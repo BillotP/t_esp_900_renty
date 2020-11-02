@@ -1,0 +1,13 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: authfunction
+spec:
+  forwardAuth:
+    address: https://openfaas.192.168.1.20/function/auth
+    trustForwardHeader: true
+    authResponseHeaders:
+      - X-Auth-User
+      - X-Secret
+    tls:
+      insecureSkipVerify: true

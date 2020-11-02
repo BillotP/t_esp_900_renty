@@ -1,0 +1,7 @@
+# Artifacts
+build
+# Secrets
+*.env
+.credential
+*.pem
+*.pub
