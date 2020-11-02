@@ -14,8 +14,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/BillotP/renty/backend/lib"
-	"github.com/BillotP/renty/backend/lib/v2/models"
+	"github.com/BillotP/gorenty"
+	"github.com/BillotP/gorenty/v2/models"
 )
 
 func (r *queryResolver) User(ctx context.Context, id string) (*models.User, error) {

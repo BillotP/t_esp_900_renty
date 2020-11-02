@@ -3,7 +3,7 @@
 package model
 
 import (
-	"github.com/BillotP/renty/backend/lib/v2/models"
+	"github.com/BillotP/gorenty/v2/models"
 )
 
 // AuthPayload is return by login mutation to get sucess token or error if any

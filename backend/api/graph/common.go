@@ -3,7 +3,7 @@ package graph
 import (
 	"fmt"
 
-	"github.com/BillotP/renty/backend/lib"
+	"github.com/BillotP/gorenty"
 )
 
 // ByID is a wrapper struct for getby id style resolvers

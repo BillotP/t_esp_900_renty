@@ -6,7 +6,7 @@ import (
 	"log"
 
 	driver "github.com/arangodb/go-driver"
-	"github.com/BillotP/renty/backend/lib/v2/models"
+	"github.com/BillotP/gorenty/v2/models"
 )
 
 func seedDatas(ctx context.Context, db driver.Database) error {

@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/BillotP/renty/backend/lib/v2/service"
+	"github.com/BillotP/gorenty/v2/service"
 
 	driver "github.com/arangodb/go-driver"
 	"github.com/arangodb/go-driver/http"

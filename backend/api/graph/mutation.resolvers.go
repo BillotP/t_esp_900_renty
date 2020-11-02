@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"github.com/minio/minio-go"
-	"github.com/BillotP/renty/backend/lib/v2/models"
+	"github.com/BillotP/gorenty/v2/models"
 )
 
 func (r *mutationResolver) Login(ctx context.Context, input *model.AuthQuery) (*model.AuthPayload, error) {

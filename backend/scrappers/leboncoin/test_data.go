@@ -1,6 +1,6 @@
 package main
 
-import "github.com/BillotP/renty/backend/lib/v2/models"
+import "github.com/BillotP/gorenty/v2/models"
 
 var fooo = models.RentOffer{
 	Title: []models.Label{

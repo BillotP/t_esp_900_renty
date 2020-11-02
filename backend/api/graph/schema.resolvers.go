@@ -8,7 +8,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/BillotP/renty/backend/lib/v2/models"
+	"github.com/BillotP/gorenty/v2/models"
 )
 
 func (r *candidatureResolver) Appointment(ctx context.Context, obj *models.Candidature) (*string, error) {

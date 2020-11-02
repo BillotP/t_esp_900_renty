@@ -15,7 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
-	"github.com/BillotP/renty/backend/lib/v2/models"
+	"github.com/BillotP/gorenty/v2/models"
 )
 
 // region    ************************** generated!.gotpl **************************

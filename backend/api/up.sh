@@ -2,7 +2,7 @@
 # exit when any command fails
 set -e
 source .credential || source ../../.credential
-docker build --build-arg CI_USER=$GOGET_USER --build-arg CI_TOKEN=$GOGET_TOKEN \
+docker build --build-arg CI_USER=$GITHUB_USER --build-arg CI_TOKEN=$GITHUB_GOGET_TOKEN \
     -t repo.treescale.com/dave-lopeur/kubebeber/api \
     .
 docker push repo.treescale.com/dave-lopeur/kubebeber/api

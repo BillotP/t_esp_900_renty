@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/BillotP/renty/backend/lib"
+	"github.com/BillotP/gorenty"
 
-	"github.com/BillotP/renty/backend/lib/api"
-	"github.com/BillotP/renty/backend/lib/v2/models"
-	"github.com/BillotP/renty/backend/lib/v2/service"
+	"github.com/BillotP/gorenty/api"
+	"github.com/BillotP/gorenty/v2/models"
+	"github.com/BillotP/gorenty/v2/service"
 )
 
 // EmailInput is an email input

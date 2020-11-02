@@ -7,10 +7,10 @@ import (
 
 	"github.com/arangodb/go-driver"
 	"github.com/cespare/xxhash"
-	"github.com/BillotP/renty/backend/lib"
-	mod "github.com/BillotP/renty/backend/lib/models"
-	"github.com/BillotP/renty/backend/lib/v2/models"
-	"github.com/BillotP/renty/backend/lib/v2/service"
+	"github.com/BillotP/gorenty"
+	mod "github.com/BillotP/gorenty/models"
+	"github.com/BillotP/gorenty/v2/models"
+	"github.com/BillotP/gorenty/v2/service"
 )
 
 // ScrappingInfos is meta info for each job id key

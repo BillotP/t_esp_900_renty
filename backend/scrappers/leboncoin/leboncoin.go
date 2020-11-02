@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
-	"github.com/BillotP/renty/backend/lib"
-	mod "github.com/BillotP/renty/backend/lib/models"
-	"github.com/BillotP/renty/backend/lib/v2/models"
+	"github.com/BillotP/gorenty"
+	mod "github.com/BillotP/gorenty/models"
+	"github.com/BillotP/gorenty/v2/models"
 )
 
 // All Leboncoin categories

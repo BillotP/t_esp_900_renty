@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/BillotP/renty/backend/lib/models"
+	"github.com/BillotP/gorenty/models"
 )
 
 // Context is an authenticated request context

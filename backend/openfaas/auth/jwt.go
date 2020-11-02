@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/BillotP/renty/backend/lib"
+	"github.com/BillotP/gorenty"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"

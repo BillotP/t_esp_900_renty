@@ -12,10 +12,10 @@ import (
 
 	"github.com/arangodb/go-driver"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/BillotP/renty/backend/lib"
-	"github.com/BillotP/renty/backend/lib/api"
-	"github.com/BillotP/renty/backend/lib/v2/models"
-	"github.com/BillotP/renty/backend/lib/v2/service"
+	"github.com/BillotP/gorenty"
+	"github.com/BillotP/gorenty/api"
+	"github.com/BillotP/gorenty/v2/models"
+	"github.com/BillotP/gorenty/v2/service"
 )
 
 // Config is the values for jwt token signing

@@ -3,24 +3,32 @@ set -e
 function create_credential_file() {
     echo -e "What's your gitlab username ?"
     read gitlabuser
-    echo -e "What's your treescale username ?\n(head to https://dash.treescale.com/sign-up to create one)\n"
+    echo -e "What's your github username ?"
+    read githubuser
+    echo -e "What's your treescale username ?\n(head to https://dash.treescale.com/sign-up to create one)"
     read treescaleuser
-    echo -e "Enter your gitlab personal access token with read repository rights\n(if missing go to https://gitlab.com/profile/personal_access_tokens)\n"
+    echo -e "Enter your gitlab personal access token with read repository rights\n(if missing go to https://gitlab.com/profile/personal_access_tokens)"
     read gogetkey
-    echo -e "Enter your gitlab personal access token with read and write container registry rights\n(if missing go to https://gitlab.com/profile/personal_access_tokens)\n"
+    echo -e "Enter your gitlab personal access token with read and write container registry rights\n(if missing go to https://gitlab.com/profile/personal_access_tokens)"
     read gitlabtoken
+    echo -e "Enter your github personal access token with read repository rights\n(if missing go to https://github.com/settings/tokens)"
+    read githubgogettoken
+    echo -e "Enter your github personal access token with read and write container registry rights\n(if missing go to https://github.com/settings/tokens)"
+    read githubregistrytoken
     echo -e "Enter your treescale access token\n(available at https://dash.treescale.com/u/$treescaleuser/auth-tokens)\n"
     read treescaletoken
     echo -e "And finally enter your treescale repo name (create one on treescale page if not allready done)"
     read treescalereponame
     echo -e "[INFO] Creating .credential file on this repo's root"
-    echo \
-"
-GOGET_USER=$gitlabuser
+    echo "GOGET_USER=$gitlabuser
 GOGET_TOKEN=$gogetkey
 GITLAB_USER=$gitlabuser
 GITLAB_TOKEN=$gitlabtoken
 GITLAB_REGISTRY_URL=registry.gitlab.com/ddng/draftlabs/kubebeber
+GITHUB_USER=$githubuser
+GITHUB_REGISTRY_TOKEN=$githubregistrytoken
+GITHUB_GOGET_TOKEN=$githubgogettoken
+GITHUB_REGISTRY=docker.pkg.github.com/billop/renty
 TREESCALE_USER=$treescaleuser
 TREESCALE_TOKEN=$treescaletoken
 TREESCALE_REGISTRY_URL=repo.treescale.com/$treescaleuser/$treescalereponame
@@ -53,5 +61,7 @@ echo -e "[INFO] Login in to gitlab registry to be able to push image"
 echo $GITLAB_TOKEN | docker login registry.gitlab.com --username $GITLAB_USER --password-stdin
 echo -e "[INFO] Login in to treescale registry"
 echo $TREESCALE_TOKEN | docker login repo.treescale.com --username $TREESCALE_USER --password-stdin
+echo -e "[INFO] Login in to treescale registry"
+echo $GITHUB_REGISTRY_TOKEN | docker login docker.pkg.github.com --username $GITHUB_USER --password-stdin
 echo -e "[INFO] Done, you could now use your images in kube default namespace"
 echo -e "\n\t All Done, enjoy your kube! ⛵\n"
