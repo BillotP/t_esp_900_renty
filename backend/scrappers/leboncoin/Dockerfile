@@ -15,7 +15,7 @@ RUN echo -e "\n\
    password $CI_TOKEN\n\
  " >> /root/.netrc
 # Set GO Build env var
-ENV GOPRIVATE=gitlab.com/ddng \
+ENV GOPRIVATE=github.com/BillotP \
     GO111MODULE=on \
     CGO_ENABLED=0 \
     GOOS=linux \

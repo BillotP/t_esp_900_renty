@@ -26,7 +26,7 @@ RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*" -n
 ARG GO111MODULE="off"
 ARG GOPROXY=""
 ARG GOFLAGS=""
-ARG GOPRIVATE="gitlab.com/ddng"
+ARG GOPRIVATE="github.com/BillotP"
 # Setup Go private package
 ARG CI_USER=${CI_USER}
 ARG CI_TOKEN=${CI_TOKEN}

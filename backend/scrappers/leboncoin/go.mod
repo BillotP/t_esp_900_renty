@@ -9,7 +9,7 @@ require (
 	github.com/antchfx/htmlquery v1.2.3 // indirect
 	github.com/antchfx/xmlquery v1.3.3 // indirect
 	github.com/arangodb/go-driver v0.0.0-20200831144536-17278d36b7e8
-	github.com/aws/aws-sdk-go v1.35.19 // indirect
+	github.com/aws/aws-sdk-go v1.35.20 // indirect
 	github.com/cespare/xxhash v1.1.0
 	github.com/go-redis/redis/v8 v8.3.3 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
