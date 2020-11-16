@@ -3,3 +3,6 @@
 *.env
 # Openfaas
 build
+
+#IDEs
+.idea

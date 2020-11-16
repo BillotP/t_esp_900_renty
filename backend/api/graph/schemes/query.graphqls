@@ -1,0 +1,6 @@
+type Query {
+  anomaly(id: String!): Anomaly!
+  anomalies: [Anomaly!]! @hasRole(role: ESTATE_AGENT)
+  tenant(id: String!): Tenant!
+  tenants: [Tenant!]! @hasRole(role: ESTATE_AGENT)
+}

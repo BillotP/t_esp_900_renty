@@ -1,0 +1,8 @@
+"""
+An Asset is a document or a picture
+"""
+type Asset {
+    url: String!
+    type: String!
+    storage: String!
+}

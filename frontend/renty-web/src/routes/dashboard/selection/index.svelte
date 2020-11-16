@@ -1,1 +1,0 @@
-<p>Selection work</p>

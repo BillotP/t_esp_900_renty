@@ -1,1 +1,0 @@
-# MinIO S3 Like Object Storage

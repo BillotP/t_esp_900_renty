@@ -1,0 +1,32 @@
+"""
+An AnomalyState is a
+"""
+enum AnomalyStates {
+    TODO,
+    IN_PROGRESS,
+    DONE
+}
+
+"""
+An Anomaly is a
+"""
+type Anomaly {
+    assignedTo: EstateAgent
+    createBy: Tenant
+    property: Property
+    description: String!
+    type: String!
+    state: AnomalyStates
+}
+
+
+input AnomalyInput {
+    property: Int
+    type: String!
+    description: String!
+}
+
+input AnomalyUpdateInput {
+    assignedTo: Int
+    state: AnomalyStates
+}

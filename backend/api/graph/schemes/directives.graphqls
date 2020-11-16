@@ -1,0 +1,6 @@
+directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+enum Role {
+    ESTATE_AGENT
+    TENANT
+}

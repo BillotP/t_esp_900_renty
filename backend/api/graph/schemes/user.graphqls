@@ -1,0 +1,14 @@
+"""
+A User is a
+"""
+type User {
+    username: String!
+    password: String!
+    role: Role!
+}
+
+input UserInput {
+    username: String!
+    password: String!
+    role: Role!
+}

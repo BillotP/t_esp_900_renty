@@ -1,1 +1,0 @@
-<p>Offer works</p>

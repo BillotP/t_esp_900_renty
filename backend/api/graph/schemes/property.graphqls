@@ -1,0 +1,16 @@
+"""
+A Property  is a
+"""
+type Property {
+    area: Float
+    address: String
+    codeNumber: Int
+    type: String
+}
+
+input PropertyInput {
+    area: Float
+    address: String
+    codeNumber: Int
+    type: String
+}

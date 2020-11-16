@@ -1,0 +1,18 @@
+"""
+A Company is a
+"""
+type Company {
+    name: String!
+    logo: Asset
+    description: String
+    tel: String!
+    EstateAgentInviteCode: String!
+    TenantInviteCode: String!
+}
+
+input CompanyInput {
+    name: String!
+    logo: String
+    description: String!
+    tel: String!
+}

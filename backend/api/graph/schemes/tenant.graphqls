@@ -1,0 +1,19 @@
+"""
+A Tenant is a
+"""
+type Tenant {
+    properties: [Property!]
+    user: User!
+    documents: [Asset!]
+}
+
+input TenantInput {
+    user: UserInput!
+    inviteCode: String!
+}
+
+
+input TenantUpdateInput {
+    properties: [Int]
+    documents: [String]
+}

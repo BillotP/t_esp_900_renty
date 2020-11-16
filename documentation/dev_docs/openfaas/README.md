@@ -1,1 +1,0 @@
-# OpenFAAS - Serverless like functions Gateway

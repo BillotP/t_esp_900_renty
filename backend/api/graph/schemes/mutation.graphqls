@@ -1,0 +1,12 @@
+type Mutation {
+    signupAsCompany(input: CompanyInput!): Company!
+    signupAsEstateAgent(input: EstateAgentInput): EstateAgent!
+    signupAsTenant(input: TenantInput): Tenant!
+
+    updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: ESTATE_AGENT)
+
+    createProperty(input: PropertyInput): Property! @hasRole(role: ESTATE_AGENT)
+
+    createAnomaly(input: AnomalyInput): Anomaly! @hasRole(role: TENANT)
+    updateAnomaly(input: AnomalyUpdateInput): Anomaly! @hasRole(role: ESTATE_AGENT)
+}

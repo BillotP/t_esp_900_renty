@@ -1,1 +1,0 @@
-# Gorenty lib

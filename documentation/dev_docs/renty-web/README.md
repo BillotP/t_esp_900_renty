@@ -1,1 +1,0 @@
-# Renty-Web A web application written with Svelte

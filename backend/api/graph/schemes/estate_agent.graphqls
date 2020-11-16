@@ -1,0 +1,12 @@
+"""
+An EstateAgent is a
+"""
+type EstateAgent {
+    company: Company!
+    user: User!
+}
+
+input EstateAgentInput {
+    user: UserInput!
+    inviteCode: String!
+}

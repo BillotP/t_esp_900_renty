@@ -1,1 +1,0 @@
-<p>Payments works</p>

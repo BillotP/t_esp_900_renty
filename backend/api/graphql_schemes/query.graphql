@@ -1,8 +1,0 @@
-type Query {
-  user(id: String!): User!
-  users(query: SearchQuery): [User!]!
-  rentoffer(id: String!): RentOffer!
-  rentoffers(query: SearchQuery): [RentOffer!]!
-  offeror(id: String!): Offeror!
-  offerors(query: SearchQuery): [Offeror!]!
-}
