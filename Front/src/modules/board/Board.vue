@@ -1,19 +1,6 @@
 <template>
   <div>
-    <table>
-      <tr v-for="(ligne, index) in board" :key="index">
-        <button @click="addJeton(ligne)">click</button>
-        <td v-for="(jeton, indexJeton) in ligne" :key="indexJeton">{{jeton}}</td>
-      </tr>
-    </table>
-    <p>score = {{score}}</p>
-    <p>tour: {{tour}}</p>
-    <button @click="save()">save</button>
-    <table>
-      <tr v-for="save in nbrSave" :key="save">
-        <button @click="changeSave(save - 1)">save: {{save}}</button>
-      </tr>
-    </table>
+    <hello-world></hello-world>
   </div>
 </template>
 
@@ -22,10 +9,16 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { board } from "./store";
 import { Action, Getter, namespace } from "vuex-class";
+import HelloWorldVue from "@/components/HelloWorld.vue";
 
 const boardModule = namespace("board");
 
-@Component
+@Component({
+  components: {
+    HelloWorld: HelloWorldVue
+  }
+})
+
 export default class Board extends Vue {
   private nbrCaseByLign = 5;
 
