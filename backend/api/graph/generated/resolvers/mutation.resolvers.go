@@ -7,8 +7,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/exec"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
-	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/server"
 )
 
 func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Company, error) {
@@ -39,7 +39,7 @@ func (r *mutationResolver) UpdateAnomaly(ctx context.Context, input *models.Anom
 	panic(fmt.Errorf("not implemented"))
 }
 
-// Mutation returns server.MutationResolver implementation.
-func (r *Resolver) Mutation() server.MutationResolver { return &mutationResolver{r} }
+// Mutation returns exec.MutationResolver implementation.
+func (r *Resolver) Mutation() exec.MutationResolver { return &mutationResolver{r} }
 
 type mutationResolver struct{ *Resolver }

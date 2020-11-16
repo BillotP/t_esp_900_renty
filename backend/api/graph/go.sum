@@ -1,6 +1,7 @@
 github.com/99designs/gqlgen v0.13.0 h1:haLTcUp3Vwp80xMVEg5KRNwzfUrgFdRmtBY8fuB8scA=
 github.com/99designs/gqlgen v0.13.0/go.mod h1:NV130r6f4tpRWuAI+zsrSdooO/eWUv+Gyyoi3rEfXIk=
 github.com/BillotP/t_esp_900_renty v0.0.0-20201116153726-57e0eb83dbdf h1:dFfbH4YVLw1fZj1x7aHGtrLA0gVnvSKL+XZJ1X42V+w=
+github.com/BillotP/t_esp_900_renty v1.0.0 h1:kpfIFhlJ7UKLLE7jr3R94xug1jr4/xokmWPQEwkCPIY=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/agnivade/levenshtein v1.0.1/go.mod h1:CURSv5d9Uaml+FovSIICkLbAUZ9S4RqaHDIsdSBg7lM=
 github.com/agnivade/levenshtein v1.0.3 h1:M5ZnqLOoZR8ygVq0FfkXsNOKzMCk0xRiow0R5+5VkQ0=

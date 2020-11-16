@@ -7,8 +7,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/exec"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
-	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/server"
 )
 
 func (r *queryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly, error) {
@@ -27,7 +27,7 @@ func (r *queryResolver) Tenants(ctx context.Context) ([]*models.Tenant, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-// Query returns server.QueryResolver implementation.
-func (r *Resolver) Query() server.QueryResolver { return &queryResolver{r} }
+// Query returns exec.QueryResolver implementation.
+func (r *Resolver) Query() exec.QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }

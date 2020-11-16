@@ -4,8 +4,8 @@ schema:
 
 # Where should the generated server code go?
 exec:
-  filename: generated/server/server.go
-  package: server
+  filename: generated/exec/exec.go
+  package: exec
 
 # Uncomment to enable federation
 # federation:
