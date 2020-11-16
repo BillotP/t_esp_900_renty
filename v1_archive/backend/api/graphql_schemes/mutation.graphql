@@ -1,0 +1,5 @@
+type Mutation {
+  login(input: AuthQuery): AuthPayload!
+  register(input: UserInput!): User
+  uploadfile(input: FileInput!): String
+}

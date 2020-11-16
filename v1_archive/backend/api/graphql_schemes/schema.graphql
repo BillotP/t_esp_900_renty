@@ -1,0 +1,186 @@
+# GraphQL schema
+
+"""
+A Source is a real estate offer website
+"""
+type Source {
+  url: String!
+}
+
+"""
+An Asset is a document or a a picture
+"""
+type Asset {
+  url: String!
+  type: String!
+  storage: String!
+}
+"""
+A Label is a text content with a locale
+"""
+type Label {
+  value: String!
+  locale: String!
+}
+
+"""
+Geometry is a GeoJSON type
+"""
+type Geometry {
+  type: String!
+  coordinates: [Float!]!
+}
+
+"""
+A Properties object contains metadata about a GeoJson entity
+"""
+type Properties {
+  name: String!
+  country: String
+}
+
+"""
+A GeoJSON is an RFC 7946 object containing geolocation informations
+"""
+type GeoJSON {
+  type: String!
+  geometry: Geometry!
+  properties: Properties
+}
+
+"""
+A Location is a wraper around geolocation object
+"""
+type Location {
+  geoJson: GeoJSON!
+}
+
+"""
+Price is a price element with a currency
+"""
+type Price {
+  value: Float!
+  currency: String!
+  condition: String!
+}
+
+"""
+Phone is a phone number with a country code
+"""
+type Phone {
+  countryCode: String!
+  value: String!
+}
+
+"""
+Email is an email with metadata added
+"""
+type Email {
+  valid: Boolean!
+  value: String!
+}
+
+"""
+Offeror is a real estate offeror infos
+"""
+type Offeror {
+  id: String!
+  name: String!
+  email: Email!
+  phone: Phone!
+  type: String!
+}
+
+"""
+Surface is the surface and rooms count infos
+"""
+type Surface {
+  value: Float!
+  unit: String!
+  rooms: Int!
+}
+
+"""
+Warrant is the candidate warrant for a real estate rental
+"""
+type Warrant {
+  firstName: String!
+  lastName: String!
+  civility: String!
+  idDocuments: [Asset!]!
+  incomesProof: [Asset!]!
+}
+
+"""
+Candidature is a real estate rent offer candidate
+"""
+type Candidature {
+  status: String!
+  candidate: User!
+  idDocuments: [Asset!]!
+  incomesProof: [Asset!]!
+  warrants: [Warrant!]
+  appointment: String
+}
+
+"""
+Requirement is a rent offer candidature requirement
+"""
+type Requirement {
+  name:      String!  
+  required:  Boolean!    
+  condition: String 
+  value:     Float
+}
+
+"""
+Requirements is a rent offer candidature requirement
+"""
+type Requirements {
+  candidate:       [Requirement!]!
+  warrants:         [Requirement!]!
+  otherConditions: String
+}
+
+"""
+Rentoffer is a real estate rent offer
+"""
+type RentOffer {
+  id: String!
+  title: [Label!]!
+  source: Source!
+  description: [Label!]!
+  price: [Price!]!
+  assets: [Asset!]!
+  location: Location!
+  offeror: Offeror!
+  surface: Surface!
+  createdAt: String!
+  expiredAt: String
+  candidatures: [Candidature!]
+  requirements: Requirements
+}
+
+"""
+User is a renty registered user
+"""
+type User {
+  id: String!
+  pseudo: String!
+  gender: String!
+  firstName: String!
+  lastName: String!
+  email: Email
+  phone: Phone
+  createdAt: String!
+  updatedAt: String!
+}
+
+"""
+AuthPayload is return by login mutation to get sucess token or error if any
+"""
+type AuthPayload {
+  user: User
+  token: String
+  error: String
+}

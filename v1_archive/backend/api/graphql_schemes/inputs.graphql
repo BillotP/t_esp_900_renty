@@ -1,0 +1,53 @@
+"""
+EmailInput is used to register a new or updated email including "send me some shit" consentment
+"""
+input EmailInput {
+  value: String!
+  infoConsent: Boolean!
+}
+
+"""
+PhoneInput is used to register a new or updated phone number
+"""
+input PhoneInput {
+  countryCode: String!
+  value: String!
+}
+
+"""
+UserInput is used to register a new or updated user
+"""
+input UserInput {
+  pseudo: String!
+  gender: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  email: EmailInput
+  phone: PhoneInput
+}
+
+"""
+AuthQuery is the payload to authenticate on renty services
+"""
+input AuthQuery {
+  pseudo: String!
+  password: String!
+}
+
+"""
+SearchQuery is a basic search / paging query
+"""
+input SearchQuery {
+  offset: Int
+  count: Int
+  intext: String
+}
+
+"""
+FileInput is a file input to request a signed upload url
+"""
+input FileInput {
+  userID: String!
+  name: String!
+}
