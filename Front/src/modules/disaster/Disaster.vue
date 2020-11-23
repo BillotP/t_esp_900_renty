@@ -10,7 +10,6 @@ import Component from 'vue-class-component';
 
 @Component
 export default class Disaster extends Vue {
-  
 }
 </script>
 

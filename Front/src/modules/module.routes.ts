@@ -1,11 +1,11 @@
 import { RouteConfig } from "vue-router";
 
-const Disaster = (resolve: any) => require(["@/modules/disaster/Disaster.vue"], (m: any) => resolve(m.default));
+const TicketList = (resolve: any) => require(["@/components/TicketList.vue"], (m: any) => resolve(m.default));
 
 
 const module: RouteConfig = {
-    path: '/disaster',
-    component: Disaster,
+    path: '/',
+    component: TicketList,
 };
 
 export default module;

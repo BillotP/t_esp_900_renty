@@ -1,24 +1,48 @@
 <template>
-  <div id="app">
-
-    <router-view/>
-
-  </div>
+  <v-app class="grey lighten-4">
+    <Navbar />
+    <v-main>
+      <v-container>
+        <router-view />
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+<script>
+import Navbar from '@/components/Navbar.vue'
 
-export default Vue.extend({
+export default {
   name: 'App',
-
   components: {
-    HelloWorld,
+    Navbar
   },
+  data() {
+    return {
 
-  data: () => ({
-    //
-  }),
-});
+    }
+  }
+}
+
 </script>
+
+<style lang="scss">
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+</style>
