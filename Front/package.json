@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "cross-env CURRENT_ENV=local vue-cli-service serve",
+    "build:local": "cross-env CURRENT_ENV=local vue-cli-service build",
+    "build:prod": "cross-env CURRENT_ENV=production vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
     "@types/vue-the-mask": "^0.11.1",
+    "axios": "^0.21.0",
     "core-js": "^3.7.0",
+    "cross-env": "^7.0.2",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.12",
     "vue-class-component": "^7.2.6",
