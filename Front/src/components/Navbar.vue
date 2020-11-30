@@ -26,13 +26,11 @@
   </nav>
 </template>
 
-<script>
+<script lang="ts">
+import Component from "vue-class-component";
+import Vue from "vue";
 
-export default {
-  data() {
-      return {
-        
-      }
-  },
+@Component
+export default class NavBar extends Vue {
 }
 </script>

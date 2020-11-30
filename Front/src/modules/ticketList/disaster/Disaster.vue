@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Client</h1>
+    <h1>Test</h1>
   </div>
 </template>
 
@@ -9,7 +9,7 @@ import Vue from "vue";
 import Component from 'vue-class-component';
 
 @Component
-export default class Auth extends Vue {
+export default class Disaster extends Vue {
 }
 </script>
 

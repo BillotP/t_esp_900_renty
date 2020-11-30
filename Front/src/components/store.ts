@@ -59,11 +59,9 @@ getLoading() {
 }
 
 const actions: ActionTree<TicketState, RootState> = {
- 
 };
 
 const mutations: MutationTree<TicketState> = {
- 
 }
 export const ticketStore: Module<TicketState, RootState> = {
   namespaced: true,
