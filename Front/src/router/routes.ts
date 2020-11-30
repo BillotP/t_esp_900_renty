@@ -47,11 +47,6 @@ export const routes: RouteConfig[] = [
         component: Root,
         children: [
             ...modules,
-            {
-                path: "/",
-                name: "dashboard",
-                component: DashboardLaboratoire
-            }
         ]
     }
 ];

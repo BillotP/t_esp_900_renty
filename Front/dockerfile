@@ -16,6 +16,6 @@ RUN npm ci
 COPY . .
 
 # construit l'app pour la production en la minifiant
-RUN npm run build:int
+RUN npm run build:local
 
 CMD [ "http-server", "dist" ]
