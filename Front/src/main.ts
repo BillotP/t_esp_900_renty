@@ -4,6 +4,7 @@ import './registerServiceWorker';
 import router from './router';
 import store from './store';
 import "./plugins/components";
+import "./plugins/forms";
 import vuetify from './plugins/vuetify';
 import "./plugins/forms";
 
