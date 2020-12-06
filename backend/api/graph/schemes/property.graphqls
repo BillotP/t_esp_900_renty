@@ -2,6 +2,9 @@
 A Property  is a
 """
 type Property {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
     area: Float
     address: String
     codeNumber: Int

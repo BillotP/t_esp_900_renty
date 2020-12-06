@@ -19,10 +19,8 @@ model:
 
 # Where should the resolver implementations go?
 resolver:
-  layout: follow-schema
+  filename: generated/resolvers/resolvers.go
   package: resolvers
-  dir: generated/resolvers
-  filename_template: "{name}.resolvers.go"
 
 
 # Optional: turn on use `gqlgen:"fieldName"` tags in your models

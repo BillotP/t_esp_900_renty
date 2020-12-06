@@ -2,6 +2,9 @@
 A User is a
 """
 type User {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
     username: String!
     password: String!
     role: Role!

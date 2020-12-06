@@ -1,0 +1,16 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:alpine
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: AFEC62CDD545955405CC3BCBD00CE85D
+      POSTGRES_DB: rentydb
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_renty:/var/lib/postgresql/data
+volumes:
+  postgres_renty: ~

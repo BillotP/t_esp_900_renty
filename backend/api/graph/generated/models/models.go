@@ -6,16 +6,23 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
 
 // An Anomaly is a
 type Anomaly struct {
-	AssignedTo  *EstateAgent   `json:"assignedTo"`
-	CreateBy    *Tenant        `json:"createBy"`
-	Property    *Property      `json:"property"`
-	Description string         `json:"description"`
-	Type        string         `json:"type"`
-	State       *AnomalyStates `json:"state"`
+	ID           *int64         `json:"ID" gorm:"primarykey"`
+	CreatedAt    *time.Time     `json:"createdAt"`
+	UpdatedAt    *time.Time     `json:"updatedAt"`
+	AssignedToID *int64         `json:"assignedToID"`
+	AssignedTo   *EstateAgent   `json:"assignedTo" gorm:"foreignKey:AssignedToID"`
+	CreateByID   *int64         `json:"createByID"`
+	CreateBy     *Tenant        `json:"createBy" gorm:"foreignKey:AssignedToID"`
+	PropertyID   *int64         `json:"propertyID"`
+	Property     *Property      `json:"property" gorm:"foreignKey:AssignedToID"`
+	Description  string         `json:"description"`
+	Type         string         `json:"type"`
+	State        *AnomalyStates `json:"state"`
 }
 
 type AnomalyInput struct {
@@ -31,19 +38,26 @@ type AnomalyUpdateInput struct {
 
 // An Asset is a document or a picture
 type Asset struct {
-	URL     string `json:"url"`
-	Type    string `json:"type"`
-	Storage string `json:"storage"`
+	ID        *int64     `json:"ID" gorm:"primarykey"`
+	CreatedAt *time.Time `json:"createdAt"`
+	UpdatedAt *time.Time `json:"updatedAt"`
+	URL       string     `json:"url"`
+	Type      string     `json:"type"`
+	Storage   string     `json:"storage"`
 }
 
 // A Company is a
 type Company struct {
-	Name                  string  `json:"name"`
-	Logo                  *Asset  `json:"logo"`
-	Description           *string `json:"description"`
-	Tel                   string  `json:"tel"`
-	EstateAgentInviteCode string  `json:"EstateAgentInviteCode"`
-	TenantInviteCode      string  `json:"TenantInviteCode"`
+	ID                    *int64     `json:"ID" gorm:"primarykey"`
+	CreatedAt             *time.Time `json:"createdAt"`
+	UpdatedAt             *time.Time `json:"updatedAt"`
+	Name                  string     `json:"name"`
+	LogoID                *int64     `json:"logoID"`
+	Logo                  *Asset     `json:"logo" gorm:"foreignKey:LogoID"`
+	Description           *string    `json:"description"`
+	Tel                   string     `json:"tel"`
+	EstateAgentInviteCode string     `json:"estateAgentInviteCode"`
+	TenantInviteCode      string     `json:"tenantInviteCode"`
 }
 
 type CompanyInput struct {
@@ -55,8 +69,13 @@ type CompanyInput struct {
 
 // An EstateAgent is a
 type EstateAgent struct {
-	Company *Company `json:"company"`
-	User    *User    `json:"user"`
+	ID        *int64     `json:"ID" gorm:"primarykey"`
+	CreatedAt *time.Time `json:"createdAt"`
+	UpdatedAt *time.Time `json:"updatedAt"`
+	CompanyID *int64     `json:"companyID"`
+	Company   *Company   `json:"company" gorm:"foreignKey:CompanyID"`
+	UserID    *int64     `json:"userID"`
+	User      *User      `json:"user" gorm:"foreignKey:UserID"`
 }
 
 type EstateAgentInput struct {
@@ -66,10 +85,13 @@ type EstateAgentInput struct {
 
 // A Property  is a
 type Property struct {
-	Area       *float64 `json:"area"`
-	Address    *string  `json:"address"`
-	CodeNumber *int64   `json:"codeNumber"`
-	Type       *string  `json:"type"`
+	ID         *int64     `json:"ID" gorm:"primarykey"`
+	CreatedAt  *time.Time `json:"createdAt"`
+	UpdatedAt  *time.Time `json:"updatedAt"`
+	Area       *float64   `json:"area"`
+	Address    *string    `json:"address"`
+	CodeNumber *int64     `json:"codeNumber"`
+	Type       *string    `json:"type"`
 }
 
 type PropertyInput struct {
@@ -81,9 +103,13 @@ type PropertyInput struct {
 
 // A Tenant is a
 type Tenant struct {
-	Properties []*Property `json:"properties"`
-	User       *User       `json:"user"`
-	Documents  []*Asset    `json:"documents"`
+	ID         *int64      `json:"ID" gorm:"primarykey"`
+	CreatedAt  *time.Time  `json:"createdAt"`
+	UpdatedAt  *time.Time  `json:"updatedAt"`
+	Properties []*Property `json:"properties" gorm:"many2many:tenant_properties"`
+	UserID     *int64      `json:"userID"`
+	User       *User       `json:"user" gorm:"foreignKey:UserID"`
+	Documents  []*Asset    `json:"documents" gorm:"many2many:tenant_documents"`
 }
 
 type TenantInput struct {
@@ -98,9 +124,12 @@ type TenantUpdateInput struct {
 
 // A User is a
 type User struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Role     Role   `json:"role"`
+	ID        *int64     `json:"ID" gorm:"primarykey"`
+	CreatedAt *time.Time `json:"createdAt"`
+	UpdatedAt *time.Time `json:"updatedAt"`
+	Username  string     `json:"username"`
+	Password  string     `json:"password"`
+	Role      Role       `json:"role"`
 }
 
 type UserInput struct {

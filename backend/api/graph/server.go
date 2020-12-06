@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/BillotP/t_esp_900_renty/v2/backend/api/lib/middleware"
+	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib/middleware"
 	"github.com/gin-gonic/gin"
 )
 

@@ -2,6 +2,9 @@
 An Asset is a document or a picture
 """
 type Asset {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
     url: String!
     type: String!
     storage: String!

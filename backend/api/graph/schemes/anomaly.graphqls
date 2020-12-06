@@ -11,9 +11,15 @@ enum AnomalyStates {
 An Anomaly is a
 """
 type Anomaly {
-    assignedTo: EstateAgent
-    createBy: Tenant
-    property: Property
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
+    assignedToID: Int
+    assignedTo: EstateAgent @extraTag(gorm:"foreignKey:AssignedToID")
+    createByID: Int
+    createBy: Tenant @extraTag(gorm:"foreignKey:AssignedToID")
+    propertyID: Int
+    property: Property @extraTag(gorm:"foreignKey:AssignedToID")
     description: String!
     type: String!
     state: AnomalyStates

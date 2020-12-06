@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
+	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	_ "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"graphql_server/generated/models"
-	"graphql_server/lib"
 	"log"
 	"os"
 	"time"
@@ -32,7 +32,7 @@ func InitDB() {
 
 	username = os.Getenv("POSTGRES_USER")
 	password = os.Getenv("POSTGRES_PASSWORD")
-	dbName = "prisma"
+	dbName = "rentydb"
 	dbHost = "127.0.0.1"
 
 	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", dbHost, username, dbName, password, "5432") //Build connection string
@@ -41,9 +41,9 @@ func InitDB() {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold: time.Second,   // Slow SQL threshold
+			SlowThreshold: time.Second, // Slow SQL threshold
 			LogLevel:      logger.Info, // Log level
-			Colorful:      false,         // Disable color,
+			Colorful:      false,       // Disable color,
 
 		},
 	)
@@ -55,11 +55,7 @@ func InitDB() {
 		fmt.Print(err)
 	}
 
-	// Migration to create tables for Order and Item schema
-	if err = Db.AutoMigrate(&models.Asset{}, &models.Label{}, &models.Area{}, &models.Device{}, &models.Location{}, &models.Price{}); err != nil {
-		os.Exit(42)
-	}
-	if err = Db.AutoMigrate(&models.User{}, models.UserDocument{}, &models.Email{}, &models.PhoneNumber{}, &models.RentOffer{}); err != nil {
+	if err = Db.AutoMigrate(&models.Anomaly{}, models.Asset{}, &models.Company{}, &models.EstateAgent{}, &models.Property{}, &models.Tenant{}, &models.User{}); err != nil {
 		os.Exit(84)
 	}
 }

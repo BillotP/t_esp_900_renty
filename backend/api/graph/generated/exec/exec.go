@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -46,32 +47,50 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Anomaly struct {
-		AssignedTo  func(childComplexity int) int
-		CreateBy    func(childComplexity int) int
-		Description func(childComplexity int) int
-		Property    func(childComplexity int) int
-		State       func(childComplexity int) int
-		Type        func(childComplexity int) int
+		AssignedTo   func(childComplexity int) int
+		AssignedToID func(childComplexity int) int
+		CreateBy     func(childComplexity int) int
+		CreateByID   func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		Description  func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Property     func(childComplexity int) int
+		PropertyID   func(childComplexity int) int
+		State        func(childComplexity int) int
+		Type         func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
 	}
 
 	Asset struct {
-		Storage func(childComplexity int) int
-		Type    func(childComplexity int) int
-		URL     func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Storage   func(childComplexity int) int
+		Type      func(childComplexity int) int
+		URL       func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
 	}
 
 	Company struct {
+		CreatedAt             func(childComplexity int) int
 		Description           func(childComplexity int) int
 		EstateAgentInviteCode func(childComplexity int) int
+		ID                    func(childComplexity int) int
 		Logo                  func(childComplexity int) int
+		LogoID                func(childComplexity int) int
 		Name                  func(childComplexity int) int
 		Tel                   func(childComplexity int) int
 		TenantInviteCode      func(childComplexity int) int
+		UpdatedAt             func(childComplexity int) int
 	}
 
 	EstateAgent struct {
-		Company func(childComplexity int) int
-		User    func(childComplexity int) int
+		Company   func(childComplexity int) int
+		CompanyID func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		User      func(childComplexity int) int
+		UserID    func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -88,7 +107,10 @@ type ComplexityRoot struct {
 		Address    func(childComplexity int) int
 		Area       func(childComplexity int) int
 		CodeNumber func(childComplexity int) int
+		CreatedAt  func(childComplexity int) int
+		ID         func(childComplexity int) int
 		Type       func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
 	}
 
 	Query struct {
@@ -99,15 +121,22 @@ type ComplexityRoot struct {
 	}
 
 	Tenant struct {
+		CreatedAt  func(childComplexity int) int
 		Documents  func(childComplexity int) int
+		ID         func(childComplexity int) int
 		Properties func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
 		User       func(childComplexity int) int
+		UserID     func(childComplexity int) int
 	}
 
 	User struct {
-		Password func(childComplexity int) int
-		Role     func(childComplexity int) int
-		Username func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Password  func(childComplexity int) int
+		Role      func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		Username  func(childComplexity int) int
 	}
 }
 
@@ -149,12 +178,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Anomaly.AssignedTo(childComplexity), true
 
+	case "Anomaly.assignedToID":
+		if e.complexity.Anomaly.AssignedToID == nil {
+			break
+		}
+
+		return e.complexity.Anomaly.AssignedToID(childComplexity), true
+
 	case "Anomaly.createBy":
 		if e.complexity.Anomaly.CreateBy == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.CreateBy(childComplexity), true
+
+	case "Anomaly.createByID":
+		if e.complexity.Anomaly.CreateByID == nil {
+			break
+		}
+
+		return e.complexity.Anomaly.CreateByID(childComplexity), true
+
+	case "Anomaly.createdAt":
+		if e.complexity.Anomaly.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Anomaly.CreatedAt(childComplexity), true
 
 	case "Anomaly.description":
 		if e.complexity.Anomaly.Description == nil {
@@ -163,12 +213,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Anomaly.Description(childComplexity), true
 
+	case "Anomaly.ID":
+		if e.complexity.Anomaly.ID == nil {
+			break
+		}
+
+		return e.complexity.Anomaly.ID(childComplexity), true
+
 	case "Anomaly.property":
 		if e.complexity.Anomaly.Property == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.Property(childComplexity), true
+
+	case "Anomaly.propertyID":
+		if e.complexity.Anomaly.PropertyID == nil {
+			break
+		}
+
+		return e.complexity.Anomaly.PropertyID(childComplexity), true
 
 	case "Anomaly.state":
 		if e.complexity.Anomaly.State == nil {
@@ -183,6 +247,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Anomaly.Type(childComplexity), true
+
+	case "Anomaly.updatedAt":
+		if e.complexity.Anomaly.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Anomaly.UpdatedAt(childComplexity), true
+
+	case "Asset.createdAt":
+		if e.complexity.Asset.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Asset.CreatedAt(childComplexity), true
+
+	case "Asset.ID":
+		if e.complexity.Asset.ID == nil {
+			break
+		}
+
+		return e.complexity.Asset.ID(childComplexity), true
 
 	case "Asset.storage":
 		if e.complexity.Asset.Storage == nil {
@@ -205,6 +290,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Asset.URL(childComplexity), true
 
+	case "Asset.updatedAt":
+		if e.complexity.Asset.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Asset.UpdatedAt(childComplexity), true
+
+	case "Company.createdAt":
+		if e.complexity.Company.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Company.CreatedAt(childComplexity), true
+
 	case "Company.description":
 		if e.complexity.Company.Description == nil {
 			break
@@ -212,12 +311,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Company.Description(childComplexity), true
 
-	case "Company.EstateAgentInviteCode":
+	case "Company.estateAgentInviteCode":
 		if e.complexity.Company.EstateAgentInviteCode == nil {
 			break
 		}
 
 		return e.complexity.Company.EstateAgentInviteCode(childComplexity), true
+
+	case "Company.ID":
+		if e.complexity.Company.ID == nil {
+			break
+		}
+
+		return e.complexity.Company.ID(childComplexity), true
 
 	case "Company.logo":
 		if e.complexity.Company.Logo == nil {
@@ -225,6 +331,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Company.Logo(childComplexity), true
+
+	case "Company.logoID":
+		if e.complexity.Company.LogoID == nil {
+			break
+		}
+
+		return e.complexity.Company.LogoID(childComplexity), true
 
 	case "Company.name":
 		if e.complexity.Company.Name == nil {
@@ -240,12 +353,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Company.Tel(childComplexity), true
 
-	case "Company.TenantInviteCode":
+	case "Company.tenantInviteCode":
 		if e.complexity.Company.TenantInviteCode == nil {
 			break
 		}
 
 		return e.complexity.Company.TenantInviteCode(childComplexity), true
+
+	case "Company.updatedAt":
+		if e.complexity.Company.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Company.UpdatedAt(childComplexity), true
 
 	case "EstateAgent.company":
 		if e.complexity.EstateAgent.Company == nil {
@@ -254,12 +374,47 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.EstateAgent.Company(childComplexity), true
 
+	case "EstateAgent.companyID":
+		if e.complexity.EstateAgent.CompanyID == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.CompanyID(childComplexity), true
+
+	case "EstateAgent.createdAt":
+		if e.complexity.EstateAgent.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.CreatedAt(childComplexity), true
+
+	case "EstateAgent.ID":
+		if e.complexity.EstateAgent.ID == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.ID(childComplexity), true
+
+	case "EstateAgent.updatedAt":
+		if e.complexity.EstateAgent.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.UpdatedAt(childComplexity), true
+
 	case "EstateAgent.user":
 		if e.complexity.EstateAgent.User == nil {
 			break
 		}
 
 		return e.complexity.EstateAgent.User(childComplexity), true
+
+	case "EstateAgent.userID":
+		if e.complexity.EstateAgent.UserID == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.UserID(childComplexity), true
 
 	case "Mutation.createAnomaly":
 		if e.complexity.Mutation.CreateAnomaly == nil {
@@ -366,12 +521,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Property.CodeNumber(childComplexity), true
 
+	case "Property.createdAt":
+		if e.complexity.Property.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Property.CreatedAt(childComplexity), true
+
+	case "Property.ID":
+		if e.complexity.Property.ID == nil {
+			break
+		}
+
+		return e.complexity.Property.ID(childComplexity), true
+
 	case "Property.type":
 		if e.complexity.Property.Type == nil {
 			break
 		}
 
 		return e.complexity.Property.Type(childComplexity), true
+
+	case "Property.updatedAt":
+		if e.complexity.Property.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Property.UpdatedAt(childComplexity), true
 
 	case "Query.anomalies":
 		if e.complexity.Query.Anomalies == nil {
@@ -411,12 +587,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Tenants(childComplexity), true
 
+	case "Tenant.createdAt":
+		if e.complexity.Tenant.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Tenant.CreatedAt(childComplexity), true
+
 	case "Tenant.documents":
 		if e.complexity.Tenant.Documents == nil {
 			break
 		}
 
 		return e.complexity.Tenant.Documents(childComplexity), true
+
+	case "Tenant.ID":
+		if e.complexity.Tenant.ID == nil {
+			break
+		}
+
+		return e.complexity.Tenant.ID(childComplexity), true
 
 	case "Tenant.properties":
 		if e.complexity.Tenant.Properties == nil {
@@ -425,12 +615,40 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Tenant.Properties(childComplexity), true
 
+	case "Tenant.updatedAt":
+		if e.complexity.Tenant.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Tenant.UpdatedAt(childComplexity), true
+
 	case "Tenant.user":
 		if e.complexity.Tenant.User == nil {
 			break
 		}
 
 		return e.complexity.Tenant.User(childComplexity), true
+
+	case "Tenant.userID":
+		if e.complexity.Tenant.UserID == nil {
+			break
+		}
+
+		return e.complexity.Tenant.UserID(childComplexity), true
+
+	case "User.createdAt":
+		if e.complexity.User.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.User.CreatedAt(childComplexity), true
+
+	case "User.ID":
+		if e.complexity.User.ID == nil {
+			break
+		}
+
+		return e.complexity.User.ID(childComplexity), true
 
 	case "User.password":
 		if e.complexity.User.Password == nil {
@@ -445,6 +663,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Role(childComplexity), true
+
+	case "User.updatedAt":
+		if e.complexity.User.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.User.UpdatedAt(childComplexity), true
 
 	case "User.username":
 		if e.complexity.User.Username == nil {
@@ -517,7 +742,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "schemes/anomaly.graphqls", Input: `"""
+	&ast.Source{Name: "schemes/anomaly.graphqls", Input: `"""
 An AnomalyState is a
 """
 enum AnomalyStates {
@@ -530,9 +755,15 @@ enum AnomalyStates {
 An Anomaly is a
 """
 type Anomaly {
-    assignedTo: EstateAgent
-    createBy: Tenant
-    property: Property
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
+    assignedToID: Int
+    assignedTo: EstateAgent @extraTag(gorm:"foreignKey:AssignedToID")
+    createByID: Int
+    createBy: Tenant @extraTag(gorm:"foreignKey:AssignedToID")
+    propertyID: Int
+    property: Property @extraTag(gorm:"foreignKey:AssignedToID")
     description: String!
     type: String!
     state: AnomalyStates
@@ -550,25 +781,32 @@ input AnomalyUpdateInput {
     state: AnomalyStates
 }
 `, BuiltIn: false},
-	{Name: "schemes/asset.graphqls", Input: `"""
+	&ast.Source{Name: "schemes/asset.graphqls", Input: `"""
 An Asset is a document or a picture
 """
 type Asset {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
     url: String!
     type: String!
     storage: String!
 }
 `, BuiltIn: false},
-	{Name: "schemes/company.graphqls", Input: `"""
+	&ast.Source{Name: "schemes/company.graphqls", Input: `"""
 A Company is a
 """
 type Company {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
     name: String!
-    logo: Asset
+    logoID: Int
+    logo: Asset @extraTag(gorm:"foreignKey:LogoID")
     description: String
     tel: String!
-    EstateAgentInviteCode: String!
-    TenantInviteCode: String!
+    estateAgentInviteCode: String!
+    tenantInviteCode: String!
 }
 
 input CompanyInput {
@@ -578,19 +816,25 @@ input CompanyInput {
     tel: String!
 }
 `, BuiltIn: false},
-	{Name: "schemes/directives.graphqls", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
+	&ast.Source{Name: "schemes/directives.graphqls", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
 
 enum Role {
     ESTATE_AGENT
     TENANT
 }
-`, BuiltIn: false},
-	{Name: "schemes/estate_agent.graphqls", Input: `"""
+
+directive @extraTag on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
+	&ast.Source{Name: "schemes/estate_agent.graphqls", Input: `"""
 An EstateAgent is a
 """
 type EstateAgent {
-    company: Company!
-    user: User!
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
+    companyID: Int
+    company: Company! @extraTag(gorm:"foreignKey:CompanyID")
+    userID: Int
+    user: User! @extraTag(gorm:"foreignKey:UserID")
 }
 
 input EstateAgentInput {
@@ -598,7 +842,7 @@ input EstateAgentInput {
     inviteCode: String!
 }
 `, BuiltIn: false},
-	{Name: "schemes/mutation.graphqls", Input: `type Mutation {
+	&ast.Source{Name: "schemes/mutation.graphqls", Input: `type Mutation {
     signupAsCompany(input: CompanyInput!): Company!
     signupAsEstateAgent(input: EstateAgentInput): EstateAgent!
     signupAsTenant(input: TenantInput): Tenant!
@@ -611,10 +855,13 @@ input EstateAgentInput {
     updateAnomaly(input: AnomalyUpdateInput): Anomaly! @hasRole(role: ESTATE_AGENT)
 }
 `, BuiltIn: false},
-	{Name: "schemes/property.graphqls", Input: `"""
+	&ast.Source{Name: "schemes/property.graphqls", Input: `"""
 A Property  is a
 """
 type Property {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
     area: Float
     address: String
     codeNumber: Int
@@ -628,20 +875,25 @@ input PropertyInput {
     type: String
 }
 `, BuiltIn: false},
-	{Name: "schemes/query.graphqls", Input: `type Query {
+	&ast.Source{Name: "schemes/query.graphqls", Input: `type Query {
   anomaly(id: String!): Anomaly!
   anomalies: [Anomaly!]! @hasRole(role: ESTATE_AGENT)
   tenant(id: String!): Tenant!
   tenants: [Tenant!]! @hasRole(role: ESTATE_AGENT)
 }
 `, BuiltIn: false},
-	{Name: "schemes/tenant.graphqls", Input: `"""
+	&ast.Source{Name: "schemes/scalars.graphqls", Input: `scalar Time`, BuiltIn: false},
+	&ast.Source{Name: "schemes/tenant.graphqls", Input: `"""
 A Tenant is a
 """
 type Tenant {
-    properties: [Property!]
-    user: User!
-    documents: [Asset!]
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
+    properties: [Property!] @extraTag(gorm:"many2many:tenant_properties")
+    userID: Int
+    user: User! @extraTag(gorm:"foreignKey:UserID")
+    documents: [Asset!] @extraTag(gorm:"many2many:tenant_documents")
 }
 
 input TenantInput {
@@ -655,10 +907,13 @@ input TenantUpdateInput {
     documents: [String]
 }
 `, BuiltIn: false},
-	{Name: "schemes/user.graphqls", Input: `"""
+	&ast.Source{Name: "schemes/user.graphqls", Input: `"""
 A User is a
 """
 type User {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
     username: String!
     password: String!
     role: Role!
@@ -682,7 +937,6 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 	args := map[string]interface{}{}
 	var arg0 models.Role
 	if tmp, ok := rawArgs["role"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
 		arg0, err = ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -697,7 +951,6 @@ func (ec *executionContext) field_Mutation_createAnomaly_args(ctx context.Contex
 	args := map[string]interface{}{}
 	var arg0 *models.AnomalyInput
 	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOAnomalyInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyInput(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -712,7 +965,6 @@ func (ec *executionContext) field_Mutation_createProperty_args(ctx context.Conte
 	args := map[string]interface{}{}
 	var arg0 *models.PropertyInput
 	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOPropertyInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyInput(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -727,7 +979,6 @@ func (ec *executionContext) field_Mutation_signupAsCompany_args(ctx context.Cont
 	args := map[string]interface{}{}
 	var arg0 models.CompanyInput
 	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCompanyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompanyInput(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -742,7 +993,6 @@ func (ec *executionContext) field_Mutation_signupAsEstateAgent_args(ctx context.
 	args := map[string]interface{}{}
 	var arg0 *models.EstateAgentInput
 	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOEstateAgentInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgentInput(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -757,7 +1007,6 @@ func (ec *executionContext) field_Mutation_signupAsTenant_args(ctx context.Conte
 	args := map[string]interface{}{}
 	var arg0 *models.TenantInput
 	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOTenantInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantInput(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -772,7 +1021,6 @@ func (ec *executionContext) field_Mutation_updateAnomaly_args(ctx context.Contex
 	args := map[string]interface{}{}
 	var arg0 *models.AnomalyUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOAnomalyUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -787,7 +1035,6 @@ func (ec *executionContext) field_Mutation_updateTenantProfile_args(ctx context.
 	args := map[string]interface{}{}
 	var arg0 *models.TenantUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOTenantUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -802,7 +1049,6 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -817,7 +1063,6 @@ func (ec *executionContext) field_Query_anomaly_args(ctx context.Context, rawArg
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -832,7 +1077,6 @@ func (ec *executionContext) field_Query_tenant_args(ctx context.Context, rawArgs
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -847,7 +1091,6 @@ func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, ra
 	args := map[string]interface{}{}
 	var arg0 bool
 	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
 		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -862,7 +1105,6 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 	args := map[string]interface{}{}
 	var arg0 bool
 	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
 		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -880,6 +1122,130 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _Anomaly_ID(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Anomaly_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Anomaly_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Anomaly_assignedToID(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AssignedToID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Anomaly_assignedTo(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -888,11 +1254,10 @@ func (ec *executionContext) _Anomaly_assignedTo(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Anomaly",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -912,6 +1277,37 @@ func (ec *executionContext) _Anomaly_assignedTo(ctx context.Context, field graph
 	return ec.marshalOEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Anomaly_createByID(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreateByID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Anomaly_createBy(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -920,11 +1316,10 @@ func (ec *executionContext) _Anomaly_createBy(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Anomaly",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -944,6 +1339,37 @@ func (ec *executionContext) _Anomaly_createBy(ctx context.Context, field graphql
 	return ec.marshalOTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenant(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Anomaly_propertyID(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PropertyID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Anomaly_property(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -952,11 +1378,10 @@ func (ec *executionContext) _Anomaly_property(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Anomaly",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -984,11 +1409,10 @@ func (ec *executionContext) _Anomaly_description(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Anomaly",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1019,11 +1443,10 @@ func (ec *executionContext) _Anomaly_type(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Anomaly",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1054,11 +1477,10 @@ func (ec *executionContext) _Anomaly_state(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Anomaly",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1078,6 +1500,99 @@ func (ec *executionContext) _Anomaly_state(ctx context.Context, field graphql.Co
 	return ec.marshalOAnomalyStates2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Asset_ID(ctx context.Context, field graphql.CollectedField, obj *models.Asset) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Asset",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Asset_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Asset) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Asset",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Asset_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Asset) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Asset",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Asset_url(ctx context.Context, field graphql.CollectedField, obj *models.Asset) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1086,11 +1601,10 @@ func (ec *executionContext) _Asset_url(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Asset",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Asset",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1121,11 +1635,10 @@ func (ec *executionContext) _Asset_type(ctx context.Context, field graphql.Colle
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Asset",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Asset",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1156,11 +1669,10 @@ func (ec *executionContext) _Asset_storage(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Asset",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Asset",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1183,6 +1695,99 @@ func (ec *executionContext) _Asset_storage(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Company_ID(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Company_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Company_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Company_name(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1191,11 +1796,10 @@ func (ec *executionContext) _Company_name(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Company",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1218,6 +1822,37 @@ func (ec *executionContext) _Company_name(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Company_logoID(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LogoID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Company_logo(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1226,11 +1861,10 @@ func (ec *executionContext) _Company_logo(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Company",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1258,11 +1892,10 @@ func (ec *executionContext) _Company_description(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Company",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1290,11 +1923,10 @@ func (ec *executionContext) _Company_tel(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Company",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1317,7 +1949,7 @@ func (ec *executionContext) _Company_tel(ctx context.Context, field graphql.Coll
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Company_EstateAgentInviteCode(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_estateAgentInviteCode(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1325,11 +1957,10 @@ func (ec *executionContext) _Company_EstateAgentInviteCode(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Company",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1352,7 +1983,7 @@ func (ec *executionContext) _Company_EstateAgentInviteCode(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Company_TenantInviteCode(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_tenantInviteCode(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1360,11 +1991,10 @@ func (ec *executionContext) _Company_TenantInviteCode(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Company",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1387,6 +2017,130 @@ func (ec *executionContext) _Company_TenantInviteCode(ctx context.Context, field
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _EstateAgent_ID(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EstateAgent_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EstateAgent_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EstateAgent_companyID(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CompanyID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _EstateAgent_company(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1395,11 +2149,10 @@ func (ec *executionContext) _EstateAgent_company(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EstateAgent",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1422,6 +2175,37 @@ func (ec *executionContext) _EstateAgent_company(ctx context.Context, field grap
 	return ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _EstateAgent_userID(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _EstateAgent_user(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1430,11 +2214,10 @@ func (ec *executionContext) _EstateAgent_user(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EstateAgent",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1465,11 +2248,10 @@ func (ec *executionContext) _Mutation_signupAsCompany(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1507,11 +2289,10 @@ func (ec *executionContext) _Mutation_signupAsEstateAgent(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1549,11 +2330,10 @@ func (ec *executionContext) _Mutation_signupAsTenant(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1591,11 +2371,10 @@ func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1624,7 +2403,7 @@ func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, f
 
 		tmp, err := directive1(rctx)
 		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
+			return nil, err
 		}
 		if tmp == nil {
 			return nil, nil
@@ -1657,11 +2436,10 @@ func (ec *executionContext) _Mutation_createProperty(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1690,7 +2468,7 @@ func (ec *executionContext) _Mutation_createProperty(ctx context.Context, field 
 
 		tmp, err := directive1(rctx)
 		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
+			return nil, err
 		}
 		if tmp == nil {
 			return nil, nil
@@ -1723,11 +2501,10 @@ func (ec *executionContext) _Mutation_createAnomaly(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1756,7 +2533,7 @@ func (ec *executionContext) _Mutation_createAnomaly(ctx context.Context, field g
 
 		tmp, err := directive1(rctx)
 		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
+			return nil, err
 		}
 		if tmp == nil {
 			return nil, nil
@@ -1789,11 +2566,10 @@ func (ec *executionContext) _Mutation_updateAnomaly(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1822,7 +2598,7 @@ func (ec *executionContext) _Mutation_updateAnomaly(ctx context.Context, field g
 
 		tmp, err := directive1(rctx)
 		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
+			return nil, err
 		}
 		if tmp == nil {
 			return nil, nil
@@ -1847,6 +2623,99 @@ func (ec *executionContext) _Mutation_updateAnomaly(ctx context.Context, field g
 	return ec.marshalNAnomaly2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomaly(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Property_ID(ctx context.Context, field graphql.CollectedField, obj *models.Property) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Property_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Property) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Property_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Property) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Property_area(ctx context.Context, field graphql.CollectedField, obj *models.Property) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1855,11 +2724,10 @@ func (ec *executionContext) _Property_area(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Property",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1887,11 +2755,10 @@ func (ec *executionContext) _Property_address(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Property",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1919,11 +2786,10 @@ func (ec *executionContext) _Property_codeNumber(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Property",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1951,11 +2817,10 @@ func (ec *executionContext) _Property_type(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Property",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -1983,11 +2848,10 @@ func (ec *executionContext) _Query_anomaly(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2025,11 +2889,10 @@ func (ec *executionContext) _Query_anomalies(ctx context.Context, field graphql.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2051,7 +2914,7 @@ func (ec *executionContext) _Query_anomalies(ctx context.Context, field graphql.
 
 		tmp, err := directive1(rctx)
 		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
+			return nil, err
 		}
 		if tmp == nil {
 			return nil, nil
@@ -2084,11 +2947,10 @@ func (ec *executionContext) _Query_tenant(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2126,11 +2988,10 @@ func (ec *executionContext) _Query_tenants(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2152,7 +3013,7 @@ func (ec *executionContext) _Query_tenants(ctx context.Context, field graphql.Co
 
 		tmp, err := directive1(rctx)
 		if err != nil {
-			return nil, graphql.ErrorOnPath(ctx, err)
+			return nil, err
 		}
 		if tmp == nil {
 			return nil, nil
@@ -2185,11 +3046,10 @@ func (ec *executionContext) _Query___type(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2224,11 +3084,10 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2248,6 +3107,99 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Tenant_ID(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Tenant_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Tenant_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Tenant_properties(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2256,11 +3208,10 @@ func (ec *executionContext) _Tenant_properties(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Tenant",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2280,6 +3231,37 @@ func (ec *executionContext) _Tenant_properties(ctx context.Context, field graphq
 	return ec.marshalOProperty2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Tenant_userID(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Tenant_user(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2288,11 +3270,10 @@ func (ec *executionContext) _Tenant_user(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Tenant",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2323,11 +3304,10 @@ func (ec *executionContext) _Tenant_documents(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Tenant",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2347,6 +3327,99 @@ func (ec *executionContext) _Tenant_documents(ctx context.Context, field graphql
 	return ec.marshalOAsset2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAssetᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _User_ID(ctx context.Context, field graphql.CollectedField, obj *models.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _User_username(ctx context.Context, field graphql.CollectedField, obj *models.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2355,11 +3428,10 @@ func (ec *executionContext) _User_username(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "User",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2390,11 +3462,10 @@ func (ec *executionContext) _User_password(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "User",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2425,11 +3496,10 @@ func (ec *executionContext) _User_role(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "User",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2460,11 +3530,10 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Directive",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__Directive",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2495,11 +3564,10 @@ func (ec *executionContext) ___Directive_description(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Directive",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__Directive",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2527,11 +3595,10 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Directive",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__Directive",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2562,11 +3629,10 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Directive",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__Directive",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2597,11 +3663,10 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__EnumValue",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__EnumValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2632,11 +3697,10 @@ func (ec *executionContext) ___EnumValue_description(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__EnumValue",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__EnumValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2664,11 +3728,10 @@ func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__EnumValue",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__EnumValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2699,11 +3762,10 @@ func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__EnumValue",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__EnumValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2731,11 +3793,10 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Field",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__Field",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2766,11 +3827,10 @@ func (ec *executionContext) ___Field_description(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Field",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__Field",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2798,11 +3858,10 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Field",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__Field",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2833,11 +3892,10 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Field",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__Field",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2868,11 +3926,10 @@ func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Field",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Field",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2903,11 +3960,10 @@ func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Field",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Field",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2935,11 +3991,10 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__InputValue",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__InputValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -2970,11 +4025,10 @@ func (ec *executionContext) ___InputValue_description(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__InputValue",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__InputValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3002,11 +4056,10 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__InputValue",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__InputValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3037,11 +4090,10 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__InputValue",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		Object:   "__InputValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3069,11 +4121,10 @@ func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Schema",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Schema",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3104,11 +4155,10 @@ func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Schema",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Schema",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3139,11 +4189,10 @@ func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Schema",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Schema",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3171,11 +4220,10 @@ func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Schema",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Schema",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3203,11 +4251,10 @@ func (ec *executionContext) ___Schema_directives(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Schema",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Schema",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3238,11 +4285,10 @@ func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3273,11 +4319,10 @@ func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3305,11 +4350,10 @@ func (ec *executionContext) ___Type_description(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3337,11 +4381,10 @@ func (ec *executionContext) ___Type_fields(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3376,11 +4419,10 @@ func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3408,11 +4450,10 @@ func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3440,11 +4481,10 @@ func (ec *executionContext) ___Type_enumValues(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3479,11 +4519,10 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3511,11 +4550,10 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "__Type",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
+		Object:   "__Type",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -3547,24 +4585,18 @@ func (ec *executionContext) unmarshalInputAnomalyInput(ctx context.Context, obj 
 		switch k {
 		case "property":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("property"))
 			it.Property, err = ec.unmarshalOInt2ᚖint64(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "type":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			it.Type, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "description":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
 			it.Description, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -3583,16 +4615,12 @@ func (ec *executionContext) unmarshalInputAnomalyUpdateInput(ctx context.Context
 		switch k {
 		case "assignedTo":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assignedTo"))
 			it.AssignedTo, err = ec.unmarshalOInt2ᚖint64(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "state":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("state"))
 			it.State, err = ec.unmarshalOAnomalyStates2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx, v)
 			if err != nil {
 				return it, err
@@ -3611,32 +4639,24 @@ func (ec *executionContext) unmarshalInputCompanyInput(ctx context.Context, obj 
 		switch k {
 		case "name":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "logo":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("logo"))
 			it.Logo, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "description":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
 			it.Description, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "tel":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tel"))
 			it.Tel, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -3655,16 +4675,12 @@ func (ec *executionContext) unmarshalInputEstateAgentInput(ctx context.Context, 
 		switch k {
 		case "user":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
 			it.User, err = ec.unmarshalNUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "inviteCode":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inviteCode"))
 			it.InviteCode, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -3683,32 +4699,24 @@ func (ec *executionContext) unmarshalInputPropertyInput(ctx context.Context, obj
 		switch k {
 		case "area":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("area"))
 			it.Area, err = ec.unmarshalOFloat2ᚖfloat64(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "address":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
 			it.Address, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "codeNumber":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("codeNumber"))
 			it.CodeNumber, err = ec.unmarshalOInt2ᚖint64(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "type":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			it.Type, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
@@ -3727,16 +4735,12 @@ func (ec *executionContext) unmarshalInputTenantInput(ctx context.Context, obj i
 		switch k {
 		case "user":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
 			it.User, err = ec.unmarshalNUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "inviteCode":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inviteCode"))
 			it.InviteCode, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -3755,16 +4759,12 @@ func (ec *executionContext) unmarshalInputTenantUpdateInput(ctx context.Context,
 		switch k {
 		case "properties":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("properties"))
 			it.Properties, err = ec.unmarshalOInt2ᚕᚖint64(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "documents":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("documents"))
 			it.Documents, err = ec.unmarshalOString2ᚕᚖstring(ctx, v)
 			if err != nil {
 				return it, err
@@ -3783,24 +4783,18 @@ func (ec *executionContext) unmarshalInputUserInput(ctx context.Context, obj int
 		switch k {
 		case "username":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
 			it.Username, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "password":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			it.Password, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 		case "role":
 			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
 			it.Role, err = ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, v)
 			if err != nil {
 				return it, err
@@ -3830,10 +4824,22 @@ func (ec *executionContext) _Anomaly(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Anomaly")
+		case "ID":
+			out.Values[i] = ec._Anomaly_ID(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Anomaly_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Anomaly_updatedAt(ctx, field, obj)
+		case "assignedToID":
+			out.Values[i] = ec._Anomaly_assignedToID(ctx, field, obj)
 		case "assignedTo":
 			out.Values[i] = ec._Anomaly_assignedTo(ctx, field, obj)
+		case "createByID":
+			out.Values[i] = ec._Anomaly_createByID(ctx, field, obj)
 		case "createBy":
 			out.Values[i] = ec._Anomaly_createBy(ctx, field, obj)
+		case "propertyID":
+			out.Values[i] = ec._Anomaly_propertyID(ctx, field, obj)
 		case "property":
 			out.Values[i] = ec._Anomaly_property(ctx, field, obj)
 		case "description":
@@ -3870,6 +4876,12 @@ func (ec *executionContext) _Asset(ctx context.Context, sel ast.SelectionSet, ob
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Asset")
+		case "ID":
+			out.Values[i] = ec._Asset_ID(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Asset_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Asset_updatedAt(ctx, field, obj)
 		case "url":
 			out.Values[i] = ec._Asset_url(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3907,11 +4919,19 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Company")
+		case "ID":
+			out.Values[i] = ec._Company_ID(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Company_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Company_updatedAt(ctx, field, obj)
 		case "name":
 			out.Values[i] = ec._Company_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "logoID":
+			out.Values[i] = ec._Company_logoID(ctx, field, obj)
 		case "logo":
 			out.Values[i] = ec._Company_logo(ctx, field, obj)
 		case "description":
@@ -3921,13 +4941,13 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "EstateAgentInviteCode":
-			out.Values[i] = ec._Company_EstateAgentInviteCode(ctx, field, obj)
+		case "estateAgentInviteCode":
+			out.Values[i] = ec._Company_estateAgentInviteCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "TenantInviteCode":
-			out.Values[i] = ec._Company_TenantInviteCode(ctx, field, obj)
+		case "tenantInviteCode":
+			out.Values[i] = ec._Company_tenantInviteCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3953,11 +4973,21 @@ func (ec *executionContext) _EstateAgent(ctx context.Context, sel ast.SelectionS
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("EstateAgent")
+		case "ID":
+			out.Values[i] = ec._EstateAgent_ID(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._EstateAgent_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._EstateAgent_updatedAt(ctx, field, obj)
+		case "companyID":
+			out.Values[i] = ec._EstateAgent_companyID(ctx, field, obj)
 		case "company":
 			out.Values[i] = ec._EstateAgent_company(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "userID":
+			out.Values[i] = ec._EstateAgent_userID(ctx, field, obj)
 		case "user":
 			out.Values[i] = ec._EstateAgent_user(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4046,6 +5076,12 @@ func (ec *executionContext) _Property(ctx context.Context, sel ast.SelectionSet,
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Property")
+		case "ID":
+			out.Values[i] = ec._Property_ID(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Property_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Property_updatedAt(ctx, field, obj)
 		case "area":
 			out.Values[i] = ec._Property_area(ctx, field, obj)
 		case "address":
@@ -4162,8 +5198,16 @@ func (ec *executionContext) _Tenant(ctx context.Context, sel ast.SelectionSet, o
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Tenant")
+		case "ID":
+			out.Values[i] = ec._Tenant_ID(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Tenant_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Tenant_updatedAt(ctx, field, obj)
 		case "properties":
 			out.Values[i] = ec._Tenant_properties(ctx, field, obj)
+		case "userID":
+			out.Values[i] = ec._Tenant_userID(ctx, field, obj)
 		case "user":
 			out.Values[i] = ec._Tenant_user(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4193,6 +5237,12 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("User")
+		case "ID":
+			out.Values[i] = ec._User_ID(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._User_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._User_updatedAt(ctx, field, obj)
 		case "username":
 			out.Values[i] = ec._User_username(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4515,6 +5565,10 @@ func (ec *executionContext) marshalNAnomaly2ᚖgithubᚗcomᚋBillotPᚋt_esp_90
 	return ec._Anomaly(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNAsset2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAsset(ctx context.Context, sel ast.SelectionSet, v models.Asset) graphql.Marshaler {
+	return ec._Asset(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNAsset2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAsset(ctx context.Context, sel ast.SelectionSet, v *models.Asset) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -4526,8 +5580,7 @@ func (ec *executionContext) marshalNAsset2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
-	res, err := graphql.UnmarshalBoolean(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	return graphql.UnmarshalBoolean(v)
 }
 
 func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
@@ -4555,8 +5608,7 @@ func (ec *executionContext) marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_90
 }
 
 func (ec *executionContext) unmarshalNCompanyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompanyInput(ctx context.Context, v interface{}) (models.CompanyInput, error) {
-	res, err := ec.unmarshalInputCompanyInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	return ec.unmarshalInputCompanyInput(ctx, v)
 }
 
 func (ec *executionContext) marshalNEstateAgent2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx context.Context, sel ast.SelectionSet, v models.EstateAgent) graphql.Marshaler {
@@ -4589,8 +5641,7 @@ func (ec *executionContext) marshalNProperty2ᚖgithubᚗcomᚋBillotPᚋt_esp_9
 
 func (ec *executionContext) unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, v interface{}) (models.Role, error) {
 	var res models.Role
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	return res, res.UnmarshalGQL(v)
 }
 
 func (ec *executionContext) marshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, sel ast.SelectionSet, v models.Role) graphql.Marshaler {
@@ -4598,8 +5649,7 @@ func (ec *executionContext) marshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rent
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	return graphql.UnmarshalString(v)
 }
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -4663,6 +5713,10 @@ func (ec *executionContext) marshalNTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900
 	return ec._Tenant(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNUser2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx context.Context, sel ast.SelectionSet, v models.User) graphql.Marshaler {
+	return ec._User(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx context.Context, sel ast.SelectionSet, v *models.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -4673,9 +5727,16 @@ func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_r
 	return ec._User(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNUserInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx context.Context, v interface{}) (models.UserInput, error) {
+	return ec.unmarshalInputUserInput(ctx, v)
+}
+
 func (ec *executionContext) unmarshalNUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx context.Context, v interface{}) (*models.UserInput, error) {
-	res, err := ec.unmarshalInputUserInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalNUserInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -4720,8 +5781,7 @@ func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgq
 }
 
 func (ec *executionContext) unmarshalN__DirectiveLocation2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	return graphql.UnmarshalString(v)
 }
 
 func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -4746,7 +5806,6 @@ func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx conte
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalN__DirectiveLocation2string(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
@@ -4893,8 +5952,7 @@ func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 }
 
 func (ec *executionContext) unmarshalN__TypeKind2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	return graphql.UnmarshalString(v)
 }
 
 func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -4907,21 +5965,33 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
+func (ec *executionContext) unmarshalOAnomalyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyInput(ctx context.Context, v interface{}) (models.AnomalyInput, error) {
+	return ec.unmarshalInputAnomalyInput(ctx, v)
+}
+
 func (ec *executionContext) unmarshalOAnomalyInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyInput(ctx context.Context, v interface{}) (*models.AnomalyInput, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputAnomalyInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOAnomalyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyInput(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOAnomalyStates2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx context.Context, v interface{}) (models.AnomalyStates, error) {
+	var res models.AnomalyStates
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalOAnomalyStates2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx context.Context, sel ast.SelectionSet, v models.AnomalyStates) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalOAnomalyStates2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx context.Context, v interface{}) (*models.AnomalyStates, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(models.AnomalyStates)
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOAnomalyStates2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalOAnomalyStates2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx context.Context, sel ast.SelectionSet, v *models.AnomalyStates) graphql.Marshaler {
@@ -4931,12 +6001,20 @@ func (ec *executionContext) marshalOAnomalyStates2ᚖgithubᚗcomᚋBillotPᚋt_
 	return v
 }
 
+func (ec *executionContext) unmarshalOAnomalyUpdateInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyUpdateInput(ctx context.Context, v interface{}) (models.AnomalyUpdateInput, error) {
+	return ec.unmarshalInputAnomalyUpdateInput(ctx, v)
+}
+
 func (ec *executionContext) unmarshalOAnomalyUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyUpdateInput(ctx context.Context, v interface{}) (*models.AnomalyUpdateInput, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputAnomalyUpdateInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOAnomalyUpdateInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyUpdateInput(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOAsset2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAsset(ctx context.Context, sel ast.SelectionSet, v models.Asset) graphql.Marshaler {
+	return ec._Asset(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOAsset2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAssetᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Asset) graphql.Marshaler {
@@ -4987,8 +6065,7 @@ func (ec *executionContext) marshalOAsset2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
-	res, err := graphql.UnmarshalBoolean(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	return graphql.UnmarshalBoolean(v)
 }
 
 func (ec *executionContext) marshalOBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
@@ -4999,15 +6076,19 @@ func (ec *executionContext) unmarshalOBoolean2ᚖbool(ctx context.Context, v int
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalBoolean(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOBoolean2bool(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast.SelectionSet, v *bool) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return graphql.MarshalBoolean(*v)
+	return ec.marshalOBoolean2bool(ctx, sel, *v)
+}
+
+func (ec *executionContext) marshalOEstateAgent2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx context.Context, sel ast.SelectionSet, v models.EstateAgent) graphql.Marshaler {
+	return ec._EstateAgent(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx context.Context, sel ast.SelectionSet, v *models.EstateAgent) graphql.Marshaler {
@@ -5017,33 +6098,50 @@ func (ec *executionContext) marshalOEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_es
 	return ec._EstateAgent(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalOEstateAgentInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgentInput(ctx context.Context, v interface{}) (models.EstateAgentInput, error) {
+	return ec.unmarshalInputEstateAgentInput(ctx, v)
+}
+
 func (ec *executionContext) unmarshalOEstateAgentInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgentInput(ctx context.Context, v interface{}) (*models.EstateAgentInput, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputEstateAgentInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOEstateAgentInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgentInput(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+	return graphql.UnmarshalFloat(v)
+}
+
+func (ec *executionContext) marshalOFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
+	return graphql.MarshalFloat(v)
 }
 
 func (ec *executionContext) unmarshalOFloat2ᚖfloat64(ctx context.Context, v interface{}) (*float64, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalFloat(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOFloat2float64(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel ast.SelectionSet, v *float64) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return graphql.MarshalFloat(*v)
+	return ec.marshalOFloat2float64(ctx, sel, *v)
+}
+
+func (ec *executionContext) unmarshalOInt2int64(ctx context.Context, v interface{}) (int64, error) {
+	return graphql.UnmarshalInt64(v)
+}
+
+func (ec *executionContext) marshalOInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
+	return graphql.MarshalInt64(v)
 }
 
 func (ec *executionContext) unmarshalOInt2ᚕᚖint64(ctx context.Context, v interface{}) ([]*int64, error) {
-	if v == nil {
-		return nil, nil
-	}
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -5055,7 +6153,6 @@ func (ec *executionContext) unmarshalOInt2ᚕᚖint64(ctx context.Context, v int
 	var err error
 	res := make([]*int64, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalOInt2ᚖint64(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
@@ -5080,15 +6177,19 @@ func (ec *executionContext) unmarshalOInt2ᚖint64(ctx context.Context, v interf
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalInt64(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOInt2int64(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalOInt2ᚖint64(ctx context.Context, sel ast.SelectionSet, v *int64) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return graphql.MarshalInt64(*v)
+	return ec.marshalOInt2int64(ctx, sel, *v)
+}
+
+func (ec *executionContext) marshalOProperty2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐProperty(ctx context.Context, sel ast.SelectionSet, v models.Property) graphql.Marshaler {
+	return ec._Property(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOProperty2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Property) graphql.Marshaler {
@@ -5138,17 +6239,20 @@ func (ec *executionContext) marshalOProperty2ᚖgithubᚗcomᚋBillotPᚋt_esp_9
 	return ec._Property(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalOPropertyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyInput(ctx context.Context, v interface{}) (models.PropertyInput, error) {
+	return ec.unmarshalInputPropertyInput(ctx, v)
+}
+
 func (ec *executionContext) unmarshalOPropertyInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyInput(ctx context.Context, v interface{}) (*models.PropertyInput, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputPropertyInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOPropertyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyInput(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
-	return res, graphql.ErrorOnPath(ctx, err)
+	return graphql.UnmarshalString(v)
 }
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -5156,9 +6260,6 @@ func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.S
 }
 
 func (ec *executionContext) unmarshalOString2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {
-	if v == nil {
-		return nil, nil
-	}
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -5170,7 +6271,6 @@ func (ec *executionContext) unmarshalOString2ᚕᚖstring(ctx context.Context, v
 	var err error
 	res := make([]*string, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalOString2ᚖstring(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
@@ -5195,15 +6295,19 @@ func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v in
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalString(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOString2string(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return graphql.MarshalString(*v)
+	return ec.marshalOString2string(ctx, sel, *v)
+}
+
+func (ec *executionContext) marshalOTenant2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenant(ctx context.Context, sel ast.SelectionSet, v models.Tenant) graphql.Marshaler {
+	return ec._Tenant(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenant(ctx context.Context, sel ast.SelectionSet, v *models.Tenant) graphql.Marshaler {
@@ -5213,20 +6317,51 @@ func (ec *executionContext) marshalOTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900
 	return ec._Tenant(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalOTenantInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantInput(ctx context.Context, v interface{}) (models.TenantInput, error) {
+	return ec.unmarshalInputTenantInput(ctx, v)
+}
+
 func (ec *executionContext) unmarshalOTenantInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantInput(ctx context.Context, v interface{}) (*models.TenantInput, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputTenantInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOTenantInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantInput(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOTenantUpdateInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantUpdateInput(ctx context.Context, v interface{}) (models.TenantUpdateInput, error) {
+	return ec.unmarshalInputTenantUpdateInput(ctx, v)
 }
 
 func (ec *executionContext) unmarshalOTenantUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantUpdateInput(ctx context.Context, v interface{}) (*models.TenantUpdateInput, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputTenantUpdateInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	res, err := ec.unmarshalOTenantUpdateInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantUpdateInput(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) unmarshalOTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	return graphql.UnmarshalTime(v)
+}
+
+func (ec *executionContext) marshalOTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	return graphql.MarshalTime(v)
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOTime2timeᚐTime(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec.marshalOTime2timeᚐTime(ctx, sel, *v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
@@ -5349,11 +6484,19 @@ func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋ99designsᚋg
 	return ret
 }
 
+func (ec *executionContext) marshalO__Schema2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v introspection.Schema) graphql.Marshaler {
+	return ec.___Schema(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v *introspection.Schema) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec.___Schema(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalO__Type2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v introspection.Type) graphql.Marshaler {
+	return ec.___Type(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {

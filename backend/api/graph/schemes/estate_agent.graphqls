@@ -2,8 +2,13 @@
 An EstateAgent is a
 """
 type EstateAgent {
-    company: Company!
-    user: User!
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
+    companyID: Int
+    company: Company! @extraTag(gorm:"foreignKey:CompanyID")
+    userID: Int
+    user: User! @extraTag(gorm:"foreignKey:UserID")
 }
 
 input EstateAgentInput {

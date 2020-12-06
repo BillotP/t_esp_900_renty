@@ -2,9 +2,13 @@
 A Tenant is a
 """
 type Tenant {
-    properties: [Property!]
-    user: User!
-    documents: [Asset!]
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
+    properties: [Property!] @extraTag(gorm:"many2many:tenant_properties")
+    userID: Int
+    user: User! @extraTag(gorm:"foreignKey:UserID")
+    documents: [Asset!] @extraTag(gorm:"many2many:tenant_documents")
 }
 
 input TenantInput {

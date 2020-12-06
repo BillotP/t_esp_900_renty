@@ -2,12 +2,16 @@
 A Company is a
 """
 type Company {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
     name: String!
-    logo: Asset
+    logoID: Int
+    logo: Asset @extraTag(gorm:"foreignKey:LogoID")
     description: String
     tel: String!
-    EstateAgentInviteCode: String!
-    TenantInviteCode: String!
+    estateAgentInviteCode: String!
+    tenantInviteCode: String!
 }
 
 input CompanyInput {
