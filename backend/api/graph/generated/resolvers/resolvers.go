@@ -282,7 +282,7 @@ func (r *mutationResolver) CreateProperty(ctx context.Context, input *models.Pro
 		Type:		input.Type,
 	}
 	if err = r.DB.Where("address = ?", property.Address).First(&property).Error; err == nil {
-		return nil, fmt.Errorf("There is already a property at this address")
+		return nil, fmt.Errorf("there is already a property at this address")
 	}
 	if err = r.DB.Create(&property).Error; err != nil {
 		lib.LogError("mutation/Register/Property", err.Error())
@@ -303,7 +303,7 @@ func (r *mutationResolver) CreateAnomaly(ctx context.Context, input *models.Anom
 	}
 
 	if err = r.DB.Where(&anomaly).First(&anomaly).Error; err == nil {
-		return nil, fmt.Errorf("Anomaly already created")
+		return nil, fmt.Errorf("anomaly already created")
 	}
 	if err = r.DB.Create(&anomaly).Error; err != nil {
 		lib.LogError("mutation/Register/Anomaly", err.Error())
@@ -335,7 +335,7 @@ func (r *queryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly
 	)
 
 	if err = r.DB.Where("ID = ?", id).First(&anomaly).Error; err != nil {
-		return nil, fmt.Errorf("Anomaly not found")
+		return nil, fmt.Errorf("anomaly not found")
 	}
 	return anomaly, nil
 }
@@ -347,7 +347,7 @@ func (r *queryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error
 	)
 
 	if err = r.DB.Find(&anomalies).Error; err != nil {
-		return nil, fmt.Errorf("No anomalies found")
+		return nil, fmt.Errorf("any anomaly found")
 	}
 	return anomalies, nil
 }
