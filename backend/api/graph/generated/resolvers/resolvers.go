@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"gorm.io/gorm"
-	"math/rand"
-	"time"
 
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/exec"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
@@ -18,18 +16,8 @@ type Resolver struct {
 	DB *gorm.DB
 }
 
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-func randSeq(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
+func (r *mutationResolver) SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Admin, error) {
+	panic("not implemented")
 }
 
 func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Company, error) {
@@ -39,12 +27,12 @@ func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.Com
 		err error
 	)
 
+	verified := false
 	company = &models.Company{
-		Name:                  input.Name,
-		Description:           &input.Description,
-		Tel:                   input.Tel,
-		EstateAgentInviteCode: randSeq(10),
-		TenantInviteCode:      randSeq(10),
+		Name:        input.Name,
+		Description: &input.Description,
+		Tel:         input.Tel,
+		Verified:    &verified,
 	}
 	if err = r.DB.Where("name = ?", company.Name).First(&company).Error; err == nil {
 		return nil, fmt.Errorf("company seems already register")
@@ -54,14 +42,29 @@ func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.Com
 		return nil, err
 	}
 	return company, nil
-
 }
 
-func (r *mutationResolver) SignupAsEstateAgent(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error) {
+func (r *mutationResolver) CreateEstateAgentUser(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error) {
 	panic("not implemented")
 }
 
-func (r *mutationResolver) SignupAsTenant(ctx context.Context, input *models.TenantInput) (*models.Tenant, error) {
+func (r *mutationResolver) CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error) {
+	panic("not implemented")
+}
+
+func (r *mutationResolver) AcceptCompany(ctx context.Context) (*models.Company, error) {
+	panic("not implemented")
+}
+
+func (r *mutationResolver) LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Company, error) {
+	panic("not implemented")
+}
+
+func (r *mutationResolver) LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.EstateAgent, error) {
+	panic("not implemented")
+}
+
+func (r *mutationResolver) LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Tenant, error) {
 	panic("not implemented")
 }
 
@@ -94,6 +97,22 @@ func (r *queryResolver) Tenant(ctx context.Context, id string) (*models.Tenant, 
 }
 
 func (r *queryResolver) Tenants(ctx context.Context) ([]*models.Tenant, error) {
+	panic("not implemented")
+}
+
+func (r *queryResolver) EstateAgent(ctx context.Context, id string) (*models.EstateAgent, error) {
+	panic("not implemented")
+}
+
+func (r *queryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
+	panic("not implemented")
+}
+
+func (r *queryResolver) Company(ctx context.Context, id string) (*models.Company, error) {
+	panic("not implemented")
+}
+
+func (r *queryResolver) Companies(ctx context.Context) ([]*models.Company, error) {
 	panic("not implemented")
 }
 

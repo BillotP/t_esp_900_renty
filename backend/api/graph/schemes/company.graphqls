@@ -10,8 +10,9 @@ type Company {
     logo: Asset @extraTag(gorm:"foreignKey:LogoID")
     description: String
     tel: String!
-    estateAgentInviteCode: String!
-    tenantInviteCode: String!
+    userID: Int
+    user: User! @extraTag(gorm:"foreignKey:UserID")
+    verified: Boolean
 }
 
 input CompanyInput {

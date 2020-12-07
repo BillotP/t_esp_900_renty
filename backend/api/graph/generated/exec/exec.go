@@ -46,6 +46,14 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Admin struct {
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		User      func(childComplexity int) int
+		UserID    func(childComplexity int) int
+	}
+
 	Anomaly struct {
 		AssignedTo   func(childComplexity int) int
 		AssignedToID func(childComplexity int) int
@@ -71,16 +79,17 @@ type ComplexityRoot struct {
 	}
 
 	Company struct {
-		CreatedAt             func(childComplexity int) int
-		Description           func(childComplexity int) int
-		EstateAgentInviteCode func(childComplexity int) int
-		ID                    func(childComplexity int) int
-		Logo                  func(childComplexity int) int
-		LogoID                func(childComplexity int) int
-		Name                  func(childComplexity int) int
-		Tel                   func(childComplexity int) int
-		TenantInviteCode      func(childComplexity int) int
-		UpdatedAt             func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Logo        func(childComplexity int) int
+		LogoID      func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Tel         func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		User        func(childComplexity int) int
+		UserID      func(childComplexity int) int
+		Verified    func(childComplexity int) int
 	}
 
 	EstateAgent struct {
@@ -94,13 +103,18 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateAnomaly       func(childComplexity int, input *models.AnomalyInput) int
-		CreateProperty      func(childComplexity int, input *models.PropertyInput) int
-		SignupAsCompany     func(childComplexity int, input models.CompanyInput) int
-		SignupAsEstateAgent func(childComplexity int, input *models.EstateAgentInput) int
-		SignupAsTenant      func(childComplexity int, input *models.TenantInput) int
-		UpdateAnomaly       func(childComplexity int, input *models.AnomalyUpdateInput) int
-		UpdateTenantProfile func(childComplexity int, input *models.TenantUpdateInput) int
+		AcceptCompany         func(childComplexity int) int
+		CreateAnomaly         func(childComplexity int, input *models.AnomalyInput) int
+		CreateEstateAgentUser func(childComplexity int, input *models.EstateAgentInput) int
+		CreateProperty        func(childComplexity int, input *models.PropertyInput) int
+		CreateTenantUser      func(childComplexity int, input *models.TenantInput) int
+		LoginAsCompany        func(childComplexity int, input *models.UserInput) int
+		LoginAsEstateAgent    func(childComplexity int, input *models.UserInput) int
+		LoginAsTenant         func(childComplexity int, input *models.UserInput) int
+		SignupAsAdmin         func(childComplexity int, input models.AdminInput) int
+		SignupAsCompany       func(childComplexity int, input models.CompanyInput) int
+		UpdateAnomaly         func(childComplexity int, input *models.AnomalyUpdateInput) int
+		UpdateTenantProfile   func(childComplexity int, input *models.TenantUpdateInput) int
 	}
 
 	Property struct {
@@ -114,10 +128,14 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Anomalies func(childComplexity int) int
-		Anomaly   func(childComplexity int, id string) int
-		Tenant    func(childComplexity int, id string) int
-		Tenants   func(childComplexity int) int
+		Anomalies    func(childComplexity int) int
+		Anomaly      func(childComplexity int, id string) int
+		Companies    func(childComplexity int) int
+		Company      func(childComplexity int, id string) int
+		EstateAgent  func(childComplexity int, id string) int
+		EstateAgents func(childComplexity int) int
+		Tenant       func(childComplexity int, id string) int
+		Tenants      func(childComplexity int) int
 	}
 
 	Tenant struct {
@@ -141,9 +159,14 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
+	SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Admin, error)
 	SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Company, error)
-	SignupAsEstateAgent(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error)
-	SignupAsTenant(ctx context.Context, input *models.TenantInput) (*models.Tenant, error)
+	CreateEstateAgentUser(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error)
+	CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error)
+	AcceptCompany(ctx context.Context) (*models.Company, error)
+	LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Company, error)
+	LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.EstateAgent, error)
+	LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Tenant, error)
 	UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error)
 	CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error)
 	CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error)
@@ -154,6 +177,10 @@ type QueryResolver interface {
 	Anomalies(ctx context.Context) ([]*models.Anomaly, error)
 	Tenant(ctx context.Context, id string) (*models.Tenant, error)
 	Tenants(ctx context.Context) ([]*models.Tenant, error)
+	EstateAgent(ctx context.Context, id string) (*models.EstateAgent, error)
+	EstateAgents(ctx context.Context) ([]*models.EstateAgent, error)
+	Company(ctx context.Context, id string) (*models.Company, error)
+	Companies(ctx context.Context) ([]*models.Company, error)
 }
 
 type executableSchema struct {
@@ -170,6 +197,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Admin.createdAt":
+		if e.complexity.Admin.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Admin.CreatedAt(childComplexity), true
+
+	case "Admin.ID":
+		if e.complexity.Admin.ID == nil {
+			break
+		}
+
+		return e.complexity.Admin.ID(childComplexity), true
+
+	case "Admin.updatedAt":
+		if e.complexity.Admin.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Admin.UpdatedAt(childComplexity), true
+
+	case "Admin.user":
+		if e.complexity.Admin.User == nil {
+			break
+		}
+
+		return e.complexity.Admin.User(childComplexity), true
+
+	case "Admin.userID":
+		if e.complexity.Admin.UserID == nil {
+			break
+		}
+
+		return e.complexity.Admin.UserID(childComplexity), true
 
 	case "Anomaly.assignedTo":
 		if e.complexity.Anomaly.AssignedTo == nil {
@@ -311,13 +373,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Company.Description(childComplexity), true
 
-	case "Company.estateAgentInviteCode":
-		if e.complexity.Company.EstateAgentInviteCode == nil {
-			break
-		}
-
-		return e.complexity.Company.EstateAgentInviteCode(childComplexity), true
-
 	case "Company.ID":
 		if e.complexity.Company.ID == nil {
 			break
@@ -353,19 +408,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Company.Tel(childComplexity), true
 
-	case "Company.tenantInviteCode":
-		if e.complexity.Company.TenantInviteCode == nil {
-			break
-		}
-
-		return e.complexity.Company.TenantInviteCode(childComplexity), true
-
 	case "Company.updatedAt":
 		if e.complexity.Company.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.Company.UpdatedAt(childComplexity), true
+
+	case "Company.user":
+		if e.complexity.Company.User == nil {
+			break
+		}
+
+		return e.complexity.Company.User(childComplexity), true
+
+	case "Company.userID":
+		if e.complexity.Company.UserID == nil {
+			break
+		}
+
+		return e.complexity.Company.UserID(childComplexity), true
+
+	case "Company.verified":
+		if e.complexity.Company.Verified == nil {
+			break
+		}
+
+		return e.complexity.Company.Verified(childComplexity), true
 
 	case "EstateAgent.company":
 		if e.complexity.EstateAgent.Company == nil {
@@ -416,6 +485,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.EstateAgent.UserID(childComplexity), true
 
+	case "Mutation.acceptCompany":
+		if e.complexity.Mutation.AcceptCompany == nil {
+			break
+		}
+
+		return e.complexity.Mutation.AcceptCompany(childComplexity), true
+
 	case "Mutation.createAnomaly":
 		if e.complexity.Mutation.CreateAnomaly == nil {
 			break
@@ -427,6 +503,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateAnomaly(childComplexity, args["input"].(*models.AnomalyInput)), true
+
+	case "Mutation.createEstateAgentUser":
+		if e.complexity.Mutation.CreateEstateAgentUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createEstateAgentUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateEstateAgentUser(childComplexity, args["input"].(*models.EstateAgentInput)), true
 
 	case "Mutation.createProperty":
 		if e.complexity.Mutation.CreateProperty == nil {
@@ -440,6 +528,66 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateProperty(childComplexity, args["input"].(*models.PropertyInput)), true
 
+	case "Mutation.createTenantUser":
+		if e.complexity.Mutation.CreateTenantUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTenantUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTenantUser(childComplexity, args["input"].(*models.TenantInput)), true
+
+	case "Mutation.loginAsCompany":
+		if e.complexity.Mutation.LoginAsCompany == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_loginAsCompany_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.LoginAsCompany(childComplexity, args["input"].(*models.UserInput)), true
+
+	case "Mutation.loginAsEstateAgent":
+		if e.complexity.Mutation.LoginAsEstateAgent == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_loginAsEstateAgent_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.LoginAsEstateAgent(childComplexity, args["input"].(*models.UserInput)), true
+
+	case "Mutation.loginAsTenant":
+		if e.complexity.Mutation.LoginAsTenant == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_loginAsTenant_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.LoginAsTenant(childComplexity, args["input"].(*models.UserInput)), true
+
+	case "Mutation.signupAsAdmin":
+		if e.complexity.Mutation.SignupAsAdmin == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_signupAsAdmin_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SignupAsAdmin(childComplexity, args["input"].(models.AdminInput)), true
+
 	case "Mutation.signupAsCompany":
 		if e.complexity.Mutation.SignupAsCompany == nil {
 			break
@@ -451,30 +599,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.SignupAsCompany(childComplexity, args["input"].(models.CompanyInput)), true
-
-	case "Mutation.signupAsEstateAgent":
-		if e.complexity.Mutation.SignupAsEstateAgent == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_signupAsEstateAgent_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.SignupAsEstateAgent(childComplexity, args["input"].(*models.EstateAgentInput)), true
-
-	case "Mutation.signupAsTenant":
-		if e.complexity.Mutation.SignupAsTenant == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_signupAsTenant_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.SignupAsTenant(childComplexity, args["input"].(*models.TenantInput)), true
 
 	case "Mutation.updateAnomaly":
 		if e.complexity.Mutation.UpdateAnomaly == nil {
@@ -567,6 +691,44 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Anomaly(childComplexity, args["id"].(string)), true
+
+	case "Query.companies":
+		if e.complexity.Query.Companies == nil {
+			break
+		}
+
+		return e.complexity.Query.Companies(childComplexity), true
+
+	case "Query.company":
+		if e.complexity.Query.Company == nil {
+			break
+		}
+
+		args, err := ec.field_Query_company_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Company(childComplexity, args["id"].(string)), true
+
+	case "Query.estateAgent":
+		if e.complexity.Query.EstateAgent == nil {
+			break
+		}
+
+		args, err := ec.field_Query_estateAgent_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.EstateAgent(childComplexity, args["id"].(string)), true
+
+	case "Query.estateAgents":
+		if e.complexity.Query.EstateAgents == nil {
+			break
+		}
+
+		return e.complexity.Query.EstateAgents(childComplexity), true
 
 	case "Query.tenant":
 		if e.complexity.Query.Tenant == nil {
@@ -742,6 +904,21 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	&ast.Source{Name: "schemes/admin.graphqls", Input: `"""
+An Admin is a
+"""
+type Admin {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
+    userID: Int
+    user: User! @extraTag(gorm:"foreignKey:UserID")
+}
+
+input AdminInput {
+    user: UserInput
+}
+`, BuiltIn: false},
 	&ast.Source{Name: "schemes/anomaly.graphqls", Input: `"""
 An AnomalyState is a
 """
@@ -805,8 +982,9 @@ type Company {
     logo: Asset @extraTag(gorm:"foreignKey:LogoID")
     description: String
     tel: String!
-    estateAgentInviteCode: String!
-    tenantInviteCode: String!
+    userID: Int
+    user: User! @extraTag(gorm:"foreignKey:UserID")
+    verified: Boolean
 }
 
 input CompanyInput {
@@ -821,6 +999,8 @@ input CompanyInput {
 enum Role {
     ESTATE_AGENT
     TENANT
+    COMPANY
+    ADMIN
 }
 
 directive @extraTag on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
@@ -843,9 +1023,16 @@ input EstateAgentInput {
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/mutation.graphqls", Input: `type Mutation {
+    signupAsAdmin(input: AdminInput!): Admin!
     signupAsCompany(input: CompanyInput!): Company!
-    signupAsEstateAgent(input: EstateAgentInput): EstateAgent!
-    signupAsTenant(input: TenantInput): Tenant!
+    createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(role: COMPANY)
+    createTenantUser(input: TenantInput): Tenant! @hasRole(role: COMPANY)
+
+    acceptCompany: Company! @hasRole(role: ADMIN)
+
+    loginAsCompany(input: UserInput): Company! @hasRole(role: COMPANY)
+    loginAsEstateAgent(input: UserInput): EstateAgent! @hasRole(role: ESTATE_AGENT)
+    loginAsTenant(input: UserInput): Tenant! @hasRole(role: TENANT)
 
     updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: ESTATE_AGENT)
 
@@ -876,10 +1063,14 @@ input PropertyInput {
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/query.graphqls", Input: `type Query {
-  anomaly(id: String!): Anomaly!
-  anomalies: [Anomaly!]! @hasRole(role: ESTATE_AGENT)
-  tenant(id: String!): Tenant!
-  tenants: [Tenant!]! @hasRole(role: ESTATE_AGENT)
+    anomaly(id: String!): Anomaly!
+    anomalies: [Anomaly!]! @hasRole(role: ESTATE_AGENT)
+    tenant(id: String!): Tenant!
+    tenants: [Tenant!]! @hasRole(role: ESTATE_AGENT)
+    estateAgent(id: String!): EstateAgent! @hasRole(role: COMPANY)
+    estateAgents: [EstateAgent!]! @hasRole(role: COMPANY)
+    company(id: String!): Company! @hasRole(role: ADMIN)
+    companies: [Company!]! @hasRole(role: ADMIN)
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/scalars.graphqls", Input: `scalar Time`, BuiltIn: false},
@@ -960,6 +1151,20 @@ func (ec *executionContext) field_Mutation_createAnomaly_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createEstateAgentUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *models.EstateAgentInput
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOEstateAgentInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgentInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createProperty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -974,40 +1179,82 @@ func (ec *executionContext) field_Mutation_createProperty_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createTenantUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *models.TenantInput
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOTenantInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_loginAsCompany_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *models.UserInput
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_loginAsEstateAgent_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *models.UserInput
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_loginAsTenant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *models.UserInput
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalOUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_signupAsAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.AdminInput
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalNAdminInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdminInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_signupAsCompany_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 models.CompanyInput
 	if tmp, ok := rawArgs["input"]; ok {
 		arg0, err = ec.unmarshalNCompanyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompanyInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_signupAsEstateAgent_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *models.EstateAgentInput
-	if tmp, ok := rawArgs["input"]; ok {
-		arg0, err = ec.unmarshalOEstateAgentInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgentInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_signupAsTenant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *models.TenantInput
-	if tmp, ok := rawArgs["input"]; ok {
-		arg0, err = ec.unmarshalOTenantInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1072,6 +1319,34 @@ func (ec *executionContext) field_Query_anomaly_args(ctx context.Context, rawArg
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_company_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_estateAgent_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_tenant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1121,6 +1396,164 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Admin_ID(ctx context.Context, field graphql.CollectedField, obj *models.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_userID(ctx context.Context, field graphql.CollectedField, obj *models.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Admin_user(ctx context.Context, field graphql.CollectedField, obj *models.Admin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Admin",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Anomaly_ID(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
 	defer func() {
@@ -1949,7 +2382,7 @@ func (ec *executionContext) _Company_tel(ctx context.Context, field graphql.Coll
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Company_estateAgentInviteCode(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_userID(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1966,24 +2399,21 @@ func (ec *executionContext) _Company_estateAgentInviteCode(ctx context.Context, 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.EstateAgentInviteCode, nil
+		return obj.UserID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*int64)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Company_tenantInviteCode(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+func (ec *executionContext) _Company_user(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2000,7 +2430,7 @@ func (ec *executionContext) _Company_tenantInviteCode(ctx context.Context, field
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.TenantInviteCode, nil
+		return obj.User, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2012,9 +2442,40 @@ func (ec *executionContext) _Company_tenantInviteCode(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*models.User)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Company_verified(ctx context.Context, field graphql.CollectedField, obj *models.Company) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Company",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Verified, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _EstateAgent_ID(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
@@ -2240,6 +2701,47 @@ func (ec *executionContext) _EstateAgent_user(ctx context.Context, field graphql
 	return ec.marshalNUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_signupAsAdmin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_signupAsAdmin_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SignupAsAdmin(rctx, args["input"].(models.AdminInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Admin)
+	fc.Result = res
+	return ec.marshalNAdmin2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdmin(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_signupAsCompany(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2281,7 +2783,7 @@ func (ec *executionContext) _Mutation_signupAsCompany(ctx context.Context, field
 	return ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_signupAsEstateAgent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createEstateAgentUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2297,15 +2799,39 @@ func (ec *executionContext) _Mutation_signupAsEstateAgent(ctx context.Context, f
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_signupAsEstateAgent_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createEstateAgentUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SignupAsEstateAgent(rctx, args["input"].(*models.EstateAgentInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateEstateAgentUser(rctx, args["input"].(*models.EstateAgentInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.EstateAgent); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.EstateAgent`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2322,7 +2848,7 @@ func (ec *executionContext) _Mutation_signupAsEstateAgent(ctx context.Context, f
 	return ec.marshalNEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_signupAsTenant(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createTenantUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2338,15 +2864,292 @@ func (ec *executionContext) _Mutation_signupAsTenant(ctx context.Context, field 
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_signupAsTenant_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createTenantUser_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SignupAsTenant(rctx, args["input"].(*models.TenantInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateTenantUser(rctx, args["input"].(*models.TenantInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.Tenant); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Tenant`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Tenant)
+	fc.Result = res
+	return ec.marshalNTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenant(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_acceptCompany(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().AcceptCompany(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.Company); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Company`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Company)
+	fc.Result = res
+	return ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_loginAsCompany(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_loginAsCompany_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().LoginAsCompany(rctx, args["input"].(*models.UserInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.Company); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Company`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Company)
+	fc.Result = res
+	return ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_loginAsEstateAgent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_loginAsEstateAgent_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().LoginAsEstateAgent(rctx, args["input"].(*models.UserInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.EstateAgent); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.EstateAgent`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.EstateAgent)
+	fc.Result = res
+	return ec.marshalNEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_loginAsTenant(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_loginAsTenant_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().LoginAsTenant(rctx, args["input"].(*models.UserInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "TENANT")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.Tenant); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Tenant`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3036,6 +3839,252 @@ func (ec *executionContext) _Query_tenants(ctx context.Context, field graphql.Co
 	res := resTmp.([]*models.Tenant)
 	fc.Result = res
 	return ec.marshalNTenant2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_estateAgent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_estateAgent_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().EstateAgent(rctx, args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.EstateAgent); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.EstateAgent`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.EstateAgent)
+	fc.Result = res
+	return ec.marshalNEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_estateAgents(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().EstateAgents(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*models.EstateAgent); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.EstateAgent`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.EstateAgent)
+	fc.Result = res
+	return ec.marshalNEstateAgent2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_company(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_company_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Company(rctx, args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.Company); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Company`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Company)
+	fc.Result = res
+	return ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_companies(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Companies(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*models.Company); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Company`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Company)
+	fc.Result = res
+	return ec.marshalNCompany2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompanyᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4577,6 +5626,24 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAdminInput(ctx context.Context, obj interface{}) (models.AdminInput, error) {
+	var it models.AdminInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "user":
+			var err error
+			it.User, err = ec.unmarshalOUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputAnomalyInput(ctx context.Context, obj interface{}) (models.AnomalyInput, error) {
 	var it models.AnomalyInput
 	var asMap = obj.(map[string]interface{})
@@ -4813,6 +5880,41 @@ func (ec *executionContext) unmarshalInputUserInput(ctx context.Context, obj int
 
 // region    **************************** object.gotpl ****************************
 
+var adminImplementors = []string{"Admin"}
+
+func (ec *executionContext) _Admin(ctx context.Context, sel ast.SelectionSet, obj *models.Admin) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, adminImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Admin")
+		case "ID":
+			out.Values[i] = ec._Admin_ID(ctx, field, obj)
+		case "createdAt":
+			out.Values[i] = ec._Admin_createdAt(ctx, field, obj)
+		case "updatedAt":
+			out.Values[i] = ec._Admin_updatedAt(ctx, field, obj)
+		case "userID":
+			out.Values[i] = ec._Admin_userID(ctx, field, obj)
+		case "user":
+			out.Values[i] = ec._Admin_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var anomalyImplementors = []string{"Anomaly"}
 
 func (ec *executionContext) _Anomaly(ctx context.Context, sel ast.SelectionSet, obj *models.Anomaly) graphql.Marshaler {
@@ -4941,16 +6043,15 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "estateAgentInviteCode":
-			out.Values[i] = ec._Company_estateAgentInviteCode(ctx, field, obj)
+		case "userID":
+			out.Values[i] = ec._Company_userID(ctx, field, obj)
+		case "user":
+			out.Values[i] = ec._Company_user(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "tenantInviteCode":
-			out.Values[i] = ec._Company_tenantInviteCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+		case "verified":
+			out.Values[i] = ec._Company_verified(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5019,18 +6120,43 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "signupAsAdmin":
+			out.Values[i] = ec._Mutation_signupAsAdmin(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "signupAsCompany":
 			out.Values[i] = ec._Mutation_signupAsCompany(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "signupAsEstateAgent":
-			out.Values[i] = ec._Mutation_signupAsEstateAgent(ctx, field)
+		case "createEstateAgentUser":
+			out.Values[i] = ec._Mutation_createEstateAgentUser(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "signupAsTenant":
-			out.Values[i] = ec._Mutation_signupAsTenant(ctx, field)
+		case "createTenantUser":
+			out.Values[i] = ec._Mutation_createTenantUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "acceptCompany":
+			out.Values[i] = ec._Mutation_acceptCompany(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "loginAsCompany":
+			out.Values[i] = ec._Mutation_loginAsCompany(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "loginAsEstateAgent":
+			out.Values[i] = ec._Mutation_loginAsEstateAgent(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "loginAsTenant":
+			out.Values[i] = ec._Mutation_loginAsTenant(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5167,6 +6293,62 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_tenants(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "estateAgent":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_estateAgent(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "estateAgents":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_estateAgents(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "company":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_company(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "companies":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_companies(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -5514,6 +6696,24 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAdmin2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdmin(ctx context.Context, sel ast.SelectionSet, v models.Admin) graphql.Marshaler {
+	return ec._Admin(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAdmin2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdmin(ctx context.Context, sel ast.SelectionSet, v *models.Admin) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Admin(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNAdminInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdminInput(ctx context.Context, v interface{}) (models.AdminInput, error) {
+	return ec.unmarshalInputAdminInput(ctx, v)
+}
+
 func (ec *executionContext) marshalNAnomaly2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomaly(ctx context.Context, sel ast.SelectionSet, v models.Anomaly) graphql.Marshaler {
 	return ec._Anomaly(ctx, sel, &v)
 }
@@ -5597,6 +6797,43 @@ func (ec *executionContext) marshalNCompany2githubᚗcomᚋBillotPᚋt_esp_900_r
 	return ec._Company(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNCompany2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompanyᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Company) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
 func (ec *executionContext) marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx context.Context, sel ast.SelectionSet, v *models.Company) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -5613,6 +6850,43 @@ func (ec *executionContext) unmarshalNCompanyInput2githubᚗcomᚋBillotPᚋt_es
 
 func (ec *executionContext) marshalNEstateAgent2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx context.Context, sel ast.SelectionSet, v models.EstateAgent) graphql.Marshaler {
 	return ec._EstateAgent(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNEstateAgent2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.EstateAgent) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalNEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx context.Context, sel ast.SelectionSet, v *models.EstateAgent) graphql.Marshaler {
@@ -6362,6 +7636,18 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 		return graphql.Null
 	}
 	return ec.marshalOTime2timeᚐTime(ctx, sel, *v)
+}
+
+func (ec *executionContext) unmarshalOUserInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx context.Context, v interface{}) (models.UserInput, error) {
+	return ec.unmarshalInputUserInput(ctx, v)
+}
+
+func (ec *executionContext) unmarshalOUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx context.Context, v interface{}) (*models.UserInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOUserInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

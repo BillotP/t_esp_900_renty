@@ -55,7 +55,7 @@ func InitDB() {
 		fmt.Print(err)
 	}
 
-	if err = Db.AutoMigrate(&models.Anomaly{}, models.Asset{}, &models.Company{}, &models.EstateAgent{}, &models.Property{}, &models.Tenant{}, &models.User{}); err != nil {
+	if err = Db.AutoMigrate(&models.Admin{}, &models.Anomaly{}, models.Asset{}, &models.Company{}, &models.EstateAgent{}, &models.Property{}, &models.Tenant{}, &models.User{}); err != nil {
 		os.Exit(84)
 	}
 }
