@@ -17,6 +17,7 @@ type Company {
 
 input CompanyInput {
     name: String!
+    user: UserInput
     logo: String
     description: String!
     tel: String!

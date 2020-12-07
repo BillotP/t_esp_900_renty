@@ -989,6 +989,7 @@ type Company {
 
 input CompanyInput {
     name: String!
+    user: UserInput
     logo: String
     description: String!
     tel: String!
@@ -5707,6 +5708,12 @@ func (ec *executionContext) unmarshalInputCompanyInput(ctx context.Context, obj 
 		case "name":
 			var err error
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "user":
+			var err error
+			it.User, err = ec.unmarshalOUserInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
