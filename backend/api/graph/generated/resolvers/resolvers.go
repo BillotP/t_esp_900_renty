@@ -8,6 +8,7 @@ import (
 
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/exec"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
@@ -67,8 +68,23 @@ func (r *mutationResolver) CreateTenantUser(ctx context.Context, input *models.T
 	panic("Miguel : not implemented")
 }
 
-func (r *mutationResolver) AcceptCompany(ctx context.Context) (*models.Company, error) {
-	panic("Wilfried : not implemented")
+func (r *mutationResolver) AcceptCompany(ctx context.Context, id int64) (*models.Company, error) {
+	var (
+		company  *models.Company
+		verified = true
+
+		err error
+	)
+
+	company = &models.Company{
+		ID:       &id,
+		Verified: &verified,
+	}
+	if err = r.DB.Updates(&company).Error; err == nil {
+		return company, nil
+	}
+	lib.LogError("mutation/AcceptCompany", err.Error())
+	return nil, err
 }
 
 func (r *mutationResolver) LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Company, error) {
@@ -107,28 +123,103 @@ func (r *queryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error
 	panic("Remi : not implemented")
 }
 
-func (r *queryResolver) Tenant(ctx context.Context, id string) (*models.Tenant, error) {
-	panic("Wilfried : not implemented")
+func (r *queryResolver) Tenant(ctx context.Context, id int64) (*models.Tenant, error) {
+	var (
+		tenant models.Tenant
+
+		err error
+	)
+
+	if err = r.DB.Preload(clause.Associations).Where("id = ?", id).First(&tenant).Error; err == nil {
+		return &tenant, nil
+	}
+	lib.LogError("mutation/Tenant", err.Error())
+	return nil, err
 }
 
 func (r *queryResolver) Tenants(ctx context.Context) ([]*models.Tenant, error) {
-	panic("Wilfried : not implemented")
+	var (
+		tenants []models.Tenant
+
+		err error
+	)
+
+	if err = r.DB.Preload(clause.Associations).Find(&tenants).Error; err == nil {
+		var tenantsfmt []*models.Tenant
+
+		for i := range tenants {
+			tenantsfmt = append(tenantsfmt, &tenants[i])
+		}
+		return tenantsfmt, nil
+	}
+	lib.LogError("mutation/Tenants", err.Error())
+	return nil, err
 }
 
-func (r *queryResolver) EstateAgent(ctx context.Context, id string) (*models.EstateAgent, error) {
-	panic("Wilfried : not implemented")
+func (r *queryResolver) EstateAgent(ctx context.Context, id int64) (*models.EstateAgent, error) {
+	var (
+		estateAgent models.EstateAgent
+
+		err error
+	)
+
+	if err = r.DB.Preload(clause.Associations).Where("id = ?", id).First(&estateAgent).Error; err == nil {
+		return &estateAgent, nil
+	}
+	lib.LogError("mutation/EstateAgent", err.Error())
+	return nil, err
 }
 
 func (r *queryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
-	panic("Wilfried : not implemented")
+	var (
+		estateAgents []models.EstateAgent
+
+		err error
+	)
+
+	if err = r.DB.Preload(clause.Associations).Find(&estateAgents).Error; err == nil {
+		var estateagentsfmt []*models.EstateAgent
+
+		for i := range estateAgents {
+			estateagentsfmt = append(estateagentsfmt, &estateAgents[i])
+		}
+		return estateagentsfmt, nil
+	}
+	lib.LogError("mutation/EstateAgents", err.Error())
+	return nil, err
 }
 
-func (r *queryResolver) Company(ctx context.Context, id string) (*models.Company, error) {
-	panic("Wilfried : not implemented")
+func (r *queryResolver) Company(ctx context.Context, id int64) (*models.Company, error) {
+	var (
+		company models.Company
+
+		err error
+	)
+
+	if err = r.DB.Preload(clause.Associations).Where("id = ?", id).First(&company).Error; err == nil {
+		return &company, nil
+	}
+	lib.LogError("mutation/Company", err.Error())
+	return nil, err
 }
 
 func (r *queryResolver) Companies(ctx context.Context) ([]*models.Company, error) {
-	panic("Wilfried : not implemented")
+	var (
+		companies []models.Company
+
+		err error
+	)
+
+	if err = r.DB.Preload(clause.Associations).Find(&companies).Error; err == nil {
+		var companiesfmt []*models.Company
+
+		for i := range companies {
+			companiesfmt = append(companiesfmt, &companies[i])
+		}
+		return companiesfmt, nil
+	}
+	lib.LogError("mutation/Companies", err.Error())
+	return nil, err
 }
 
 // Mutation returns exec.MutationResolver implementation.
