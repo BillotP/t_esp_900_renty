@@ -108,7 +108,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AcceptCompany         func(childComplexity int) int
+		AcceptCompany         func(childComplexity int, id int64) int
 		CreateAnomaly         func(childComplexity int, input *models.AnomalyInput) int
 		CreateEstateAgentUser func(childComplexity int, input *models.EstateAgentInput) int
 		CreateProperty        func(childComplexity int, input *models.PropertyInput) int
@@ -136,10 +136,10 @@ type ComplexityRoot struct {
 		Anomalies    func(childComplexity int) int
 		Anomaly      func(childComplexity int, id string) int
 		Companies    func(childComplexity int) int
-		Company      func(childComplexity int, id string) int
-		EstateAgent  func(childComplexity int, id string) int
+		Company      func(childComplexity int, id int64) int
+		EstateAgent  func(childComplexity int, id int64) int
 		EstateAgents func(childComplexity int) int
-		Tenant       func(childComplexity int, id string) int
+		Tenant       func(childComplexity int, id int64) int
 		Tenants      func(childComplexity int) int
 	}
 
@@ -170,10 +170,10 @@ type MutationResolver interface {
 	SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Credential, error)
 	CreateEstateAgentUser(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error)
 	CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error)
-	AcceptCompany(ctx context.Context) (*models.Company, error)
-	LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Credential, error)
-	LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.Credential, error)
-	LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Credential, error)
+	AcceptCompany(ctx context.Context, id int64) (*models.Company, error)
+	LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Company, error)
+	LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.EstateAgent, error)
+	LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Tenant, error)
 	UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error)
 	CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error)
 	CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error)
@@ -182,11 +182,11 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Anomaly(ctx context.Context, id string) (*models.Anomaly, error)
 	Anomalies(ctx context.Context) ([]*models.Anomaly, error)
-	Tenant(ctx context.Context, id string) (*models.Tenant, error)
+	Tenant(ctx context.Context, id int64) (*models.Tenant, error)
 	Tenants(ctx context.Context) ([]*models.Tenant, error)
-	EstateAgent(ctx context.Context, id string) (*models.EstateAgent, error)
+	EstateAgent(ctx context.Context, id int64) (*models.EstateAgent, error)
 	EstateAgents(ctx context.Context) ([]*models.EstateAgent, error)
-	Company(ctx context.Context, id string) (*models.Company, error)
+	Company(ctx context.Context, id int64) (*models.Company, error)
 	Companies(ctx context.Context) ([]*models.Company, error)
 }
 
@@ -511,7 +511,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Mutation.AcceptCompany(childComplexity), true
+		args, err := ec.field_Mutation_acceptCompany_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AcceptCompany(childComplexity, args["id"].(int64)), true
 
 	case "Mutation.createAnomaly":
 		if e.complexity.Mutation.CreateAnomaly == nil {
@@ -730,7 +735,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Company(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.Company(childComplexity, args["id"].(int64)), true
 
 	case "Query.estateAgent":
 		if e.complexity.Query.EstateAgent == nil {
@@ -742,7 +747,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.EstateAgent(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.EstateAgent(childComplexity, args["id"].(int64)), true
 
 	case "Query.estateAgents":
 		if e.complexity.Query.EstateAgents == nil {
@@ -761,7 +766,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Tenant(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.Tenant(childComplexity, args["id"].(int64)), true
 
 	case "Query.tenants":
 		if e.complexity.Query.Tenants == nil {
@@ -1070,7 +1075,7 @@ input EstateAgentInput {
     createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(role: COMPANY)
     createTenantUser(input: TenantInput): Tenant! @hasRole(role: ESTATE_AGENT)
 
-    acceptCompany: Company! @hasRole(role: ADMIN)
+    acceptCompany(id: Int!): Company! @hasRole(role: ADMIN)
 
     loginAsCompany(input: UserInput): Credential!
     loginAsEstateAgent(input: UserInput): Credential!
@@ -1107,11 +1112,11 @@ input PropertyInput {
 	&ast.Source{Name: "schemes/query.graphqls", Input: `type Query {
     anomaly(id: String!): Anomaly!
     anomalies: [Anomaly!]! @hasRole(role: ESTATE_AGENT)
-    tenant(id: String!): Tenant!
+    tenant(id: Int!): Tenant!
     tenants: [Tenant!]! @hasRole(role: ESTATE_AGENT)
-    estateAgent(id: String!): EstateAgent! @hasRole(role: COMPANY)
+    estateAgent(id: Int!): EstateAgent! @hasRole(role: COMPANY)
     estateAgents: [EstateAgent!]! @hasRole(role: COMPANY)
-    company(id: String!): Company! @hasRole(role: ADMIN)
+    company(id: Int!): Company! @hasRole(role: ADMIN)
     companies: [Company!]! @hasRole(role: ADMIN)
 }
 `, BuiltIn: false},
@@ -1176,6 +1181,20 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 		}
 	}
 	args["role"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_acceptCompany_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int64
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNInt2int64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -1364,9 +1383,9 @@ func (ec *executionContext) field_Query_anomaly_args(ctx context.Context, rawArg
 func (ec *executionContext) field_Query_company_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 int64
 	if tmp, ok := rawArgs["id"]; ok {
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1378,9 +1397,9 @@ func (ec *executionContext) field_Query_company_args(ctx context.Context, rawArg
 func (ec *executionContext) field_Query_estateAgent_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 int64
 	if tmp, ok := rawArgs["id"]; ok {
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1392,9 +1411,9 @@ func (ec *executionContext) field_Query_estateAgent_args(ctx context.Context, ra
 func (ec *executionContext) field_Query_tenant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 int64
 	if tmp, ok := rawArgs["id"]; ok {
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3032,10 +3051,17 @@ func (ec *executionContext) _Mutation_acceptCompany(ctx context.Context, field g
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_acceptCompany_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().AcceptCompany(rctx)
+			return ec.resolvers.Mutation().AcceptCompany(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
@@ -3798,7 +3824,7 @@ func (ec *executionContext) _Query_tenant(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Tenant(rctx, args["id"].(string))
+		return ec.resolvers.Query().Tenant(rctx, args["id"].(int64))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3898,7 +3924,7 @@ func (ec *executionContext) _Query_estateAgent(ctx context.Context, field graphq
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().EstateAgent(rctx, args["id"].(string))
+			return ec.resolvers.Query().EstateAgent(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
@@ -4021,7 +4047,7 @@ func (ec *executionContext) _Query_company(ctx context.Context, field graphql.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Company(rctx, args["id"].(string))
+			return ec.resolvers.Query().Company(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
@@ -7015,6 +7041,20 @@ func (ec *executionContext) marshalNEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_es
 		return graphql.Null
 	}
 	return ec._EstateAgent(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNInt2int64(ctx context.Context, v interface{}) (int64, error) {
+	return graphql.UnmarshalInt64(v)
+}
+
+func (ec *executionContext) marshalNInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
+	res := graphql.MarshalInt64(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalNProperty2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐProperty(ctx context.Context, sel ast.SelectionSet, v models.Property) graphql.Marshaler {

@@ -4,7 +4,7 @@ type Mutation {
     createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(role: COMPANY)
     createTenantUser(input: TenantInput): Tenant! @hasRole(role: ESTATE_AGENT)
 
-    acceptCompany: Company! @hasRole(role: ADMIN)
+    acceptCompany(id: Int!): Company! @hasRole(role: ADMIN)
 
     loginAsCompany(input: UserInput): Credential!
     loginAsEstateAgent(input: UserInput): Credential!
