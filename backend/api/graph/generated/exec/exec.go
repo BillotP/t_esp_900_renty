@@ -92,6 +92,11 @@ type ComplexityRoot struct {
 		Verified    func(childComplexity int) int
 	}
 
+	Credential struct {
+		Token func(childComplexity int) int
+		User  func(childComplexity int) int
+	}
+
 	EstateAgent struct {
 		Company   func(childComplexity int) int
 		CompanyID func(childComplexity int) int
@@ -139,13 +144,15 @@ type ComplexityRoot struct {
 	}
 
 	Tenant struct {
-		CreatedAt  func(childComplexity int) int
-		Documents  func(childComplexity int) int
-		ID         func(childComplexity int) int
-		Properties func(childComplexity int) int
-		UpdatedAt  func(childComplexity int) int
-		User       func(childComplexity int) int
-		UserID     func(childComplexity int) int
+		CreatedAt     func(childComplexity int) int
+		Documents     func(childComplexity int) int
+		EstateAgent   func(childComplexity int) int
+		EstateAgentID func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Properties    func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
+		User          func(childComplexity int) int
+		UserID        func(childComplexity int) int
 	}
 
 	User struct {
@@ -159,14 +166,14 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Admin, error)
-	SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Company, error)
+	SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Credential, error)
+	SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Credential, error)
 	CreateEstateAgentUser(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error)
 	CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error)
 	AcceptCompany(ctx context.Context) (*models.Company, error)
-	LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Company, error)
-	LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.EstateAgent, error)
-	LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Tenant, error)
+	LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Credential, error)
+	LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.Credential, error)
+	LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Credential, error)
 	UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error)
 	CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error)
 	CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error)
@@ -435,6 +442,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Company.Verified(childComplexity), true
+
+	case "Credential.token":
+		if e.complexity.Credential.Token == nil {
+			break
+		}
+
+		return e.complexity.Credential.Token(childComplexity), true
+
+	case "Credential.user":
+		if e.complexity.Credential.User == nil {
+			break
+		}
+
+		return e.complexity.Credential.User(childComplexity), true
 
 	case "EstateAgent.company":
 		if e.complexity.EstateAgent.Company == nil {
@@ -763,6 +784,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Tenant.Documents(childComplexity), true
 
+	case "Tenant.estateAgent":
+		if e.complexity.Tenant.EstateAgent == nil {
+			break
+		}
+
+		return e.complexity.Tenant.EstateAgent(childComplexity), true
+
+	case "Tenant.estateAgentID":
+		if e.complexity.Tenant.EstateAgentID == nil {
+			break
+		}
+
+		return e.complexity.Tenant.EstateAgentID(childComplexity), true
+
 	case "Tenant.ID":
 		if e.complexity.Tenant.ID == nil {
 			break
@@ -995,6 +1030,13 @@ input CompanyInput {
     tel: String!
 }
 `, BuiltIn: false},
+	&ast.Source{Name: "schemes/credential.graphqls", Input: `"""
+A Credential is a
+"""
+type Credential {
+    user: User
+    token: String
+}`, BuiltIn: false},
 	&ast.Source{Name: "schemes/directives.graphqls", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
 
 enum Role {
@@ -1020,20 +1062,19 @@ type EstateAgent {
 
 input EstateAgentInput {
     user: UserInput!
-    inviteCode: String!
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/mutation.graphqls", Input: `type Mutation {
-    signupAsAdmin(input: AdminInput!): Admin!
-    signupAsCompany(input: CompanyInput!): Company!
+    signupAsAdmin(input: AdminInput!): Credential!
+    signupAsCompany(input: CompanyInput!): Credential!
     createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(role: COMPANY)
-    createTenantUser(input: TenantInput): Tenant! @hasRole(role: COMPANY)
+    createTenantUser(input: TenantInput): Tenant! @hasRole(role: ESTATE_AGENT)
 
     acceptCompany: Company! @hasRole(role: ADMIN)
 
-    loginAsCompany(input: UserInput): Company! @hasRole(role: COMPANY)
-    loginAsEstateAgent(input: UserInput): EstateAgent! @hasRole(role: ESTATE_AGENT)
-    loginAsTenant(input: UserInput): Tenant! @hasRole(role: TENANT)
+    loginAsCompany(input: UserInput): Credential!
+    loginAsEstateAgent(input: UserInput): Credential!
+    loginAsTenant(input: UserInput): Credential!
 
     updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: ESTATE_AGENT)
 
@@ -1085,12 +1126,13 @@ type Tenant {
     properties: [Property!] @extraTag(gorm:"many2many:tenant_properties")
     userID: Int
     user: User! @extraTag(gorm:"foreignKey:UserID")
+    estateAgentID: Int
+    estateAgent: EstateAgent! @extraTag(gorm:"foreignKey:EstateAgentID")
     documents: [Asset!] @extraTag(gorm:"many2many:tenant_documents")
 }
 
 input TenantInput {
     user: UserInput!
-    inviteCode: String!
 }
 
 
@@ -1114,7 +1156,6 @@ type User {
 input UserInput {
     username: String!
     password: String!
-    role: Role!
 }
 `, BuiltIn: false},
 }
@@ -2479,6 +2520,68 @@ func (ec *executionContext) _Company_verified(ctx context.Context, field graphql
 	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Credential_user(ctx context.Context, field graphql.CollectedField, obj *models.Credential) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Credential",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Credential_token(ctx context.Context, field graphql.CollectedField, obj *models.Credential) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Credential",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _EstateAgent_ID(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2738,9 +2841,9 @@ func (ec *executionContext) _Mutation_signupAsAdmin(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Admin)
+	res := resTmp.(*models.Credential)
 	fc.Result = res
-	return ec.marshalNAdmin2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdmin(ctx, field.Selections, res)
+	return ec.marshalNCredential2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCredential(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_signupAsCompany(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2779,9 +2882,9 @@ func (ec *executionContext) _Mutation_signupAsCompany(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Company)
+	res := resTmp.(*models.Credential)
 	fc.Result = res
-	return ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, field.Selections, res)
+	return ec.marshalNCredential2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCredential(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createEstateAgentUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2877,7 +2980,7 @@ func (ec *executionContext) _Mutation_createTenantUser(ctx context.Context, fiel
 			return ec.resolvers.Mutation().CreateTenantUser(rctx, args["input"].(*models.TenantInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
 			if err != nil {
 				return nil, err
 			}
@@ -2995,32 +3098,8 @@ func (ec *executionContext) _Mutation_loginAsCompany(ctx context.Context, field 
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().LoginAsCompany(rctx, args["input"].(*models.UserInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, err
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*models.Company); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Company`, tmp)
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().LoginAsCompany(rctx, args["input"].(*models.UserInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3032,9 +3111,9 @@ func (ec *executionContext) _Mutation_loginAsCompany(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Company)
+	res := resTmp.(*models.Credential)
 	fc.Result = res
-	return ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, field.Selections, res)
+	return ec.marshalNCredential2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCredential(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_loginAsEstateAgent(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3060,32 +3139,8 @@ func (ec *executionContext) _Mutation_loginAsEstateAgent(ctx context.Context, fi
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().LoginAsEstateAgent(rctx, args["input"].(*models.UserInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, err
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*models.EstateAgent); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.EstateAgent`, tmp)
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().LoginAsEstateAgent(rctx, args["input"].(*models.UserInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3097,9 +3152,9 @@ func (ec *executionContext) _Mutation_loginAsEstateAgent(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.EstateAgent)
+	res := resTmp.(*models.Credential)
 	fc.Result = res
-	return ec.marshalNEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx, field.Selections, res)
+	return ec.marshalNCredential2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCredential(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_loginAsTenant(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3125,32 +3180,8 @@ func (ec *executionContext) _Mutation_loginAsTenant(ctx context.Context, field g
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		directive0 := func(rctx context.Context) (interface{}, error) {
-			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().LoginAsTenant(rctx, args["input"].(*models.UserInput))
-		}
-		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "TENANT")
-			if err != nil {
-				return nil, err
-			}
-			if ec.directives.HasRole == nil {
-				return nil, errors.New("directive hasRole is not implemented")
-			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
-		}
-
-		tmp, err := directive1(rctx)
-		if err != nil {
-			return nil, err
-		}
-		if tmp == nil {
-			return nil, nil
-		}
-		if data, ok := tmp.(*models.Tenant); ok {
-			return data, nil
-		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Tenant`, tmp)
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().LoginAsTenant(rctx, args["input"].(*models.UserInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3162,9 +3193,9 @@ func (ec *executionContext) _Mutation_loginAsTenant(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.Tenant)
+	res := resTmp.(*models.Credential)
 	fc.Result = res
-	return ec.marshalNTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenant(ctx, field.Selections, res)
+	return ec.marshalNCredential2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCredential(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4344,6 +4375,71 @@ func (ec *executionContext) _Tenant_user(ctx context.Context, field graphql.Coll
 	res := resTmp.(*models.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Tenant_estateAgentID(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EstateAgentID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Tenant_estateAgent(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EstateAgent, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.EstateAgent)
+	fc.Result = res
+	return ec.marshalNEstateAgent2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Tenant_documents(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
@@ -5753,12 +5849,6 @@ func (ec *executionContext) unmarshalInputEstateAgentInput(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
-		case "inviteCode":
-			var err error
-			it.InviteCode, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -5813,12 +5903,6 @@ func (ec *executionContext) unmarshalInputTenantInput(ctx context.Context, obj i
 			if err != nil {
 				return it, err
 			}
-		case "inviteCode":
-			var err error
-			it.InviteCode, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -5864,12 +5948,6 @@ func (ec *executionContext) unmarshalInputUserInput(ctx context.Context, obj int
 		case "password":
 			var err error
 			it.Password, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "role":
-			var err error
-			it.Role, err = ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6059,6 +6137,32 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "verified":
 			out.Values[i] = ec._Company_verified(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var credentialImplementors = []string{"Credential"}
+
+func (ec *executionContext) _Credential(ctx context.Context, sel ast.SelectionSet, obj *models.Credential) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, credentialImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Credential")
+		case "user":
+			out.Values[i] = ec._Credential_user(ctx, field, obj)
+		case "token":
+			out.Values[i] = ec._Credential_token(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6402,6 +6506,13 @@ func (ec *executionContext) _Tenant(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "estateAgentID":
+			out.Values[i] = ec._Tenant_estateAgentID(ctx, field, obj)
+		case "estateAgent":
+			out.Values[i] = ec._Tenant_estateAgent(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "documents":
 			out.Values[i] = ec._Tenant_documents(ctx, field, obj)
 		default:
@@ -6703,20 +6814,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAdmin2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdmin(ctx context.Context, sel ast.SelectionSet, v models.Admin) graphql.Marshaler {
-	return ec._Admin(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNAdmin2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdmin(ctx context.Context, sel ast.SelectionSet, v *models.Admin) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Admin(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNAdminInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAdminInput(ctx context.Context, v interface{}) (models.AdminInput, error) {
 	return ec.unmarshalInputAdminInput(ctx, v)
 }
@@ -6853,6 +6950,20 @@ func (ec *executionContext) marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_90
 
 func (ec *executionContext) unmarshalNCompanyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompanyInput(ctx context.Context, v interface{}) (models.CompanyInput, error) {
 	return ec.unmarshalInputCompanyInput(ctx, v)
+}
+
+func (ec *executionContext) marshalNCredential2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCredential(ctx context.Context, sel ast.SelectionSet, v models.Credential) graphql.Marshaler {
+	return ec._Credential(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCredential2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCredential(ctx context.Context, sel ast.SelectionSet, v *models.Credential) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Credential(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNEstateAgent2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐEstateAgent(ctx context.Context, sel ast.SelectionSet, v models.EstateAgent) graphql.Marshaler {
@@ -7643,6 +7754,17 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 		return graphql.Null
 	}
 	return ec.marshalOTime2timeᚐTime(ctx, sel, *v)
+}
+
+func (ec *executionContext) marshalOUser2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx context.Context, sel ast.SelectionSet, v models.User) graphql.Marshaler {
+	return ec._User(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx context.Context, sel ast.SelectionSet, v *models.User) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOUserInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUserInput(ctx context.Context, v interface{}) (models.UserInput, error) {

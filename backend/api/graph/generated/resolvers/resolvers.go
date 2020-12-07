@@ -5,6 +5,10 @@ package resolvers
 import (
 	"context"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
+	"math/rand"
+	"time"
 
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"gorm.io/gorm"
@@ -17,36 +21,54 @@ type Resolver struct {
 	DB *gorm.DB
 }
 
-func (r *mutationResolver) SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Admin, error) {
-
-	panic("Miguel : not implemented")
+func getPseudoRandomCost() int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn((20 - bcrypt.MinCost) + bcrypt.MinCost)
 }
 
-func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Company, error) {
+func createToken(username string, userRole models.Role) (string, error) {
 	var (
-		user    *models.User
+		token = ""
+
+		err error
+	)
+
+	atClaims := jwt.MapClaims{}
+
+	atClaims["authorized"] = true
+	atClaims["username"] = username
+	atClaims["userrole"] = userRole.String()
+	atClaims["exp"] = time.Now().Add(time.Minute * 60).Unix()
+
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	if token, err = at.SignedString([]byte(lib.ServerConf.JwtSigningKey)); err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+func (r *mutationResolver) SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Credential, error) {
+	panic("not implemented")
+}
+
+func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Credential, error) {
+	var (
+		token   string
 		company *models.Company
+		pwdHash []byte
 
 		err error
 	)
 
 	verified := false
 
-	user = &models.User{
-		Username: input.User.Username,
-		Password: input.User.Password,
-		Role:     models.RoleCompany,
-	}
-	if err = r.DB.Where("username = ?", user.Username).First(&user).Error; err == nil {
-		return nil, fmt.Errorf("user seems already register")
-	}
-	if err = r.DB.Create(&user).Error; err != nil {
-		lib.LogError("mutation/Register/User", err.Error())
-		return nil, err
-	}
 	company = &models.Company{
-		Name:        input.Name,
-		UserID:      user.ID,
+		Name: input.Name,
+		User: &models.User{
+			Username: input.User.Username,
+			Password: "",
+			Role:     models.RoleCompany,
+		},
 		Description: &input.Description,
 		Tel:         input.Tel,
 		Verified:    &verified,
@@ -54,35 +76,194 @@ func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.Com
 	if err = r.DB.Where("name = ?", company.Name).First(&company).Error; err == nil {
 		return nil, fmt.Errorf("company seems already register")
 	}
+	if pwdHash, err = bcrypt.GenerateFromPassword([]byte(input.User.Password), getPseudoRandomCost()); err != nil {
+		lib.LogError("mutation/Register", err.Error())
+		return nil, err
+	}
+
+	company.User.Password = string(pwdHash)
 	if err = r.DB.Create(&company).Error; err != nil {
 		lib.LogError("mutation/Register/Company", err.Error())
 		return nil, err
 	}
-	return company, nil
+	if token, err = createToken(company.User.Username, company.User.Role); err != nil {
+		return nil, err
+	}
+	return &models.Credential{
+		User:  company.User,
+		Token: &token,
+	}, nil
 }
 
 func (r *mutationResolver) CreateEstateAgentUser(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error) {
-	panic("Miguel : not implemented")
+	var (
+		usernameCtx = lib.ContextKey("username")
+
+		company     *models.Company
+		estateAgent *models.EstateAgent
+		pwdHash     []byte
+
+		err error
+	)
+
+	companyUsername := ctx.Value(usernameCtx).(string)
+
+	company = &models.Company{
+		User: &models.User{
+			Username: companyUsername,
+		},
+	}
+	if err = r.DB.Where(&company).First(&company).Error; err != nil {
+		return nil, err
+	}
+
+	estateAgent = &models.EstateAgent{
+		Company: company,
+		User: &models.User{
+			Username: input.User.Username,
+			Password: "",
+			Role:     models.RoleEstateAgent,
+		},
+	}
+	if err = r.DB.Joins("User").Where("username = ?", input.User.Username).First(&estateAgent).Error; err == nil {
+		return nil, fmt.Errorf("estate agent seems already register")
+	}
+	if pwdHash, err = bcrypt.GenerateFromPassword([]byte(input.User.Password), getPseudoRandomCost()); err != nil {
+		lib.LogError("mutation/Register", err.Error())
+		return nil, err
+	}
+
+	estateAgent.User.Password = string(pwdHash)
+	if err = r.DB.Create(&estateAgent).Error; err != nil {
+		lib.LogError("mutation/Register/EstateAgent", err.Error())
+		return nil, err
+	}
+	return estateAgent, nil
 }
 
 func (r *mutationResolver) CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error) {
-	panic("Miguel : not implemented")
+	var (
+		usernameCtx = lib.ContextKey("username")
+
+		estateAgent *models.EstateAgent
+		tenant      *models.Tenant
+		pwdHash     []byte
+
+		err error
+	)
+
+	estateAgentUsername := ctx.Value(usernameCtx).(string)
+
+	estateAgent = &models.EstateAgent{
+		User: &models.User{
+			Username: estateAgentUsername,
+		},
+	}
+	if err = r.DB.Where(&estateAgent).First(&estateAgent).Error; err != nil {
+		return nil, err
+	}
+
+	tenant = &models.Tenant{
+		EstateAgent: estateAgent,
+		User: &models.User{
+			Username: input.User.Username,
+			Password: "",
+			Role:     models.RoleEstateAgent,
+		},
+	}
+	if err = r.DB.Joins("User").Where("username = ?", input.User.Username).First(&tenant).Error; err == nil {
+		return nil, fmt.Errorf("tenant seems already register")
+	}
+	if pwdHash, err = bcrypt.GenerateFromPassword([]byte(input.User.Password), getPseudoRandomCost()); err != nil {
+		lib.LogError("mutation/Register", err.Error())
+		return nil, err
+	}
+
+	tenant.User.Password = string(pwdHash)
+	if err = r.DB.Create(&tenant).Error; err != nil {
+		lib.LogError("mutation/Register/Tenant", err.Error())
+		return nil, err
+	}
+	return tenant, nil
 }
 
 func (r *mutationResolver) AcceptCompany(ctx context.Context) (*models.Company, error) {
 	panic("Wilfried : not implemented")
 }
 
-func (r *mutationResolver) LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Company, error) {
-	panic("Miguel : not implemented")
+func (r *mutationResolver) LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
+	var (
+		company *models.Company
+		token   = ""
+
+		err error
+	)
+
+	company = &models.Company{}
+	if err = r.DB.Joins("User").Where("username = ?", input.Username).First(&company).Error; err != nil {
+		return nil, err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(company.User.Password), []byte(input.Password)); err != nil {
+		lib.LogError("resolvers/LoginAsCompany", err.Error())
+		return nil, fmt.Errorf("bad password provided")
+	}
+	if token, err = createToken(company.User.Username, company.User.Role); err != nil {
+		return nil, err
+	}
+	return &models.Credential{
+		User:  company.User,
+		Token: &token,
+	}, nil
 }
 
-func (r *mutationResolver) LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.EstateAgent, error) {
-	panic("Miguel : not implemented")
+func (r *mutationResolver) LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
+	var (
+		estateAgent *models.EstateAgent
+		token   = ""
+
+		err error
+	)
+
+	estateAgent = &models.EstateAgent{}
+	if err = r.DB.Joins("User").Where("username = ?", input.Username).First(&estateAgent).Error; err != nil {
+		return nil, err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(estateAgent.User.Password), []byte(input.Password)); err != nil {
+		lib.LogError("resolvers/LoginAsCompany", err.Error())
+		return nil, fmt.Errorf("bad password provided")
+	}
+	if token, err = createToken(estateAgent.User.Username, estateAgent.User.Role); err != nil {
+		return nil, err
+	}
+	return &models.Credential{
+		User:  estateAgent.User,
+		Token: &token,
+	}, nil
 }
 
-func (r *mutationResolver) LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Tenant, error) {
-	panic("Miguel : not implemented")
+func (r *mutationResolver) LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
+	var (
+		tenant *models.Tenant
+		token   = ""
+
+		err error
+	)
+
+	tenant = &models.Tenant{}
+	if err = r.DB.Joins("User").Where("username = ?", input.Username).First(&tenant).Error; err != nil {
+		return nil, err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(tenant.User.Password), []byte(input.Password)); err != nil {
+		lib.LogError("resolvers/LoginAsCompany", err.Error())
+		return nil, fmt.Errorf("bad password provided")
+	}
+	if token, err = createToken(tenant.User.Username, tenant.User.Role); err != nil {
+		return nil, err
+	}
+	return &models.Credential{
+		User:  tenant.User,
+		Token: &token,
+	}, nil
 }
 
 func (r *mutationResolver) UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error) {

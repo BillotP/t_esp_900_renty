@@ -82,6 +82,12 @@ type CompanyInput struct {
 	Tel         string     `json:"tel"`
 }
 
+// A Credential is a
+type Credential struct {
+	User  *User   `json:"user"`
+	Token *string `json:"token"`
+}
+
 // An EstateAgent is a
 type EstateAgent struct {
 	ID        *int64     `json:"ID" gorm:"primarykey"`
@@ -94,8 +100,7 @@ type EstateAgent struct {
 }
 
 type EstateAgentInput struct {
-	User       *UserInput `json:"user"`
-	InviteCode string     `json:"inviteCode"`
+	User *UserInput `json:"user"`
 }
 
 // A Property  is a
@@ -118,18 +123,19 @@ type PropertyInput struct {
 
 // A Tenant is a
 type Tenant struct {
-	ID         *int64      `json:"ID" gorm:"primarykey"`
-	CreatedAt  *time.Time  `json:"createdAt"`
-	UpdatedAt  *time.Time  `json:"updatedAt"`
-	Properties []*Property `json:"properties" gorm:"many2many:tenant_properties"`
-	UserID     *int64      `json:"userID"`
-	User       *User       `json:"user" gorm:"foreignKey:UserID"`
-	Documents  []*Asset    `json:"documents" gorm:"many2many:tenant_documents"`
+	ID            *int64       `json:"ID" gorm:"primarykey"`
+	CreatedAt     *time.Time   `json:"createdAt"`
+	UpdatedAt     *time.Time   `json:"updatedAt"`
+	Properties    []*Property  `json:"properties" gorm:"many2many:tenant_properties"`
+	UserID        *int64       `json:"userID"`
+	User          *User        `json:"user" gorm:"foreignKey:UserID"`
+	EstateAgentID *int64       `json:"estateAgentID"`
+	EstateAgent   *EstateAgent `json:"estateAgent" gorm:"foreignKey:EstateAgentID"`
+	Documents     []*Asset     `json:"documents" gorm:"many2many:tenant_documents"`
 }
 
 type TenantInput struct {
-	User       *UserInput `json:"user"`
-	InviteCode string     `json:"inviteCode"`
+	User *UserInput `json:"user"`
 }
 
 type TenantUpdateInput struct {
@@ -150,7 +156,6 @@ type User struct {
 type UserInput struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Role     Role   `json:"role"`
 }
 
 // An AnomalyState is a
