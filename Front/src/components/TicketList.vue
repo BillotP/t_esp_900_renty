@@ -40,6 +40,7 @@ export default class TicketList extends Vue {
   private tickets = [];
   private options = {};
   // private { sortBy, sortDesc, page, itemsPerPage } = options;
+
   private headers = [
     {
       text: "Client",

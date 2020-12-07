@@ -7,6 +7,7 @@ import "./plugins/components";
 import "./plugins/forms";
 import vuetify from './plugins/vuetify';
 import "./plugins/forms";
+import { createProvider } from '@/vue-apollo';
 
 Vue.config.productionTip = false;
 
@@ -14,5 +15,6 @@ new Vue({
   router,
   store,
   vuetify,
+  apolloProvider: createProvider(),
   render: h => h(App)
 }).$mount('#app');

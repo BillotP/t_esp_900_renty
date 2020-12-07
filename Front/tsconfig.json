@@ -9,6 +9,8 @@
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
+    "allowJs": true,
     "sourceMap": true,
     "baseUrl": ".",
     "typeRoots": [
@@ -18,7 +20,8 @@
     "types": [
       "webpack-env",
       "jest",
-      "vuetify"
+      "vuetify",
+      "vue-cli-plugin-apollo"
     ],
     "paths": {
       "@/*": [
@@ -35,9 +38,11 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "src/vue-apollo.js",
     "src/**/*.vue",
+    "src/vue-apollo.js",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx", "src/vue-apollo.js"
   ],
   "exclude": [
     "node_modules"
