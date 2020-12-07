@@ -1,7 +1,14 @@
 type Mutation {
+    signupAsAdmin(input: AdminInput!): Admin!
     signupAsCompany(input: CompanyInput!): Company!
-    signupAsEstateAgent(input: EstateAgentInput): EstateAgent!
-    signupAsTenant(input: TenantInput): Tenant!
+    createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(role: COMPANY)
+    createTenantUser(input: TenantInput): Tenant! @hasRole(role: COMPANY)
+
+    acceptCompany: Company! @hasRole(role: ADMIN)
+
+    loginAsCompany(input: UserInput): Company! @hasRole(role: COMPANY)
+    loginAsEstateAgent(input: UserInput): EstateAgent! @hasRole(role: ESTATE_AGENT)
+    loginAsTenant(input: UserInput): Tenant! @hasRole(role: TENANT)
 
     updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: ESTATE_AGENT)
 

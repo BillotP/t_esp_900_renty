@@ -1,0 +1,14 @@
+"""
+An Admin is a
+"""
+type Admin {
+    ID: Int @extraTag(gorm:"primarykey")
+    createdAt: Time
+    updatedAt: Time
+    userID: Int
+    user: User! @extraTag(gorm:"foreignKey:UserID")
+}
+
+input AdminInput {
+    user: UserInput
+}

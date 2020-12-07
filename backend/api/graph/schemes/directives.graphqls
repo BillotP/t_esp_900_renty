@@ -3,6 +3,8 @@ directive @hasRole(role: Role!) on FIELD_DEFINITION
 enum Role {
     ESTATE_AGENT
     TENANT
+    COMPANY
+    ADMIN
 }
 
 directive @extraTag on INPUT_FIELD_DEFINITION | FIELD_DEFINITION

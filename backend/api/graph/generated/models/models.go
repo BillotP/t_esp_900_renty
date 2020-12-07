@@ -9,6 +9,19 @@ import (
 	"time"
 )
 
+// An Admin is a
+type Admin struct {
+	ID        *int64     `json:"ID" gorm:"primarykey"`
+	CreatedAt *time.Time `json:"createdAt"`
+	UpdatedAt *time.Time `json:"updatedAt"`
+	UserID    *int64     `json:"userID"`
+	User      *User      `json:"user" gorm:"foreignKey:UserID"`
+}
+
+type AdminInput struct {
+	User *UserInput `json:"user"`
+}
+
 // An Anomaly is a
 type Anomaly struct {
 	ID           *int64         `json:"ID" gorm:"primarykey"`
@@ -48,16 +61,17 @@ type Asset struct {
 
 // A Company is a
 type Company struct {
-	ID                    *int64     `json:"ID" gorm:"primarykey"`
-	CreatedAt             *time.Time `json:"createdAt"`
-	UpdatedAt             *time.Time `json:"updatedAt"`
-	Name                  string     `json:"name"`
-	LogoID                *int64     `json:"logoID"`
-	Logo                  *Asset     `json:"logo" gorm:"foreignKey:LogoID"`
-	Description           *string    `json:"description"`
-	Tel                   string     `json:"tel"`
-	EstateAgentInviteCode string     `json:"estateAgentInviteCode"`
-	TenantInviteCode      string     `json:"tenantInviteCode"`
+	ID          *int64     `json:"ID" gorm:"primarykey"`
+	CreatedAt   *time.Time `json:"createdAt"`
+	UpdatedAt   *time.Time `json:"updatedAt"`
+	Name        string     `json:"name"`
+	LogoID      *int64     `json:"logoID"`
+	Logo        *Asset     `json:"logo" gorm:"foreignKey:LogoID"`
+	Description *string    `json:"description"`
+	Tel         string     `json:"tel"`
+	UserID      *int64     `json:"userID"`
+	User        *User      `json:"user" gorm:"foreignKey:UserID"`
+	Verified    *bool      `json:"verified"`
 }
 
 type CompanyInput struct {
@@ -187,16 +201,20 @@ type Role string
 const (
 	RoleEstateAgent Role = "ESTATE_AGENT"
 	RoleTenant      Role = "TENANT"
+	RoleCompany     Role = "COMPANY"
+	RoleAdmin       Role = "ADMIN"
 )
 
 var AllRole = []Role{
 	RoleEstateAgent,
 	RoleTenant,
+	RoleCompany,
+	RoleAdmin,
 }
 
 func (e Role) IsValid() bool {
 	switch e {
-	case RoleEstateAgent, RoleTenant:
+	case RoleEstateAgent, RoleTenant, RoleCompany, RoleAdmin:
 		return true
 	}
 	return false
