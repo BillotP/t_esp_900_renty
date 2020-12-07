@@ -5,6 +5,7 @@ package resolvers
 import (
 	"context"
 	"fmt"
+
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"gorm.io/gorm"
 
@@ -17,19 +18,35 @@ type Resolver struct {
 }
 
 func (r *mutationResolver) SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Admin, error) {
-	panic("not implemented")
+
+	panic("Miguel : not implemented")
 }
 
 func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Company, error) {
 	var (
+		user    *models.User
 		company *models.Company
 
 		err error
 	)
 
 	verified := false
+
+	user = &models.User{
+		Username: input.User.Username,
+		Password: input.User.Password,
+		Role:     models.RoleCompany,
+	}
+	if err = r.DB.Where("username = ?", user.Username).First(&user).Error; err == nil {
+		return nil, fmt.Errorf("user seems already register")
+	}
+	if err = r.DB.Create(&user).Error; err != nil {
+		lib.LogError("mutation/Register/User", err.Error())
+		return nil, err
+	}
 	company = &models.Company{
 		Name:        input.Name,
+		UserID:      user.ID,
 		Description: &input.Description,
 		Tel:         input.Tel,
 		Verified:    &verified,
@@ -45,31 +62,31 @@ func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.Com
 }
 
 func (r *mutationResolver) CreateEstateAgentUser(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error) {
-	panic("not implemented")
+	panic("Miguel : not implemented")
 }
 
 func (r *mutationResolver) CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error) {
-	panic("not implemented")
+	panic("Miguel : not implemented")
 }
 
 func (r *mutationResolver) AcceptCompany(ctx context.Context) (*models.Company, error) {
-	panic("not implemented")
+	panic("Wilfried : not implemented")
 }
 
 func (r *mutationResolver) LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Company, error) {
-	panic("not implemented")
+	panic("Miguel : not implemented")
 }
 
 func (r *mutationResolver) LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.EstateAgent, error) {
-	panic("not implemented")
+	panic("Miguel : not implemented")
 }
 
 func (r *mutationResolver) LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Tenant, error) {
-	panic("not implemented")
+	panic("Miguel : not implemented")
 }
 
 func (r *mutationResolver) UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error) {
-	panic("not implemented")
+	panic("Wilfried : not implemented")
 }
 
 func (r *mutationResolver) CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error) {
@@ -148,15 +165,31 @@ func (r *queryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly
 }
 
 func (r *queryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error) {
-	panic("not implemented")
+	panic("Remi : not implemented")
 }
 
 func (r *queryResolver) Tenant(ctx context.Context, id string) (*models.Tenant, error) {
-	panic("not implemented")
+	panic("Wilfried : not implemented")
 }
 
 func (r *queryResolver) Tenants(ctx context.Context) ([]*models.Tenant, error) {
-	panic("not implemented")
+	panic("Wilfried : not implemented")
+}
+
+func (r *queryResolver) EstateAgent(ctx context.Context, id string) (*models.EstateAgent, error) {
+	panic("Wilfried : not implemented")
+}
+
+func (r *queryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
+	panic("Wilfried : not implemented")
+}
+
+func (r *queryResolver) Company(ctx context.Context, id string) (*models.Company, error) {
+	panic("Wilfried : not implemented")
+}
+
+func (r *queryResolver) Companies(ctx context.Context) ([]*models.Company, error) {
+	panic("Wilfried : not implemented")
 }
 
 func (r *queryResolver) EstateAgent(ctx context.Context, id string) (*models.EstateAgent, error) {

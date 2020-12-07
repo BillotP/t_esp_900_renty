@@ -75,10 +75,11 @@ type Company struct {
 }
 
 type CompanyInput struct {
-	Name        string  `json:"name"`
-	Logo        *string `json:"logo"`
-	Description string  `json:"description"`
-	Tel         string  `json:"tel"`
+	Name        string     `json:"name"`
+	User        *UserInput `json:"user"`
+	Logo        *string    `json:"logo"`
+	Description string     `json:"description"`
+	Tel         string     `json:"tel"`
 }
 
 // An EstateAgent is a
