@@ -192,22 +192,6 @@ func (r *queryResolver) Companies(ctx context.Context) ([]*models.Company, error
 	panic("Wilfried : not implemented")
 }
 
-func (r *queryResolver) EstateAgent(ctx context.Context, id string) (*models.EstateAgent, error) {
-	panic("not implemented")
-}
-
-func (r *queryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
-	panic("not implemented")
-}
-
-func (r *queryResolver) Company(ctx context.Context, id string) (*models.Company, error) {
-	panic("not implemented")
-}
-
-func (r *queryResolver) Companies(ctx context.Context) ([]*models.Company, error) {
-	panic("not implemented")
-}
-
 // Mutation returns exec.MutationResolver implementation.
 func (r *Resolver) Mutation() exec.MutationResolver { return &mutationResolver{r} }
 
