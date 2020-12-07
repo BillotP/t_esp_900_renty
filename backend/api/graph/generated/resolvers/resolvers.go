@@ -140,7 +140,7 @@ func (r *mutationResolver) UpdateAnomaly(ctx context.Context, input *models.Anom
 		AssignedToID:   input.AssignedTo,
 		State: 			input.State,
 	}
-	if err = r.DB.Update('', &anomaly).Error; err != nil {
+	if err = r.DB.Updates(&anomaly).First(&anomaly).Error; err != nil {
 		lib.LogError("mutation/Register/Anomaly", err.Error())
 		return nil, err
 	}
@@ -152,20 +152,23 @@ func (r *queryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly
 		anomaly *models.Anomaly
 		err error
 	)
-	anomaly = &models.Anomaly{
-		PropertyID:     input.Property,
-		Type: 			input.Type,
-		Description:	input.Description,
-	}
 
-	if err = r.DB.Where("codeNumber = ?", anomaly.PropertyID).First(&anomaly).Error; err == nil {
+	if err = r.DB.Where("ID = ?", id).First(&anomaly).Error; err == nil {
 		return nil, fmt.Errorf("Anomaly not found")
 	}
 	return anomaly, nil
 }
 
 func (r *queryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error) {
-	panic("Remi : not implemented")
+	var (
+		anomalies []*models.Anomaly
+		err error
+	)
+
+	if err = r.DB.First(&anomalies).Error; err == nil {
+		return nil, fmt.Errorf("No anomalies found")
+	}
+	return anomalies, nil
 }
 
 func (r *queryResolver) Tenant(ctx context.Context, id string) (*models.Tenant, error) {
