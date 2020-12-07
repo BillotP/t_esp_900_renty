@@ -25,30 +25,31 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue"
-import Component from "vue-class-component"
+import Vue from "vue";
+import Component from "vue-class-component";
 import { namespace } from "vuex-class";
-import { DataTicketReceived, Ticket } from './type'
-import { ticketStore } from './store'
+import { DataTicketReceived, Ticket } from "./type";
+import { ticketStore } from "./store";
 
 const ticketModule = namespace("ticketStore");
+
 @Component
 export default class TicketList extends Vue {
-  private search:String = '';
-  private totalTickets:Number = 0;
+  private search: String = "";
+  private totalTickets: Number = 0;
   private tickets = [];
   private options = {};
   // private { sortBy, sortDesc, page, itemsPerPage } = options;
   private headers = [
     {
-      text: 'Client',
-      align: 'start',
+      text: "Client",
+      align: "start",
       sortable: true,
-      value: 'name',
+      value: "name",
     },
-    { text: 'Besoin', value: 'needs' },
-    { text: 'Priorité', value: 'priority' },
-    { text: 'Assigné à', value: 'responsible' },
+    { text: "Besoin", value: "needs" },
+    { text: "Priorité", value: "priority" },
+    { text: "Assigné à", value: "responsible" },
   ];
   @ticketModule.Getter("getTickets")
   private ticketReceived!: DataTicketReceived;

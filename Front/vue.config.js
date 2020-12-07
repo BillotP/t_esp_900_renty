@@ -11,7 +11,7 @@ module.exports = {
                     env: {
                         VUE_APP_API_HOST_URL: `'${config.apiUrl || "http://localhost:5001"}'`,
                         VUE_APP_ENV_NAME: `'${config.environnementName || "Local"}'`,
-                        VUE_APP_VERSION: `'${process.env.VUE_APP_VERSION}'`
+                        VUE_APP_VERSION: `'${process.env.VUE_APP_VERSION}'`,
                     }
                 }
             })
