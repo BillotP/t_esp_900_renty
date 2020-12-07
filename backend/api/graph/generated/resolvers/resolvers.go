@@ -334,7 +334,7 @@ func (r *queryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly
 		err error
 	)
 
-	if err = r.DB.Where("ID = ?", id).First(&anomaly).Error; err == nil {
+	if err = r.DB.Where("ID = ?", id).First(&anomaly).Error; err != nil {
 		return nil, fmt.Errorf("Anomaly not found")
 	}
 	return anomaly, nil
