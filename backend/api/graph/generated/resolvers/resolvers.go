@@ -346,7 +346,7 @@ func (r *queryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error
 		err error
 	)
 
-	if err = r.DB.Find(&anomalies).Error; err == nil {
+	if err = r.DB.Find(&anomalies).Error; err != nil {
 		return nil, fmt.Errorf("No anomalies found")
 	}
 	return anomalies, nil
