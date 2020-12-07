@@ -61,6 +61,7 @@ func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.Com
 	)
 
 	verified := false
+
 	company = &models.Company{
 		Name: input.Name,
 		User: &models.User{
@@ -270,23 +271,85 @@ func (r *mutationResolver) UpdateTenantProfile(ctx context.Context, input *model
 }
 
 func (r *mutationResolver) CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error) {
-	panic("Remi : not implemented")
+	var (
+		property *models.Property
+		err error
+	)
+	property = &models.Property{
+		Area:       input.Area,
+		Address: 	input.Address,
+		CodeNumber: input.CodeNumber,
+		Type:		input.Type,
+	}
+	if err = r.DB.Where("address = ?", property.Address).First(&property).Error; err == nil {
+		return nil, fmt.Errorf("There is already a property at this address")
+	}
+	if err = r.DB.Create(&property).Error; err != nil {
+		lib.LogError("mutation/Register/Property", err.Error())
+		return nil, err
+	}
+	return property, nil
 }
 
 func (r *mutationResolver) CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error) {
-	panic("Remi : not implemented")
+	var (
+		anomaly *models.Anomaly
+		err error
+	)
+	anomaly = &models.Anomaly{
+		PropertyID:     input.Property,
+		Type: 			input.Type,
+		Description:	input.Description,
+	}
+
+	if err = r.DB.Where(&anomaly).First(&anomaly).Error; err == nil {
+		return nil, fmt.Errorf("Anomaly already created")
+	}
+	if err = r.DB.Create(&anomaly).Error; err != nil {
+		lib.LogError("mutation/Register/Anomaly", err.Error())
+		return nil, err
+	}
+	return anomaly, nil
 }
 
 func (r *mutationResolver) UpdateAnomaly(ctx context.Context, input *models.AnomalyUpdateInput) (*models.Anomaly, error) {
-	panic("Remi : not implemented")
+	var (
+		anomaly *models.Anomaly
+		err error
+	)
+	anomaly = &models.Anomaly{
+		AssignedToID:   input.AssignedTo,
+		State: 			input.State,
+	}
+	if err = r.DB.Updates(&anomaly).First(&anomaly).Error; err != nil {
+		lib.LogError("mutation/Register/Anomaly", err.Error())
+		return nil, err
+	}
+	return anomaly, nil
 }
 
 func (r *queryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly, error) {
-	panic("Remi : not implemented")
+	var (
+		anomaly *models.Anomaly
+		err error
+	)
+
+	if err = r.DB.Where("ID = ?", id).First(&anomaly).Error; err == nil {
+		return nil, fmt.Errorf("Anomaly not found")
+	}
+	return anomaly, nil
 }
 
 func (r *queryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error) {
-	panic("Remi : not implemented")
+	var (
+		anomalies []*models.Anomaly
+		err error
+	)
+
+	if err = r.DB.Find(&anomalies).Error; err != nil {
+		return nil, fmt.Errorf("No anomalies found")
+	}
+	return anomalies, nil
 }
 
 func (r *queryResolver) Tenant(ctx context.Context, id string) (*models.Tenant, error) {
