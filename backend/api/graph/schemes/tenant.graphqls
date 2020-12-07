@@ -8,12 +8,13 @@ type Tenant {
     properties: [Property!] @extraTag(gorm:"many2many:tenant_properties")
     userID: Int
     user: User! @extraTag(gorm:"foreignKey:UserID")
+    estateAgentID: Int
+    estateAgent: EstateAgent! @extraTag(gorm:"foreignKey:EstateAgentID")
     documents: [Asset!] @extraTag(gorm:"many2many:tenant_documents")
 }
 
 input TenantInput {
     user: UserInput!
-    inviteCode: String!
 }
 
 
