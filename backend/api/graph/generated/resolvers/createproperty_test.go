@@ -5,6 +5,7 @@ import (
 	"github.com/99designs/gqlgen/client"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/stretchr/testify/require"
+	"log"
 	"testing"
 )
 
@@ -15,15 +16,14 @@ func TestMutationResolver_CreateProperty(t *testing.T) {
 
 		input  *models.PropertyInput
 		output struct {
-			CreateProperty models.Credential
+			CreateProperty models.Property
 		}
-		expectedId int64 = 1
 
 		err error
 	)
 
 	errPropertyExists = errors.New("[{\"message\":\"property seems to be already registered\",\"path\":[\"createProperty\"]}]")
-	query = `mutation createProperty($input: PropertyInput!){createProperty(input: $input){user{ID,address}}}`
+	query = `mutation createProperty($input: PropertyInput!){createProperty(input: $input){ID,address}}`
 	var (
 		aeraTest float64 = 123
 		addressTest string = "1 avenue Test, 33000, Bordeaux, apt 104B"
@@ -39,10 +39,10 @@ func TestMutationResolver_CreateProperty(t *testing.T) {
 
 
 	t.Run("should create property correctly", func(t *testing.T) {
-		err = Server.Post(query, &output, client.Var("input", input))
+		err = Server.Post(query, &output, client.Var("input", &input))
 
-		require.Equal(t, &expectedId, output.CreateProperty.User.ID)
-		require.Equal(t, "thalesadmin", output.CreateProperty.User.Username)
+		log.Print(">>>> output.CreatedProperty = ", output.CreateProperty)
+		require.Equal(t, &addressTest, output.CreateProperty.Address)
 	})
 
 	t.Run("should raise property already registered error", func(t *testing.T) {
