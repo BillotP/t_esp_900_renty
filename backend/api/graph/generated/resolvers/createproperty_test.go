@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-
 func TestMutationResolver_CreateProperty(t *testing.T) {
 	var (
 		errPropertyExists error
@@ -25,7 +24,7 @@ func TestMutationResolver_CreateProperty(t *testing.T) {
 
 	errPropertyExists = errors.New("[{\"message\":\"property seems to be already registered\",\"path\":[\"createProperty\"]}]")
 	query = `mutation createProperty($input: PropertyInput!){createProperty(input: $input){ID,address}}`
-	var (c
+	var (
 		aeraTest float64 = 123
 		addressTest string = "1 avenue Test, 33000, Bordeaux, apt 104B"
 		codeNumberTest int64 = 33000
@@ -37,7 +36,6 @@ func TestMutationResolver_CreateProperty(t *testing.T) {
 		CodeNumber:	&codeNumberTest,
 		Type: 		&typeTest,
 	}
-
 
 	t.Run("should create property correctly", func(t *testing.T) {
 		err = Server.Post(query, &output, client.Var("input", &input))
