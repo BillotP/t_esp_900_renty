@@ -1,4 +1,4 @@
-package resolvers
+package resolvers_test
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestMutationResolver_SignupAsCompany(t *testing.T) {
+func TestMutationResolver_CreateProperty(t *testing.T) {
 	var (
 		errPropertyExists error
 		query            string
