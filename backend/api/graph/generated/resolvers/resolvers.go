@@ -242,27 +242,6 @@ func (r *MutationResolver) UpdateTenantProfile(ctx context.Context, input *model
 	panic("Wilfried : not implemented")
 }
 
-func (r *MutationResolver) CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error) {
-	var (
-		property *models.Property
-		err error
-	)
-	property = &models.Property{
-		Area:       input.Area,
-		Address: 	input.Address,
-		CodeNumber: input.CodeNumber,
-		Type:		input.Type,
-	}
-	if err = r.DB.Where("address = ?", property.Address).First(&property).Error; err == nil {
-		return nil, fmt.Errorf("there is already a property at this address")
-	}
-	if err = r.DB.Create(&property).Error; err != nil {
-		lib.LogError("mutation/Register/Property", err.Error())
-		return nil, err
-	}
-	return property, nil
-}
-
 func (r *MutationResolver) CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error) {
 	var (
 		anomaly *models.Anomaly
