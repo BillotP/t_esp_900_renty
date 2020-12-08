@@ -48,55 +48,11 @@ func createToken(username string, userRole models.Role) (string, error) {
 	return token, nil
 }
 
-func (r *mutationResolver) SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Credential, error) {
+func (r *MutationResolver) SignupAsAdmin(ctx context.Context, input models.AdminInput) (*models.Credential, error) {
 	panic("not implemented")
 }
 
-func (r *mutationResolver) SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Credential, error) {
-	var (
-		token   string
-		company *models.Company
-		pwdHash []byte
-
-		err error
-	)
-
-	verified := false
-
-	company = &models.Company{
-		Name: input.Name,
-		User: &models.User{
-			Username: input.User.Username,
-			Password: "",
-			Role:     models.RoleCompany,
-		},
-		Description: &input.Description,
-		Tel:         input.Tel,
-		Verified:    &verified,
-	}
-	if err = r.DB.Where("name = ?", company.Name).First(&company).Error; err == nil {
-		return nil, fmt.Errorf("company seems already register")
-	}
-	if pwdHash, err = bcrypt.GenerateFromPassword([]byte(input.User.Password), getPseudoRandomCost()); err != nil {
-		lib.LogError("mutation/Register", err.Error())
-		return nil, err
-	}
-
-	company.User.Password = string(pwdHash)
-	if err = r.DB.Create(&company).Error; err != nil {
-		lib.LogError("mutation/Register/Company", err.Error())
-		return nil, err
-	}
-	if token, err = createToken(company.User.Username, company.User.Role); err != nil {
-		return nil, err
-	}
-	return &models.Credential{
-		User:  company.User,
-		Token: &token,
-	}, nil
-}
-
-func (r *mutationResolver) CreateEstateAgentUser(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error) {
+func (r *MutationResolver) CreateEstateAgentUser(ctx context.Context, input *models.EstateAgentInput) (*models.EstateAgent, error) {
 	var (
 		usernameCtx = lib.ContextKey("username")
 
@@ -142,7 +98,7 @@ func (r *mutationResolver) CreateEstateAgentUser(ctx context.Context, input *mod
 	return estateAgent, nil
 }
 
-func (r *mutationResolver) CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error) {
+func (r *MutationResolver) CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error) {
 	var (
 		usernameCtx = lib.ContextKey("username")
 
@@ -188,7 +144,7 @@ func (r *mutationResolver) CreateTenantUser(ctx context.Context, input *models.T
 	return tenant, nil
 }
 
-func (r *mutationResolver) AcceptCompany(ctx context.Context, id int64) (*models.Company, error) {
+func (r *MutationResolver) AcceptCompany(ctx context.Context, id int64) (*models.Company, error) {
 	var (
 		company  *models.Company
 		verified = true
@@ -207,7 +163,7 @@ func (r *mutationResolver) AcceptCompany(ctx context.Context, id int64) (*models
 	return nil, err
 }
 
-func (r *mutationResolver) LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
+func (r *MutationResolver) LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
 	var (
 		company *models.Company
 		token   = ""
@@ -232,7 +188,7 @@ func (r *mutationResolver) LoginAsCompany(ctx context.Context, input *models.Use
 	}, nil
 }
 
-func (r *mutationResolver) LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
+func (r *MutationResolver) LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
 	var (
 		estateAgent *models.EstateAgent
 		token   = ""
@@ -257,7 +213,7 @@ func (r *mutationResolver) LoginAsEstateAgent(ctx context.Context, input *models
 	}, nil
 }
 
-func (r *mutationResolver) LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
+func (r *MutationResolver) LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
 	var (
 		tenant *models.Tenant
 		token   = ""
@@ -282,11 +238,11 @@ func (r *mutationResolver) LoginAsTenant(ctx context.Context, input *models.User
 	}, nil
 }
 
-func (r *mutationResolver) UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error) {
+func (r *MutationResolver) UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error) {
 	panic("Wilfried : not implemented")
 }
 
-func (r *mutationResolver) CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error) {
+func (r *MutationResolver) CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error) {
 	var (
 		property *models.Property
 		err error
@@ -307,7 +263,7 @@ func (r *mutationResolver) CreateProperty(ctx context.Context, input *models.Pro
 	return property, nil
 }
 
-func (r *mutationResolver) CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error) {
+func (r *MutationResolver) CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error) {
 	var (
 		anomaly *models.Anomaly
 		err error
@@ -328,7 +284,7 @@ func (r *mutationResolver) CreateAnomaly(ctx context.Context, input *models.Anom
 	return anomaly, nil
 }
 
-func (r *mutationResolver) UpdateAnomaly(ctx context.Context, input *models.AnomalyUpdateInput) (*models.Anomaly, error) {
+func (r *MutationResolver) UpdateAnomaly(ctx context.Context, input *models.AnomalyUpdateInput) (*models.Anomaly, error) {
 	var (
 		anomaly *models.Anomaly
 		err error
@@ -344,7 +300,7 @@ func (r *mutationResolver) UpdateAnomaly(ctx context.Context, input *models.Anom
 	return anomaly, nil
 }
 
-func (r *queryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly, error) {
+func (r *QueryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly, error) {
 	var (
 		anomaly *models.Anomaly
 		err error
@@ -356,7 +312,7 @@ func (r *queryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly
 	return anomaly, nil
 }
 
-func (r *queryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error) {
+func (r *QueryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error) {
 	var (
 		anomalies []*models.Anomaly
 		err error
@@ -368,7 +324,7 @@ func (r *queryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error
 	return anomalies, nil
 }
 
-func (r *queryResolver) Tenant(ctx context.Context, id int64) (*models.Tenant, error) {
+func (r *QueryResolver) Tenant(ctx context.Context, id int64) (*models.Tenant, error) {
 	var (
 		tenant models.Tenant
 
@@ -382,7 +338,7 @@ func (r *queryResolver) Tenant(ctx context.Context, id int64) (*models.Tenant, e
 	return nil, err
 }
 
-func (r *queryResolver) Tenants(ctx context.Context) ([]*models.Tenant, error) {
+func (r *QueryResolver) Tenants(ctx context.Context) ([]*models.Tenant, error) {
 	var (
 		tenants []models.Tenant
 
@@ -401,7 +357,7 @@ func (r *queryResolver) Tenants(ctx context.Context) ([]*models.Tenant, error) {
 	return nil, err
 }
 
-func (r *queryResolver) EstateAgent(ctx context.Context, id int64) (*models.EstateAgent, error) {
+func (r *QueryResolver) EstateAgent(ctx context.Context, id int64) (*models.EstateAgent, error) {
 	var (
 		estateAgent models.EstateAgent
 
@@ -415,7 +371,7 @@ func (r *queryResolver) EstateAgent(ctx context.Context, id int64) (*models.Esta
 	return nil, err
 }
 
-func (r *queryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
+func (r *QueryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
 	var (
 		estateAgents []models.EstateAgent
 
@@ -434,7 +390,7 @@ func (r *queryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent
 	return nil, err
 }
 
-func (r *queryResolver) Company(ctx context.Context, id int64) (*models.Company, error) {
+func (r *QueryResolver) Company(ctx context.Context, id int64) (*models.Company, error) {
 	var (
 		company models.Company
 
@@ -448,7 +404,7 @@ func (r *queryResolver) Company(ctx context.Context, id int64) (*models.Company,
 	return nil, err
 }
 
-func (r *queryResolver) Companies(ctx context.Context) ([]*models.Company, error) {
+func (r *QueryResolver) Companies(ctx context.Context) ([]*models.Company, error) {
 	var (
 		companies []models.Company
 
@@ -468,10 +424,10 @@ func (r *queryResolver) Companies(ctx context.Context) ([]*models.Company, error
 }
 
 // Mutation returns exec.MutationResolver implementation.
-func (r *Resolver) Mutation() exec.MutationResolver { return &mutationResolver{r} }
+func (r *Resolver) Mutation() exec.MutationResolver { return &MutationResolver{r} }
 
 // Query returns exec.QueryResolver implementation.
-func (r *Resolver) Query() exec.QueryResolver { return &queryResolver{r} }
+func (r *Resolver) Query() exec.QueryResolver { return &QueryResolver{r} }
 
-type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
+type MutationResolver struct{ *Resolver }
+type QueryResolver struct{ *Resolver }

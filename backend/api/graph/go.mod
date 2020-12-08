@@ -13,6 +13,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/rs/xid v1.2.1
+	github.com/stretchr/testify v1.5.1
 	github.com/vektah/gqlparser/v2 v2.1.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20200803210538-64077c9b5642 // indirect
