@@ -1,7 +1,11 @@
 <template>
   <div>
-    <navBar-field></navBar-field>
-    <router-view></router-view>
+    <div>
+      <navBar-field></navBar-field>
+    </div>
+    <div>
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
