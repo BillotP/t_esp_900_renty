@@ -7,6 +7,7 @@ import (
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib/middleware"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
+	"log"
 	"regexp"
 	"testing"
 )
@@ -37,12 +38,21 @@ func TestMutationResolver_CreateProperty(t *testing.T) {
 
 	errPropertyExists = errors.New("[{\"message\":\"property seems to be already registered\",\"path\":[\"createProperty\"]}]")
 	query = `mutation createProperty($input: PropertyInput!){createProperty(input: $input){ID,address}}`
-	input = &models.PropertyInput{
+	input = &models.PropertyInput {
 		Area:		&aeraTest,
 		Address:	&addressTest,
 		CodeNumber:	&codeNumberTest,
 		Type: 		&typeTest,
 	}
+	*input.Area = aeraTest
+	*input.Address = addressTest
+	*input.CodeNumber = codeNumberTest
+	*input.Type = typeTest
+	log.Print(">>>> input = ", input)
+	log.Print(">>>> &input = ", &input)
+	log.Print(">>>> *input = ", *input)
+	log.Print(">>>> input.Address = ", input.Address)
+
 
 
 
@@ -58,9 +68,9 @@ func TestMutationResolver_CreateProperty(t *testing.T) {
 			ExpectQuery(regexp.QuoteMeta("INSERT INTO \"properties\" (\"created_at\",\"updated_at\",\"address\",\"type\",\"area\",\"codeNumber\") VALUES ($1,$2,$3,$4,$5,$6) RETURNING \"id\"")).
 			WithArgs(AnyTime{}, AnyTime{}, input.Address, input.Type, input.Area, input.CodeNumber).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
-		err = middleware.Server.Post(query, &output, client.Var("input", input))
+		err = middleware.Server.Post(query, &output, client.Var("input", &input))
 
-		//require.Equal(t, &expectedId, output.CreateProperty.ID)
+		require.Equal(t, &expectedId, output.CreateProperty.ID)
 		address := output.CreateProperty.Address
 		require.Equal(t, addressTest, address)
 	})
