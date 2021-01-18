@@ -37,5 +37,10 @@ func TestMutationResolver_CreateEstateAgentUser(t *testing.T) {
 		},
 	}
 
-
+	print(errCompanyExists)
+	print(query)
+	print(input)
+	print(output.SignupAsCompany.Token)
+	print(expectedId)
+	print(err)
 }
