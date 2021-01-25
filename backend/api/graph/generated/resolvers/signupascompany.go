@@ -40,7 +40,7 @@ func (r *MutationResolver) SignupAsCompany(ctx context.Context, input models.Com
 
 	company.User.Password = string(pwdHash)
 	if err = r.DB.Create(&company).Error; err != nil {
-		lib.LogError("mutation/Register/Company", err.Error())
+		lib.LogError("mutation/Register/GetCompany", err.Error())
 		return nil, err
 	}
 	if token, err = createToken(company.User.Username, company.User.Role); err != nil {

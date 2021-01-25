@@ -48,7 +48,7 @@ func (r *MutationResolver) CreateEstateAgentUser(ctx context.Context, input *mod
 
 	estateAgent.User.Password = string(pwdHash)
 	if err = r.DB.Create(&estateAgent).Error; err != nil {
-		lib.LogError("mutation/Register/EstateAgent", err.Error())
+		lib.LogError("mutation/Register/GetEstateAgent", err.Error())
 		return nil, err
 	}
 	return estateAgent, nil

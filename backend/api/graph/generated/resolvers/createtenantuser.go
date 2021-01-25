@@ -48,7 +48,7 @@ func (r *MutationResolver) CreateTenantUser(ctx context.Context, input *models.T
 
 	tenant.User.Password = string(pwdHash)
 	if err = r.DB.Create(&tenant).Error; err != nil {
-		lib.LogError("mutation/Register/Tenant", err.Error())
+		lib.LogError("mutation/Register/GetTenant", err.Error())
 		return nil, err
 	}
 	return tenant, nil
