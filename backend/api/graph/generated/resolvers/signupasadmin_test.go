@@ -13,8 +13,8 @@ import (
 
 func TestMutationResolver_SignupAsAdmin(t *testing.T) {
 	var (
-		errAdminUserExists	error
-		query				string
+		errAdminUserExists error
+		query              string
 
 		input  *models.AdminInput
 		output struct {
