@@ -26,7 +26,7 @@ func (r *MutationResolver) SignupAsAdmin(ctx context.Context, input models.Admin
 			Role:     models.RoleAdmin,
 		},
 	}
-	if err = r.DB.Where("UserID = ?", admin.UserID).First(&admin).Error; err == nil {
+	if err = r.DB.Joins("User").Where("username = ?", input.User.Username).First(&admin).Error; err == nil {
 		return nil, fmt.Errorf("admin seems already register")
 	}
 	if pwdHash, err = bcrypt.GenerateFromPassword([]byte(input.User.Password), getPseudoRandomCost()); err != nil {
