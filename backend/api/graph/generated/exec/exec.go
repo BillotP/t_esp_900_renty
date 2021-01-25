@@ -2954,7 +2954,7 @@ func (ec *executionContext) _Mutation_createEstateAgentUser(ctx context.Context,
 		if data, ok := tmp.(*models.EstateAgent); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetEstateAgent`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.EstateAgent`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3019,7 +3019,7 @@ func (ec *executionContext) _Mutation_createTenantUser(ctx context.Context, fiel
 		if data, ok := tmp.(*models.Tenant); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetTenant`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Tenant`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3084,7 +3084,7 @@ func (ec *executionContext) _Mutation_acceptCompany(ctx context.Context, field g
 		if data, ok := tmp.(*models.Company); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetCompany`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Company`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3272,7 +3272,7 @@ func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, f
 		if data, ok := tmp.(*models.Tenant); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetTenant`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Tenant`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3402,7 +3402,7 @@ func (ec *executionContext) _Mutation_createAnomaly(ctx context.Context, field g
 		if data, ok := tmp.(*models.Anomaly); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetAnomaly`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Anomaly`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3467,7 +3467,7 @@ func (ec *executionContext) _Mutation_updateAnomaly(ctx context.Context, field g
 		if data, ok := tmp.(*models.Anomaly); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetAnomaly`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Anomaly`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3783,7 +3783,7 @@ func (ec *executionContext) _Query_anomalies(ctx context.Context, field graphql.
 		if data, ok := tmp.([]*models.Anomaly); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetAnomaly`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Anomaly`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3882,7 +3882,7 @@ func (ec *executionContext) _Query_tenants(ctx context.Context, field graphql.Co
 		if data, ok := tmp.([]*models.Tenant); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetTenant`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Tenant`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3947,7 +3947,7 @@ func (ec *executionContext) _Query_estateAgent(ctx context.Context, field graphq
 		if data, ok := tmp.(*models.EstateAgent); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetEstateAgent`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.EstateAgent`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4005,7 +4005,7 @@ func (ec *executionContext) _Query_estateAgents(ctx context.Context, field graph
 		if data, ok := tmp.([]*models.EstateAgent); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetEstateAgent`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.EstateAgent`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4070,7 +4070,7 @@ func (ec *executionContext) _Query_company(ctx context.Context, field graphql.Co
 		if data, ok := tmp.(*models.Company); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetCompany`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Company`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4128,7 +4128,7 @@ func (ec *executionContext) _Query_companies(ctx context.Context, field graphql.
 		if data, ok := tmp.([]*models.Company); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.GetCompany`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Company`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
