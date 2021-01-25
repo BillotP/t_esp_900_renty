@@ -31,11 +31,11 @@ func (r *MutationResolver) CreateTenantUser(ctx context.Context, input *models.T
 	}
 
 	tenant = &models.Tenant{
-		EstateAgent: estateAgent,
+		EstateAgentID: estateAgent.ID,
 		User: &models.User{
 			Username: input.User.Username,
 			Password: "",
-			Role:     models.RoleEstateAgent,
+			Role:     models.RoleTenant,
 		},
 	}
 	if err = r.DB.Joins("User").Where("username = ?", input.User.Username).First(&tenant).Error; err == nil {

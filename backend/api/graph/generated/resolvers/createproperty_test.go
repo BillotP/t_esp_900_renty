@@ -30,7 +30,7 @@ func TestMutationResolver_CreateProperty(t *testing.T) {
 		typeTest               = "T3"
 	)
 
-	middleware.InitMockDB("admin", models.RoleEstateAgent)
+	middleware.InitMockDB(models.RoleEstateAgent)
 
 	errPropertyExists = errors.New("[{\"message\":\"there is already a property at this address\",\"path\":[\"createProperty\"]}]")
 	query = `mutation createProperty($input: PropertyInput!){createProperty(input: $input){ID,address}}`

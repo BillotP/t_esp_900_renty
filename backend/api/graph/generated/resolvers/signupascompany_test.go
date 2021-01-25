@@ -25,7 +25,7 @@ func TestMutationResolver_SignupAsCompany(t *testing.T) {
 		err error
 	)
 
-	middleware.InitMockDB("admin", models.RoleAdmin)
+	middleware.InitMockDB(models.RoleAdmin)
 
 	errCompanyExists = errors.New("[{\"message\":\"company seems already register\",\"path\":[\"signupAsCompany\"]}]")
 	query = `mutation signupAsCompany($input: CompanyInput!){signupAsCompany(input: $input){user{ID,username}}}`

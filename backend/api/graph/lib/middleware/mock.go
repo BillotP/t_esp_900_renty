@@ -10,7 +10,6 @@ import (
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/resolvers"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
-	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib/directive"
 	"github.com/DATA-DOG/go-sqlmock"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -25,7 +24,7 @@ var (
 	Server *client.Client
 )
 
-func InitMockDB(username string, userrole models.Role) {
+func InitMockDB(userrole models.Role) {
 	var (
 		db    *gorm.DB
 		sqlDb *sql.DB
@@ -50,14 +49,16 @@ func InitMockDB(username string, userrole models.Role) {
 	c := exec.Config{
 		Resolvers: &resolvers.Resolver{DB: db},
 		Directives: exec.DirectiveRoot{
-			HasRole: directive.HasRole,
+			HasRole: func(ctx context.Context, obj interface{}, next graphql.Resolver, role models.Role) (res interface{}, err error) {
+				return next(ctx)
+			},
 		}}
 	myHandler := handler.NewDefaultServer(exec.NewExecutableSchema(c))
 	myHandler.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
 		graphql.GetOperationContext(ctx).DisableIntrospection = true
 		namekontext := lib.ContextKey("username")
 		rolekontext := lib.ContextKey("userrole")
-		ctx = context.WithValue(ctx, namekontext, username)
+		ctx = context.WithValue(ctx, namekontext, "admin")
 		ctx = context.WithValue(ctx, rolekontext, userrole)
 		return next(ctx)
 	})
