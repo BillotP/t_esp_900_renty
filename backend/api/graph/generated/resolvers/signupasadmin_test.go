@@ -44,6 +44,10 @@ func TestMutationResolver_SignupAsAdmin(t *testing.T) {
 			ExpectQuery(regexp.QuoteMeta("INSERT INTO \"users\" (\"created_at\",\"updated_at\",\"username\",\"password\",\"role\") VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING RETURNING \"id\"")).
 			WithArgs(AnyTime{}, AnyTime{}, input.User.Username, AvoidPassword{}, models.RoleAdmin.String()).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
+		middleware.Mock.
+			ExpectQuery(regexp.QuoteMeta("INSERT INTO \"admins\" (\"created_at\",\"updated_at\",\"user_id\") VALUES ($1,$2,$3) RETURNING \"id\"")).
+			WithArgs(AnyTime{}, AnyTime{}, expectedId).
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 		err = middleware.Server.Post(query, &output, client.Var("input", input))
 
 		require.Equal(t, &expectedId, output.SignupAsAdmin.User.ID)
@@ -52,8 +56,8 @@ func TestMutationResolver_SignupAsAdmin(t *testing.T) {
 
 	t.Run("should provide admin user already register error", func(t *testing.T) {
 		middleware.Mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"users\" WHERE username = $1 ORDER BY \"users\".\"username\" LIMIT 1")).
-			WithArgs(input.User.Username).
+			ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"admins\" WHERE user_id = $1 ORDER BY \"admins\".\"id\" LIMIT 1")).
+			WithArgs(expectedId).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 		err = middleware.Server.Post(query, &output, client.Var("input", &input))
 
