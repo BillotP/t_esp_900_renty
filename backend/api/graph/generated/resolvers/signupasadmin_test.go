@@ -56,7 +56,7 @@ func TestMutationResolver_SignupAsAdmin(t *testing.T) {
 
 	t.Run("should provide admin user already register error", func(t *testing.T) {
 		middleware.Mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"admins\" LIMIT 1")).
+			ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"admins\" WHERE UserID = 1 ORDER BY \"admins\".\"id\" LIMIT 1")).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 		err = middleware.Server.Post(query, &output, client.Var("input", &input))
 
