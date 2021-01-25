@@ -16,7 +16,7 @@ func TestMutationResolver_SignupAsAdmin(t *testing.T) {
 		errAdminUserExists	error
 		query				string
 
-		input  *models.UserInput
+		input  *models.AdminInput
 		output struct {
 			SignupAsAdmin models.Credential
 		}
@@ -28,10 +28,12 @@ func TestMutationResolver_SignupAsAdmin(t *testing.T) {
 	middleware.InitMockDB(models.RoleAdmin)
 
 	errAdminUserExists = errors.New("[{\"message\":\"user seems already register\",\"path\":[\"signupAsAdmin\"]}]")
-	query = `mutation signupAsAdmin($input: UserInput!){signupAsAdmin(input: $input){user{ID,username}}}`
-	input = &models.UserInput{
+	query = `mutation signupAsAdmin($input: AdminInput!){signupAsAdmin(input: $input){user{ID,username}}}`
+	input = &models.AdminInput{
+		User: &models.UserInput{
 			Username: "adminusertest",
 			Password: "aut1234",
+		},
 	}
 
 	t.Run("should signup admin user correctly", func(t *testing.T) {
@@ -40,7 +42,7 @@ func TestMutationResolver_SignupAsAdmin(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows(nil))
 		middleware.Mock.
 			ExpectQuery(regexp.QuoteMeta("INSERT INTO \"users\" (\"created_at\",\"updated_at\",\"username\",\"password\",\"role\") VALUES ($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING RETURNING \"id\"")).
-			WithArgs(AnyTime{}, AnyTime{}, input.Username, AvoidPassword{}, models.RoleAdmin.String()).
+			WithArgs(AnyTime{}, AnyTime{}, input.User.Username, AvoidPassword{}, models.RoleAdmin.String()).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 		err = middleware.Server.Post(query, &output, client.Var("input", input))
 
@@ -51,7 +53,7 @@ func TestMutationResolver_SignupAsAdmin(t *testing.T) {
 	t.Run("should provide admin user already register error", func(t *testing.T) {
 		middleware.Mock.
 			ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"users\" WHERE username = $1 ORDER BY \"users\".\"id\" LIMIT 1")).
-			WithArgs(input.Username).
+			WithArgs(input.User.Username).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 		err = middleware.Server.Post(query, &output, client.Var("input", &input))
 
