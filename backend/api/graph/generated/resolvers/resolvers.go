@@ -52,52 +52,6 @@ func (r *MutationResolver) SignupAsAdmin(ctx context.Context, input models.Admin
 	panic("not implemented")
 }
 
-func (r *MutationResolver) CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error) {
-	var (
-		usernameCtx = lib.ContextKey("username")
-
-		estateAgent *models.EstateAgent
-		tenant      *models.Tenant
-		pwdHash     []byte
-
-		err error
-	)
-
-	estateAgentUsername := ctx.Value(usernameCtx).(string)
-
-	estateAgent = &models.EstateAgent{
-		User: &models.User{
-			Username: estateAgentUsername,
-		},
-	}
-	if err = r.DB.Where(&estateAgent).First(&estateAgent).Error; err != nil {
-		return nil, err
-	}
-
-	tenant = &models.Tenant{
-		EstateAgent: estateAgent,
-		User: &models.User{
-			Username: input.User.Username,
-			Password: "",
-			Role:     models.RoleEstateAgent,
-		},
-	}
-	if err = r.DB.Joins("User").Where("username = ?", input.User.Username).First(&tenant).Error; err == nil {
-		return nil, fmt.Errorf("tenant seems already register")
-	}
-	if pwdHash, err = bcrypt.GenerateFromPassword([]byte(input.User.Password), getPseudoRandomCost()); err != nil {
-		lib.LogError("mutation/Register", err.Error())
-		return nil, err
-	}
-
-	tenant.User.Password = string(pwdHash)
-	if err = r.DB.Create(&tenant).Error; err != nil {
-		lib.LogError("mutation/Register/Tenant", err.Error())
-		return nil, err
-	}
-	return tenant, nil
-}
-
 func (r *MutationResolver) AcceptCompany(ctx context.Context, id int64) (*models.Company, error) {
 	var (
 		company  *models.Company
@@ -115,81 +69,6 @@ func (r *MutationResolver) AcceptCompany(ctx context.Context, id int64) (*models
 	}
 	lib.LogError("mutation/AcceptCompany", err.Error())
 	return nil, err
-}
-
-func (r *MutationResolver) LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
-	var (
-		company *models.Company
-		token   = ""
-
-		err error
-	)
-
-	company = &models.Company{}
-	if err = r.DB.Joins("User").Where("username = ?", input.Username).First(&company).Error; err != nil {
-		return nil, err
-	}
-	if err := bcrypt.CompareHashAndPassword([]byte(company.User.Password), []byte(input.Password)); err != nil {
-		lib.LogError("resolvers/LoginAsCompany", err.Error())
-		return nil, fmt.Errorf("bad password provided")
-	}
-	if token, err = createToken(company.User.Username, company.User.Role); err != nil {
-		return nil, err
-	}
-	return &models.Credential{
-		User:  company.User,
-		Token: &token,
-	}, nil
-}
-
-func (r *MutationResolver) LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
-	var (
-		estateAgent *models.EstateAgent
-		token   = ""
-
-		err error
-	)
-
-	estateAgent = &models.EstateAgent{}
-	if err = r.DB.Joins("User").Where("username = ?", input.Username).First(&estateAgent).Error; err != nil {
-		return nil, err
-	}
-	if err := bcrypt.CompareHashAndPassword([]byte(estateAgent.User.Password), []byte(input.Password)); err != nil {
-		lib.LogError("resolvers/LoginAsCompany", err.Error())
-		return nil, fmt.Errorf("bad password provided")
-	}
-	if token, err = createToken(estateAgent.User.Username, estateAgent.User.Role); err != nil {
-		return nil, err
-	}
-	return &models.Credential{
-		User:  estateAgent.User,
-		Token: &token,
-	}, nil
-}
-
-func (r *MutationResolver) LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Credential, error) {
-	var (
-		tenant *models.Tenant
-		token   = ""
-
-		err error
-	)
-
-	tenant = &models.Tenant{}
-	if err = r.DB.Joins("User").Where("username = ?", input.Username).First(&tenant).Error; err != nil {
-		return nil, err
-	}
-	if err := bcrypt.CompareHashAndPassword([]byte(tenant.User.Password), []byte(input.Password)); err != nil {
-		lib.LogError("resolvers/LoginAsCompany", err.Error())
-		return nil, fmt.Errorf("bad password provided")
-	}
-	if token, err = createToken(tenant.User.Username, tenant.User.Role); err != nil {
-		return nil, err
-	}
-	return &models.Credential{
-		User:  tenant.User,
-		Token: &token,
-	}, nil
 }
 
 func (r *MutationResolver) UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error) {

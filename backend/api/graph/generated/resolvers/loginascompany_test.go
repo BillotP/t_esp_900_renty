@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestMutationResolver_SignupAsCompany(t *testing.T) {
+func TestMutationResolver_LoginAsCompany(t *testing.T) {
 	var (
 		errCompanyExists error
 		query            string
@@ -39,7 +39,7 @@ func TestMutationResolver_SignupAsCompany(t *testing.T) {
 		},
 	}
 
-	t.Run("should signup company correctly", func(t *testing.T) {
+	t.Run("should login company correctly", func(t *testing.T) {
 		middleware.Mock.
 			ExpectQuery(".+").
 			WillReturnRows(sqlmock.NewRows(nil))
@@ -57,7 +57,7 @@ func TestMutationResolver_SignupAsCompany(t *testing.T) {
 		require.Equal(t, "thalesadmin", output.SignupAsCompany.User.Username)
 	})
 
-	t.Run("should provide company already register error", func(t *testing.T) {
+	t.Run("should provide company login error", func(t *testing.T) {
 		middleware.Mock.
 			ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"companies\" WHERE name = $1 ORDER BY \"companies\".\"id\" LIMIT 1")).
 			WithArgs(input.Name).

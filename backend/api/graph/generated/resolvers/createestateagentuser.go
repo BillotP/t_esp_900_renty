@@ -31,7 +31,7 @@ func (r *MutationResolver) CreateEstateAgentUser(ctx context.Context, input *mod
 	}
 
 	estateAgent = &models.EstateAgent{
-		Company: company,
+		CompanyID: company.ID,
 		User: &models.User{
 			Username: input.User.Username,
 			Password: "",

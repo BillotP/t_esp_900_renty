@@ -9,6 +9,8 @@ import (
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/exec"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/resolvers"
+	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
+	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib/directive"
 	"github.com/DATA-DOG/go-sqlmock"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -23,12 +25,11 @@ var (
 	Server *client.Client
 )
 
-func InitMockDB() {
+func InitMockDB(username string, userrole models.Role) {
 	var (
-		db           *gorm.DB
-		sqlDb        *sql.DB
-		avoidHasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, role models.Role) (interface{}, error)
-		err          error
+		db    *gorm.DB
+		sqlDb *sql.DB
+		err   error
 	)
 
 	sqlDb, Mock, err = sqlmock.New()
@@ -43,17 +44,22 @@ func InitMockDB() {
 		},
 	)
 
-	avoidHasRole = func(ctx context.Context, obj interface{}, next graphql.Resolver, role models.Role) (interface{}, error) {
-		return next(ctx)
-	}
-
 	if db, err = gorm.Open(postgres.Dialector{Config: &postgres.Config{Conn: sqlDb}}, &gorm.Config{Logger: newLogger}); err != nil {
 		panic(err.Error())
 	}
 	c := exec.Config{
 		Resolvers: &resolvers.Resolver{DB: db},
 		Directives: exec.DirectiveRoot{
-			HasRole: avoidHasRole,
+			HasRole: directive.HasRole,
 		}}
-	Server = client.New(handler.NewDefaultServer(exec.NewExecutableSchema(c)))
+	myHandler := handler.NewDefaultServer(exec.NewExecutableSchema(c))
+	myHandler.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
+		graphql.GetOperationContext(ctx).DisableIntrospection = true
+		namekontext := lib.ContextKey("username")
+		rolekontext := lib.ContextKey("userrole")
+		ctx = context.WithValue(ctx, namekontext, username)
+		ctx = context.WithValue(ctx, rolekontext, userrole)
+		return next(ctx)
+	})
+	Server = client.New(myHandler)
 }
