@@ -24,15 +24,11 @@ export interface Login {
 
 export interface AuthentificationState {
     connected: boolean,
-    privilege: privilege
-    login: string,
 }
 
 
 const state: AuthentificationState = {
     connected: false,
-    privilege: 0,
-    login: "",
 };
 
 const getters: GetterTree<AuthentificationState, RootState> = {
@@ -40,10 +36,6 @@ const getters: GetterTree<AuthentificationState, RootState> = {
     {
         return state.connected;
     },
-    getPrivilege(state) : privilege
-    {
-        return state.privilege;
-    }
 };
 
 
@@ -58,8 +50,6 @@ const mutations: MutationTree<AuthentificationState> = {
     setLogin(state, login: Login)
     {
         state.connected = true;
-        state.login = login.username;
-        state.privilege = login.privilege;
     }
 };
 
