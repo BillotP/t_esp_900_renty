@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h1>Login as company</h1>
+    <h1>Create Tenant User account</h1>
     <v-text-field v-model="username" label="Username"></v-text-field>
     <v-text-field type="password" v-model="password" label="Password"></v-text-field>
-    <v-btn depressed color="primary" v-on:click="login()">
-      Login
+    <v-btn depressed color="primary" v-on:click="createUser()">
+      Create
     </v-btn>
   </div>
 </template>
@@ -14,16 +14,16 @@ import Vue from "vue";
 import Component from 'vue-class-component';
 import gql from "graphql-tag";
 
-const LOGIN_COMPANY_MUTATION = gql`
-mutation ($input: UserInput) {
-  loginAsCompany(input: $input) {
-    token
+const CREATE_TENANT_USER_MUTATION = gql`
+mutation ($input: TenantInput) {
+  createTenantUser(input: $input) {
+    ID
   }
 }
 `;
 
 @Component
-export default class Auth extends Vue {
+export default class CreateTenantUser extends Vue {
 
   data() {
     return {
@@ -32,20 +32,22 @@ export default class Auth extends Vue {
     }
   }
 
-  async login() {
+  async createUser() {
     try {
       const resp = await this.$apollo.getClient().mutate({
-        mutation: LOGIN_COMPANY_MUTATION,
+        mutation: CREATE_TENANT_USER_MUTATION,
         variables: {
           input: {
-            username: this.$data.username,
-            password: this.$data.password
+            user: {
+              username: this.$data.username,
+              password: this.$data.password
+            }
           }
         }
       });
-      if (resp.data.loginAsCompany.token) {
-        localStorage.setItem('token', resp.data.loginAsCompany.token);
-        this.$router.push('/');
+      if (resp.data.createTenantUser.ID) {
+          this.$data.text = 'User ' + this.$data.username + ' create succesfully !';
+          this.$data.snackbar = true;
       }
     } catch (e) {
       console.error(e);

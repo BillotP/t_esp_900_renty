@@ -8,6 +8,7 @@ import "./plugins/forms";
 import vuetify from './plugins/vuetify';
 import "./plugins/forms";
 import { ApolloClient } from 'apollo-client'
+import {ApolloLink, concat} from 'apollo-link'
 import { createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
@@ -17,7 +18,17 @@ Vue.use(VueApollo)
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: 'http://localhost:8080/graphql',
+  uri: 'http://localhost:8080/query',
+})
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  operation.setContext({
+    headers: {
+      authorization: localStorage.getItem('token') || null,
+    }
+  });
+  return forward(operation);
 })
 
 // Cache implementation
@@ -25,7 +36,7 @@ const cache = new InMemoryCache()
 
 // Create the apollo client
 const apolloClient = new ApolloClient({
-  link: httpLink,
+  link: concat(authMiddleware, httpLink),
   cache,
 })
 
