@@ -10,7 +10,7 @@ const module: RouteConfig[] = [
     component: AuthClient,
   },
   {
-    path: '/login/company',
+    path: 'login/company',
     component: AuthCompany,
   }
 ];

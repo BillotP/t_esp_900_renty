@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <h1>Login as company</h1>
     <v-text-field v-model="username" label="Username"></v-text-field>
     <v-text-field type="password" v-model="password" label="Password"></v-text-field>
@@ -9,7 +10,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import Component from 'vue-class-component';
 import gql from "graphql-tag";

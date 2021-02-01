@@ -1,5 +1,6 @@
 import { RouteConfig } from "vue-router";
-import AuthRoute from "./authentification/module.routes";
+
+import AuthRoute from "@/modules/authentification/module.routes";
 import CreateUserRoute from "./create-user/module.routes";
 
 const TicketList = (resolve: any) => require(["@/modules/ticketList/TicketList.vue"], (m: any) => resolve(m.default));
@@ -11,9 +12,18 @@ const module: RouteConfig[] = [
         component: TicketList,
         children: [
             {
-                path: "/",
+                path: "/dashboard",
+                component: Disaster
+            },
+            {
+                path: "/tenement",
+                component: Disaster
+            },
+            {
+                path: "/tickets",
                 component: Disaster
             }
+
         ]
     },
     ...CreateUserRoute,

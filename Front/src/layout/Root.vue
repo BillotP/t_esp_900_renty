@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div v-if="!getRoute()">
       <navBar-field></navBar-field>
     </div>
     <div>
@@ -15,5 +15,10 @@ import Component from "vue-class-component";
 import { RootState } from "@/store/types";
 
 @Component({})
-export default class Root extends Vue {}
+export default class Root extends Vue {
+
+  private getRoute() {
+    return this.$route.path.toString().includes("login");
+  }
+}
 </script>
