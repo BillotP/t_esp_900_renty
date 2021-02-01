@@ -14,7 +14,7 @@ import (
 func TestMutationResolver_CreateAnomaly(t *testing.T) {
 	var (
 		errAnomalyExists error
-		query             string
+		query            string
 
 		input  *models.AnomalyInput
 		output struct {
@@ -24,20 +24,15 @@ func TestMutationResolver_CreateAnomaly(t *testing.T) {
 
 		err error
 
-		/*areaTest       float64 = 123
-		addressTest            = "1 avenue Test, 33000, Bordeaux, apt 104B"
-		codeNumberTest int64   = 33000
-		typeTest               = "T3"
-		*/
 		propertyTest int64 = 1
-		typeTest = "VMC"
+		typeTest = "Damages"
 		descriptionTest = "VMC cuisine hors-service"
 	)
 
-	middleware.InitMockDB(models.RoleEstateAgent)
+	middleware.InitMockDB(models.RoleAdmin)
 
-	errAnomalyExists = errors.New("[{\"message\":\"there is already an anomaly with this \",\"path\":[\"createProperty\"]}]")
-	query = `mutation createProperty($input: PropertyInput!){createProperty(input: $input){ID,address}}`
+	errAnomalyExists = errors.New("[{\"message\":\"there is already an anomaly with this \",\"path\":[\"createAnomaly\"]}]")
+	query = `mutation createAnomaly($input: AnomalyInput!){createAnomaly(input: $input){ID}}`
 	input = &models.AnomalyInput{
 		Property: &propertyTest,
 		Type: typeTest,
@@ -60,7 +55,7 @@ func TestMutationResolver_CreateAnomaly(t *testing.T) {
 
 	t.Run("should raise anomaly already registered error", func(t *testing.T) {
 		middleware.Mock.
-			ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"anomalies\" ORDER BY \"anomalies\".\"id\" LIMIT 1")).
+			ExpectQuery(regexp.QuoteMeta("SELECT * FROM \"anomalies\"")).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedId))
 		err = middleware.Server.Post(query, &output, client.Var("input", &input))
 
