@@ -17,9 +17,10 @@
 
         <template v-slot:extension>
           <v-tabs fixed-tabs horizontal align-with-title>
-            <v-tab exact to="/dashboard">Dashboard</v-tab>
-            <v-tab exact to="/tenement">tenement</v-tab>
-            <v-tab exact to="/tickets">Tickets</v-tab>
+            <v-tab v-if="status == 0 || status == 1" exact to="/dashboard">Dashboard</v-tab>
+            <v-tab v-if="status == 2" exact to="/EstateAgent">EstateAgent</v-tab>
+            <v-tab v-if="status == 0 || status == 2" exact to="/tenement">tenement</v-tab>
+            <v-tab v-if="status == 0 || status == 1" exact to="/tickets">Tickets</v-tab>
           </v-tabs>
         </template>
       </v-app-bar>
@@ -30,7 +31,16 @@
 <script lang="ts">
 import Component from "vue-class-component";
 import Vue from "vue";
+import { Action, Getter, namespace } from "vuex-class";
+import { privilege } from "@/store/authentificationStore";
+
+const authModule = namespace("authentificationStore");
+
 
 @Component
-export default class NavBar extends Vue {}
+export default class NavBar extends Vue {
+
+  @authModule.Getter("getPrivilege")
+  private status!: privilege;
+}
 </script>
