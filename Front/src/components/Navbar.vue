@@ -16,8 +16,8 @@
 
         <template v-slot:extension>
           <v-tabs fixed-tabs horizontal align-with-title>
-            <v-tab exact to="/dashboard">Tableau de bord</v-tab>
-            <v-tab exact to="/plannings">Plannings</v-tab>
+            <v-tab exact to="/dashboard">Dashboard</v-tab>
+            <v-tab exact to="/tenement">tenement</v-tab>
             <v-tab exact to="/tickets">Tickets</v-tab>
           </v-tabs>
         </template>
