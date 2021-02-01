@@ -1,4 +1,4 @@
-# ideal-group
+# Renty-group
 
 ## Project setup
 ```
