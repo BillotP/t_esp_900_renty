@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex, { StoreOptions, ActionTree, MutationTree, GetterTree } from "vuex";
-import { board } from "@/modules/board/store";
+import { authentificationStore } from "@/store/authentificationStore";
 import { RootState } from './types';
 
 Vue.use(Vuex);
@@ -26,7 +26,7 @@ const store: StoreOptions<any> = {
   mutations,
   getters,
   modules: {
-    board
+    authentificationStore
   },
 };
 

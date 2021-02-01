@@ -1,8 +1,7 @@
 <template>
   <nav>
-    <v-toolbar flat style="color: #42b983;">
+    <v-toolbar flat style="color: #42b983">
       <v-app-bar app>
-
         <v-toolbar-title class="text-uppercase grey--text">
           Renty
         </v-toolbar-title>
@@ -10,7 +9,9 @@
         <v-spacer></v-spacer>
 
         <v-btn text color="grey">
-          <span>Sign out</span>
+          <v-tab exact to="/login/company">
+            <span>Sign out</span>
+          </v-tab>
           <v-icon right>mdi-exit-to-app</v-icon>
         </v-btn>
 
@@ -31,6 +32,5 @@ import Component from "vue-class-component";
 import Vue from "vue";
 
 @Component
-export default class NavBar extends Vue {
-}
+export default class NavBar extends Vue {}
 </script>
