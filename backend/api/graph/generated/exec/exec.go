@@ -180,14 +180,14 @@ type MutationResolver interface {
 	UpdateAnomaly(ctx context.Context, input *models.AnomalyUpdateInput) (*models.Anomaly, error)
 }
 type QueryResolver interface {
-	Anomaly(ctx context.Context, id string) (*models.Anomaly, error)
-	Anomalies(ctx context.Context) ([]*models.Anomaly, error)
-	Tenant(ctx context.Context, id int64) (*models.Tenant, error)
-	Tenants(ctx context.Context) ([]*models.Tenant, error)
-	EstateAgent(ctx context.Context, id int64) (*models.EstateAgent, error)
-	EstateAgents(ctx context.Context) ([]*models.EstateAgent, error)
-	Company(ctx context.Context, id int64) (*models.Company, error)
-	Companies(ctx context.Context) ([]*models.Company, error)
+	GetAnomaly(ctx context.Context, id string) (*models.Anomaly, error)
+	GetAnomalies(ctx context.Context) ([]*models.Anomaly, error)
+	GetTenant(ctx context.Context, id int64) (*models.Tenant, error)
+	GetTenants(ctx context.Context) ([]*models.Tenant, error)
+	GetEstateAgent(ctx context.Context, id int64) (*models.EstateAgent, error)
+	GetEstateAgents(ctx context.Context) ([]*models.EstateAgent, error)
+	GetCompany(ctx context.Context, id int64) (*models.Company, error)
+	GetCompanies(ctx context.Context) ([]*models.Company, error)
 }
 
 type executableSchema struct {
@@ -240,84 +240,84 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Admin.UserID(childComplexity), true
 
-	case "Anomaly.assignedTo":
+	case "GetAnomaly.assignedTo":
 		if e.complexity.Anomaly.AssignedTo == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.AssignedTo(childComplexity), true
 
-	case "Anomaly.assignedToID":
+	case "GetAnomaly.assignedToID":
 		if e.complexity.Anomaly.AssignedToID == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.AssignedToID(childComplexity), true
 
-	case "Anomaly.createBy":
+	case "GetAnomaly.createBy":
 		if e.complexity.Anomaly.CreateBy == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.CreateBy(childComplexity), true
 
-	case "Anomaly.createByID":
+	case "GetAnomaly.createByID":
 		if e.complexity.Anomaly.CreateByID == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.CreateByID(childComplexity), true
 
-	case "Anomaly.createdAt":
+	case "GetAnomaly.createdAt":
 		if e.complexity.Anomaly.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.CreatedAt(childComplexity), true
 
-	case "Anomaly.description":
+	case "GetAnomaly.description":
 		if e.complexity.Anomaly.Description == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.Description(childComplexity), true
 
-	case "Anomaly.ID":
+	case "GetAnomaly.ID":
 		if e.complexity.Anomaly.ID == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.ID(childComplexity), true
 
-	case "Anomaly.property":
+	case "GetAnomaly.property":
 		if e.complexity.Anomaly.Property == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.Property(childComplexity), true
 
-	case "Anomaly.propertyID":
+	case "GetAnomaly.propertyID":
 		if e.complexity.Anomaly.PropertyID == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.PropertyID(childComplexity), true
 
-	case "Anomaly.state":
+	case "GetAnomaly.state":
 		if e.complexity.Anomaly.State == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.State(childComplexity), true
 
-	case "Anomaly.type":
+	case "GetAnomaly.type":
 		if e.complexity.Anomaly.Type == nil {
 			break
 		}
 
 		return e.complexity.Anomaly.Type(childComplexity), true
 
-	case "Anomaly.updatedAt":
+	case "GetAnomaly.updatedAt":
 		if e.complexity.Anomaly.UpdatedAt == nil {
 			break
 		}
@@ -366,77 +366,77 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Asset.UpdatedAt(childComplexity), true
 
-	case "Company.createdAt":
+	case "GetCompany.createdAt":
 		if e.complexity.Company.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Company.CreatedAt(childComplexity), true
 
-	case "Company.description":
+	case "GetCompany.description":
 		if e.complexity.Company.Description == nil {
 			break
 		}
 
 		return e.complexity.Company.Description(childComplexity), true
 
-	case "Company.ID":
+	case "GetCompany.ID":
 		if e.complexity.Company.ID == nil {
 			break
 		}
 
 		return e.complexity.Company.ID(childComplexity), true
 
-	case "Company.logo":
+	case "GetCompany.logo":
 		if e.complexity.Company.Logo == nil {
 			break
 		}
 
 		return e.complexity.Company.Logo(childComplexity), true
 
-	case "Company.logoID":
+	case "GetCompany.logoID":
 		if e.complexity.Company.LogoID == nil {
 			break
 		}
 
 		return e.complexity.Company.LogoID(childComplexity), true
 
-	case "Company.name":
+	case "GetCompany.name":
 		if e.complexity.Company.Name == nil {
 			break
 		}
 
 		return e.complexity.Company.Name(childComplexity), true
 
-	case "Company.tel":
+	case "GetCompany.tel":
 		if e.complexity.Company.Tel == nil {
 			break
 		}
 
 		return e.complexity.Company.Tel(childComplexity), true
 
-	case "Company.updatedAt":
+	case "GetCompany.updatedAt":
 		if e.complexity.Company.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.Company.UpdatedAt(childComplexity), true
 
-	case "Company.user":
+	case "GetCompany.user":
 		if e.complexity.Company.User == nil {
 			break
 		}
 
 		return e.complexity.Company.User(childComplexity), true
 
-	case "Company.userID":
+	case "GetCompany.userID":
 		if e.complexity.Company.UserID == nil {
 			break
 		}
 
 		return e.complexity.Company.UserID(childComplexity), true
 
-	case "Company.verified":
+	case "GetCompany.verified":
 		if e.complexity.Company.Verified == nil {
 			break
 		}
@@ -457,49 +457,49 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Credential.User(childComplexity), true
 
-	case "EstateAgent.company":
+	case "GetEstateAgent.company":
 		if e.complexity.EstateAgent.Company == nil {
 			break
 		}
 
 		return e.complexity.EstateAgent.Company(childComplexity), true
 
-	case "EstateAgent.companyID":
+	case "GetEstateAgent.companyID":
 		if e.complexity.EstateAgent.CompanyID == nil {
 			break
 		}
 
 		return e.complexity.EstateAgent.CompanyID(childComplexity), true
 
-	case "EstateAgent.createdAt":
+	case "GetEstateAgent.createdAt":
 		if e.complexity.EstateAgent.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.EstateAgent.CreatedAt(childComplexity), true
 
-	case "EstateAgent.ID":
+	case "GetEstateAgent.ID":
 		if e.complexity.EstateAgent.ID == nil {
 			break
 		}
 
 		return e.complexity.EstateAgent.ID(childComplexity), true
 
-	case "EstateAgent.updatedAt":
+	case "GetEstateAgent.updatedAt":
 		if e.complexity.EstateAgent.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.EstateAgent.UpdatedAt(childComplexity), true
 
-	case "EstateAgent.user":
+	case "GetEstateAgent.user":
 		if e.complexity.EstateAgent.User == nil {
 			break
 		}
 
 		return e.complexity.EstateAgent.User(childComplexity), true
 
-	case "EstateAgent.userID":
+	case "GetEstateAgent.userID":
 		if e.complexity.EstateAgent.UserID == nil {
 			break
 		}
@@ -775,63 +775,63 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Tenants(childComplexity), true
 
-	case "Tenant.createdAt":
+	case "GetTenant.createdAt":
 		if e.complexity.Tenant.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Tenant.CreatedAt(childComplexity), true
 
-	case "Tenant.documents":
+	case "GetTenant.documents":
 		if e.complexity.Tenant.Documents == nil {
 			break
 		}
 
 		return e.complexity.Tenant.Documents(childComplexity), true
 
-	case "Tenant.estateAgent":
+	case "GetTenant.estateAgent":
 		if e.complexity.Tenant.EstateAgent == nil {
 			break
 		}
 
 		return e.complexity.Tenant.EstateAgent(childComplexity), true
 
-	case "Tenant.estateAgentID":
+	case "GetTenant.estateAgentID":
 		if e.complexity.Tenant.EstateAgentID == nil {
 			break
 		}
 
 		return e.complexity.Tenant.EstateAgentID(childComplexity), true
 
-	case "Tenant.ID":
+	case "GetTenant.ID":
 		if e.complexity.Tenant.ID == nil {
 			break
 		}
 
 		return e.complexity.Tenant.ID(childComplexity), true
 
-	case "Tenant.properties":
+	case "GetTenant.properties":
 		if e.complexity.Tenant.Properties == nil {
 			break
 		}
 
 		return e.complexity.Tenant.Properties(childComplexity), true
 
-	case "Tenant.updatedAt":
+	case "GetTenant.updatedAt":
 		if e.complexity.Tenant.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.Tenant.UpdatedAt(childComplexity), true
 
-	case "Tenant.user":
+	case "GetTenant.user":
 		if e.complexity.Tenant.User == nil {
 			break
 		}
 
 		return e.complexity.Tenant.User(childComplexity), true
 
-	case "Tenant.userID":
+	case "GetTenant.userID":
 		if e.complexity.Tenant.UserID == nil {
 			break
 		}
@@ -969,16 +969,16 @@ enum AnomalyStates {
 }
 
 """
-An Anomaly is a
+An GetAnomaly is a
 """
-type Anomaly {
+type GetAnomaly {
     ID: Int @extraTag(gorm:"primarykey")
     createdAt: Time
     updatedAt: Time
     assignedToID: Int
-    assignedTo: EstateAgent @extraTag(gorm:"foreignKey:AssignedToID")
+    assignedTo: GetEstateAgent @extraTag(gorm:"foreignKey:AssignedToID")
     createByID: Int
-    createBy: Tenant @extraTag(gorm:"foreignKey:AssignedToID")
+    createBy: GetTenant @extraTag(gorm:"foreignKey:AssignedToID")
     propertyID: Int
     property: Property @extraTag(gorm:"foreignKey:AssignedToID")
     description: String!
@@ -1011,9 +1011,9 @@ type Asset {
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/company.graphqls", Input: `"""
-A Company is a
+A GetCompany is a
 """
-type Company {
+type GetCompany {
     ID: Int @extraTag(gorm:"primarykey")
     createdAt: Time
     updatedAt: Time
@@ -1053,14 +1053,14 @@ enum Role {
 
 directive @extraTag on INPUT_FIELD_DEFINITION | FIELD_DEFINITION`, BuiltIn: false},
 	&ast.Source{Name: "schemes/estate_agent.graphqls", Input: `"""
-An EstateAgent is a
+An GetEstateAgent is a
 """
-type EstateAgent {
+type GetEstateAgent {
     ID: Int @extraTag(gorm:"primarykey")
     createdAt: Time
     updatedAt: Time
     companyID: Int
-    company: Company! @extraTag(gorm:"foreignKey:CompanyID")
+    company: GetCompany! @extraTag(gorm:"foreignKey:CompanyID")
     userID: Int
     user: User! @extraTag(gorm:"foreignKey:UserID")
 }
@@ -1072,21 +1072,21 @@ input EstateAgentInput {
 	&ast.Source{Name: "schemes/mutation.graphqls", Input: `type Mutation {
     signupAsAdmin(input: AdminInput!): Credential!
     signupAsCompany(input: CompanyInput!): Credential!
-    createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(role: COMPANY)
-    createTenantUser(input: TenantInput): Tenant! @hasRole(role: ESTATE_AGENT)
+    createEstateAgentUser(input: EstateAgentInput): GetEstateAgent! @hasRole(role: COMPANY)
+    createTenantUser(input: TenantInput): GetTenant! @hasRole(role: ESTATE_AGENT)
 
-    acceptCompany(id: Int!): Company! @hasRole(role: ADMIN)
+    acceptCompany(id: Int!): GetCompany! @hasRole(role: ADMIN)
 
     loginAsCompany(input: UserInput): Credential!
     loginAsEstateAgent(input: UserInput): Credential!
     loginAsTenant(input: UserInput): Credential!
 
-    updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: ESTATE_AGENT)
+    updateTenantProfile(input: TenantUpdateInput): GetTenant! @hasRole(role: ESTATE_AGENT)
 
     createProperty(input: PropertyInput): Property! @hasRole(role: ESTATE_AGENT)
 
-    createAnomaly(input: AnomalyInput): Anomaly! @hasRole(role: TENANT)
-    updateAnomaly(input: AnomalyUpdateInput): Anomaly! @hasRole(role: ESTATE_AGENT)
+    createAnomaly(input: AnomalyInput): GetAnomaly! @hasRole(role: TENANT)
+    updateAnomaly(input: AnomalyUpdateInput): GetAnomaly! @hasRole(role: ESTATE_AGENT)
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/property.graphqls", Input: `"""
@@ -1110,21 +1110,21 @@ input PropertyInput {
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/query.graphqls", Input: `type Query {
-    anomaly(id: String!): Anomaly!
-    anomalies: [Anomaly!]! @hasRole(role: ESTATE_AGENT)
-    tenant(id: Int!): Tenant!
-    tenants: [Tenant!]! @hasRole(role: ESTATE_AGENT)
-    estateAgent(id: Int!): EstateAgent! @hasRole(role: COMPANY)
-    estateAgents: [EstateAgent!]! @hasRole(role: COMPANY)
-    company(id: Int!): Company! @hasRole(role: ADMIN)
-    companies: [Company!]! @hasRole(role: ADMIN)
+    anomaly(id: String!): GetAnomaly!
+    anomalies: [GetAnomaly!]! @hasRole(role: ESTATE_AGENT)
+    tenant(id: Int!): GetTenant!
+    tenants: [GetTenant!]! @hasRole(role: ESTATE_AGENT)
+    estateAgent(id: Int!): GetEstateAgent! @hasRole(role: COMPANY)
+    estateAgents: [GetEstateAgent!]! @hasRole(role: COMPANY)
+    company(id: Int!): GetCompany! @hasRole(role: ADMIN)
+    companies: [GetCompany!]! @hasRole(role: ADMIN)
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/scalars.graphqls", Input: `scalar Time`, BuiltIn: false},
 	&ast.Source{Name: "schemes/tenant.graphqls", Input: `"""
-A Tenant is a
+A GetTenant is a
 """
-type Tenant {
+type GetTenant {
     ID: Int @extraTag(gorm:"primarykey")
     createdAt: Time
     updatedAt: Time
@@ -1132,7 +1132,7 @@ type Tenant {
     userID: Int
     user: User! @extraTag(gorm:"foreignKey:UserID")
     estateAgentID: Int
-    estateAgent: EstateAgent! @extraTag(gorm:"foreignKey:EstateAgentID")
+    estateAgent: GetEstateAgent! @extraTag(gorm:"foreignKey:EstateAgentID")
     documents: [Asset!] @extraTag(gorm:"many2many:tenant_documents")
 }
 
@@ -1624,7 +1624,7 @@ func (ec *executionContext) _Anomaly_ID(ctx context.Context, field graphql.Colle
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1655,7 +1655,7 @@ func (ec *executionContext) _Anomaly_createdAt(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1686,7 +1686,7 @@ func (ec *executionContext) _Anomaly_updatedAt(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1717,7 +1717,7 @@ func (ec *executionContext) _Anomaly_assignedToID(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1748,7 +1748,7 @@ func (ec *executionContext) _Anomaly_assignedTo(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1779,7 +1779,7 @@ func (ec *executionContext) _Anomaly_createByID(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1810,7 +1810,7 @@ func (ec *executionContext) _Anomaly_createBy(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1841,7 +1841,7 @@ func (ec *executionContext) _Anomaly_propertyID(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1872,7 +1872,7 @@ func (ec *executionContext) _Anomaly_property(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1903,7 +1903,7 @@ func (ec *executionContext) _Anomaly_description(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1937,7 +1937,7 @@ func (ec *executionContext) _Anomaly_type(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -1971,7 +1971,7 @@ func (ec *executionContext) _Anomaly_state(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Anomaly",
+		Object:   "GetAnomaly",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2197,7 +2197,7 @@ func (ec *executionContext) _Company_ID(ctx context.Context, field graphql.Colle
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2228,7 +2228,7 @@ func (ec *executionContext) _Company_createdAt(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2259,7 +2259,7 @@ func (ec *executionContext) _Company_updatedAt(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2290,7 +2290,7 @@ func (ec *executionContext) _Company_name(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2324,7 +2324,7 @@ func (ec *executionContext) _Company_logoID(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2355,7 +2355,7 @@ func (ec *executionContext) _Company_logo(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2386,7 +2386,7 @@ func (ec *executionContext) _Company_description(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2417,7 +2417,7 @@ func (ec *executionContext) _Company_tel(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2451,7 +2451,7 @@ func (ec *executionContext) _Company_userID(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2482,7 +2482,7 @@ func (ec *executionContext) _Company_user(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2516,7 +2516,7 @@ func (ec *executionContext) _Company_verified(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Company",
+		Object:   "GetCompany",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2609,7 +2609,7 @@ func (ec *executionContext) _EstateAgent_ID(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "EstateAgent",
+		Object:   "GetEstateAgent",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2640,7 +2640,7 @@ func (ec *executionContext) _EstateAgent_createdAt(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "EstateAgent",
+		Object:   "GetEstateAgent",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2671,7 +2671,7 @@ func (ec *executionContext) _EstateAgent_updatedAt(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "EstateAgent",
+		Object:   "GetEstateAgent",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2702,7 +2702,7 @@ func (ec *executionContext) _EstateAgent_companyID(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "EstateAgent",
+		Object:   "GetEstateAgent",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2733,7 +2733,7 @@ func (ec *executionContext) _EstateAgent_company(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "EstateAgent",
+		Object:   "GetEstateAgent",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2767,7 +2767,7 @@ func (ec *executionContext) _EstateAgent_userID(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "EstateAgent",
+		Object:   "GetEstateAgent",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -2798,7 +2798,7 @@ func (ec *executionContext) _EstateAgent_user(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "EstateAgent",
+		Object:   "GetEstateAgent",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -3725,7 +3725,7 @@ func (ec *executionContext) _Query_anomaly(ctx context.Context, field graphql.Co
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Anomaly(rctx, args["id"].(string))
+		return ec.resolvers.Query().GetAnomaly(rctx, args["id"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3760,7 +3760,7 @@ func (ec *executionContext) _Query_anomalies(ctx context.Context, field graphql.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Anomalies(rctx)
+			return ec.resolvers.Query().GetAnomalies(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
@@ -3824,7 +3824,7 @@ func (ec *executionContext) _Query_tenant(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Tenant(rctx, args["id"].(int64))
+		return ec.resolvers.Query().GetTenant(rctx, args["id"].(int64))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3859,7 +3859,7 @@ func (ec *executionContext) _Query_tenants(ctx context.Context, field graphql.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Tenants(rctx)
+			return ec.resolvers.Query().GetTenants(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
@@ -3924,7 +3924,7 @@ func (ec *executionContext) _Query_estateAgent(ctx context.Context, field graphq
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().EstateAgent(rctx, args["id"].(int64))
+			return ec.resolvers.Query().GetEstateAgent(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
@@ -3982,7 +3982,7 @@ func (ec *executionContext) _Query_estateAgents(ctx context.Context, field graph
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().EstateAgents(rctx)
+			return ec.resolvers.Query().GetEstateAgents(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
@@ -4047,7 +4047,7 @@ func (ec *executionContext) _Query_company(ctx context.Context, field graphql.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Company(rctx, args["id"].(int64))
+			return ec.resolvers.Query().GetCompany(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
@@ -4105,7 +4105,7 @@ func (ec *executionContext) _Query_companies(ctx context.Context, field graphql.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Companies(rctx)
+			return ec.resolvers.Query().GetCompanies(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
@@ -4222,7 +4222,7 @@ func (ec *executionContext) _Tenant_ID(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -4253,7 +4253,7 @@ func (ec *executionContext) _Tenant_createdAt(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -4284,7 +4284,7 @@ func (ec *executionContext) _Tenant_updatedAt(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -4315,7 +4315,7 @@ func (ec *executionContext) _Tenant_properties(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -4346,7 +4346,7 @@ func (ec *executionContext) _Tenant_userID(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -4377,7 +4377,7 @@ func (ec *executionContext) _Tenant_user(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -4411,7 +4411,7 @@ func (ec *executionContext) _Tenant_estateAgentID(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -4442,7 +4442,7 @@ func (ec *executionContext) _Tenant_estateAgent(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -4476,7 +4476,7 @@ func (ec *executionContext) _Tenant_documents(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Tenant",
+		Object:   "GetTenant",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -6026,7 +6026,7 @@ func (ec *executionContext) _Admin(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
-var anomalyImplementors = []string{"Anomaly"}
+var anomalyImplementors = []string{"GetAnomaly"}
 
 func (ec *executionContext) _Anomaly(ctx context.Context, sel ast.SelectionSet, obj *models.Anomaly) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, anomalyImplementors)
@@ -6036,7 +6036,7 @@ func (ec *executionContext) _Anomaly(ctx context.Context, sel ast.SelectionSet, 
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Anomaly")
+			out.Values[i] = graphql.MarshalString("GetAnomaly")
 		case "ID":
 			out.Values[i] = ec._Anomaly_ID(ctx, field, obj)
 		case "createdAt":
@@ -6121,7 +6121,7 @@ func (ec *executionContext) _Asset(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
-var companyImplementors = []string{"Company"}
+var companyImplementors = []string{"GetCompany"}
 
 func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, obj *models.Company) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, companyImplementors)
@@ -6131,7 +6131,7 @@ func (ec *executionContext) _Company(ctx context.Context, sel ast.SelectionSet, 
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Company")
+			out.Values[i] = graphql.MarshalString("GetCompany")
 		case "ID":
 			out.Values[i] = ec._Company_ID(ctx, field, obj)
 		case "createdAt":
@@ -6200,7 +6200,7 @@ func (ec *executionContext) _Credential(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var estateAgentImplementors = []string{"EstateAgent"}
+var estateAgentImplementors = []string{"GetEstateAgent"}
 
 func (ec *executionContext) _EstateAgent(ctx context.Context, sel ast.SelectionSet, obj *models.EstateAgent) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, estateAgentImplementors)
@@ -6210,7 +6210,7 @@ func (ec *executionContext) _EstateAgent(ctx context.Context, sel ast.SelectionS
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("EstateAgent")
+			out.Values[i] = graphql.MarshalString("GetEstateAgent")
 		case "ID":
 			out.Values[i] = ec._EstateAgent_ID(ctx, field, obj)
 		case "createdAt":
@@ -6506,7 +6506,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
-var tenantImplementors = []string{"Tenant"}
+var tenantImplementors = []string{"GetTenant"}
 
 func (ec *executionContext) _Tenant(ctx context.Context, sel ast.SelectionSet, obj *models.Tenant) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, tenantImplementors)
@@ -6516,7 +6516,7 @@ func (ec *executionContext) _Tenant(ctx context.Context, sel ast.SelectionSet, o
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Tenant")
+			out.Values[i] = graphql.MarshalString("GetTenant")
 		case "ID":
 			out.Values[i] = ec._Tenant_ID(ctx, field, obj)
 		case "createdAt":
