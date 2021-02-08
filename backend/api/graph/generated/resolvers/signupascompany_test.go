@@ -2,13 +2,14 @@ package resolvers_test
 
 import (
 	"errors"
+	"regexp"
+	"testing"
+
 	"github.com/99designs/gqlgen/client"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib/middleware"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
-	"regexp"
-	"testing"
 )
 
 func TestMutationResolver_SignupAsCompany(t *testing.T) {
@@ -31,7 +32,7 @@ func TestMutationResolver_SignupAsCompany(t *testing.T) {
 	query = `mutation signupAsCompany($input: CompanyInput!){signupAsCompany(input: $input){user{ID,username}}}`
 	input = &models.CompanyInput{
 		Name:        "Thales",
-		Description: "Thales est un groupe d'électronique spécialisé dans l'aérospatiale",
+		Description: "Thales est un groupe d'électronique spécialisé dans l'aérospatial",
 		Tel:         "6101010101",
 		User: &models.UserInput{
 			Username: "thalesadmin",
