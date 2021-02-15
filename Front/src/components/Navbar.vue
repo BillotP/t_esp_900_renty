@@ -8,18 +8,36 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn text color="grey">
-          <v-tab exact to="/login/company">
+        <v-tab exact to="/login/company">
+          <v-btn text color="grey">
             <span>Sign out</span>
-          </v-tab>
-          <v-icon right>mdi-exit-to-app</v-icon>
-        </v-btn>
+            <v-icon right>mdi-exit-to-app</v-icon>
+          </v-btn>
+        </v-tab>
 
         <template v-slot:extension>
           <v-tabs fixed-tabs horizontal align-with-title>
-            <v-tab exact to="/dashboard">Dashboard</v-tab>
-            <v-tab exact to="/tenement">tenement</v-tab>
-            <v-tab exact to="/tickets">Tickets</v-tab>
+            <v-tab
+              v-if="getPrivilege == 0 || getPrivilege == 1"
+              exact
+              to="/dashboard"
+              >Dashboard</v-tab
+            >
+            <v-tab v-if="getPrivilege == 2" exact to="/EstateAgent"
+              >EstateAgent</v-tab
+            >
+            <v-tab
+              v-if="getPrivilege == 0 || getPrivilege == 2"
+              exact
+              to="/tenement"
+              >tenement</v-tab
+            >
+            <v-tab
+              v-if="getPrivilege == 0 || getPrivilege == 1"
+              exact
+              to="/tickets"
+              >Tickets</v-tab
+            >
           </v-tabs>
         </template>
       </v-app-bar>
@@ -30,7 +48,12 @@
 <script lang="ts">
 import Component from "vue-class-component";
 import Vue from "vue";
+import { namespace } from "vuex-class";
 
 @Component
-export default class NavBar extends Vue {}
+export default class NavBar extends Vue {
+  get getPrivilege() {
+    return Number(localStorage.getItem("privilege")) || 0;
+  }
+}
 </script>
