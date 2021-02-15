@@ -63,7 +63,9 @@ export default class Auth extends Vue {
         },
       });
       if (resp.data.loginAsCompany.token) {
-        this.setInformationsLogin({ username: this.modelUsername, privilege: 0 });
+        //this.setInformationsLogin({ username: this.modelUsername, privilege: 0 });
+        localStorage.setItem("username", this.modelUsername);
+        localStorage.setItem("privilege", resp.data.loginAsCompany.user.role);
         localStorage.setItem("token", resp.data.loginAsCompany.token);
         this.$router.push("/");
       }

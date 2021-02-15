@@ -20,5 +20,10 @@ export default class Root extends Vue {
   private getRoute() {
     return this.$route.path.toString().includes("login");
   }
+
+  public mounted()
+  {
+    
+  }
 }
 </script>

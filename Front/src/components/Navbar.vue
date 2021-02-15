@@ -8,19 +8,36 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn text color="grey">
-          <v-tab exact to="/login/company">
+        <v-tab exact to="/login/company">
+          <v-btn text color="grey">
             <span>Sign out</span>
-          </v-tab>
-          <v-icon right>mdi-exit-to-app</v-icon>
-        </v-btn>
+            <v-icon right>mdi-exit-to-app</v-icon>
+          </v-btn>
+        </v-tab>
 
         <template v-slot:extension>
           <v-tabs fixed-tabs horizontal align-with-title>
-            <v-tab v-if="status == 0 || status == 1" exact to="/dashboard">Dashboard</v-tab>
-            <v-tab v-if="status == 2" exact to="/EstateAgent">EstateAgent</v-tab>
-            <v-tab v-if="status == 0 || status == 2" exact to="/tenement">tenement</v-tab>
-            <v-tab v-if="status == 0 || status == 1" exact to="/tickets">Tickets</v-tab>
+            <v-tab
+              v-if="getPrivilege == 0 || getPrivilege == 1"
+              exact
+              to="/dashboard"
+              >Dashboard</v-tab
+            >
+            <v-tab v-if="getPrivilege == 2" exact to="/EstateAgent"
+              >EstateAgent</v-tab
+            >
+            <v-tab
+              v-if="getPrivilege == 0 || getPrivilege == 2"
+              exact
+              to="/tenement"
+              >tenement</v-tab
+            >
+            <v-tab
+              v-if="getPrivilege == 0 || getPrivilege == 1"
+              exact
+              to="/tickets"
+              >Tickets</v-tab
+            >
           </v-tabs>
         </template>
       </v-app-bar>
@@ -31,16 +48,12 @@
 <script lang="ts">
 import Component from "vue-class-component";
 import Vue from "vue";
-import { Action, Getter, namespace } from "vuex-class";
-import { privilege } from "@/store/authentificationStore";
-
-const authModule = namespace("authentificationStore");
-
+import { namespace } from "vuex-class";
 
 @Component
 export default class NavBar extends Vue {
-
-  @authModule.Getter("getPrivilege")
-  private status!: privilege;
+  get getPrivilege() {
+    return Number(localStorage.getItem("privilege")) || 0;
+  }
 }
 </script>
