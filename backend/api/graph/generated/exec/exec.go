@@ -1081,7 +1081,7 @@ input EstateAgentInput {
     loginAsEstateAgent(input: UserInput): Credential!
     loginAsTenant(input: UserInput): Credential!
 
-    updateTenantProfile(input: TenantUpdateInput): GetTenant! @hasRole(role: ESTATE_AGENT)
+    updateTenantProfile(input: TenantUpdateInput): GetTenant! @hasRole(role: TENANT)
 
     createProperty(input: PropertyInput): Property! @hasRole(role: ESTATE_AGENT)
 
@@ -3252,7 +3252,7 @@ func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, f
 			return ec.resolvers.Mutation().UpdateTenantProfile(rctx, args["input"].(*models.TenantUpdateInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "TENANT")
 			if err != nil {
 				return nil, err
 			}
