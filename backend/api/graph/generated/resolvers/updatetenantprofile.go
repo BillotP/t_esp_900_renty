@@ -2,8 +2,6 @@ package resolvers
 
 import (
 	"context"
-	"strconv"
-
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 )
@@ -17,9 +15,8 @@ func (r *MutationResolver) UpdateTenantProfile(ctx context.Context, input *model
 		err    error
 	)
 
-	id := ctx.Value(lib.ContextKey("username")).(string)
-	idVal, _ := strconv.ParseInt(id, 10, 64)
-	tenant.ID = &idVal
+	username := ctx.Value(lib.ContextKey("username")).(string)
+	tenant = models.Tenant{User: &models.User{Username: username}}
 	if err = r.DB.First(&tenant).Error; err != nil {
 		lib.LogError("mutation/UpdateTenantProfile", err.Error())
 		return nil, err
