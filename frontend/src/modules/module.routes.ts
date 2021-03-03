@@ -1,8 +1,8 @@
 import { RouteConfig } from "vue-router";
 
-import AuthRoute from "@/modules/authentification/module.routes";
 import CreateUserRoute from "./create-user/module.routes";
 
+const Login = (resolve: any) => require(["@/modules/authentication/Login.vue"], (m: any) => resolve(m.default));
 const TicketList = (resolve: any) => require(["@/modules/ticketList/TicketList.vue"], (m: any) => resolve(m.default));
 const Disaster = (resolve: any) => require(["@/modules/ticketList/disaster/Disaster.vue"], (m: any) => resolve(m.default));
 
@@ -26,8 +26,11 @@ const module: RouteConfig[] = [
 
         ]
     },
-    ...CreateUserRoute,
-    ...AuthRoute
+    {
+        path: '/login',
+        component: Login
+    },
+    ...CreateUserRoute
 ];
 
 export default module;

@@ -57,7 +57,7 @@ export default class CreateEstateAgentUser extends Vue {
         }
       });
       if (resp.data.createEstateAgentUser.ID) {
-        this.$data.text = 'User ' + this.$data.username + ' create succesfully !';
+        this.$data.text = 'User ' + this.$data.username + ' create successfully !';
         this.$data.snackbar = true;
       }
     } catch (e) {
