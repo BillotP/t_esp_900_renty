@@ -1,0 +1,11 @@
+# 
+schemes
+#
+Dockerfile
+# Various
+*.md
+*.env
+*.log
+*.txt
+*.tmp
+.gitignore
