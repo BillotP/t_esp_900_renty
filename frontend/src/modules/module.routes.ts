@@ -2,6 +2,7 @@ import { RouteConfig } from "vue-router";
 
 import CreateUserRoute from "./create-user/module.routes";
 import TenantRoute from "./tenant/module.routes";
+import EstateAgent from "./estateAgent/module.routes";
 
 const Login = (resolve: any) => require(["@/modules/authentication/Login.vue"], (m: any) => resolve(m.default));
 const TicketList = (resolve: any) => require(["@/modules/ticketList/TicketList.vue"], (m: any) => resolve(m.default));
@@ -33,6 +34,7 @@ const module: RouteConfig[] = [
     },
     ...CreateUserRoute,
     ...TenantRoute
+    ...EstateAgent
 ];
 
 export default module;
