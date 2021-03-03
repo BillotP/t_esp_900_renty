@@ -48,6 +48,6 @@ func TestMutationResolver_CreateAnomaly(t *testing.T) {
 
 		description := output.CreateAnomaly.Description
 		require.Equal(t, descriptionTest, description)
-		require.NotNil(t, err)
+		require.NotNil(t, err.Error())
 	})
 }
