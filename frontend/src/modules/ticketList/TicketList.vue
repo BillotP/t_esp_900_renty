@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>t</h1>
     <ticketlist-field />
   </div>
 </template>

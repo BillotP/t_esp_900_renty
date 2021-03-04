@@ -9,7 +9,6 @@
           <v-text-field
             v-model="firstname"
             :rules="nameRules"
-            :counter="10"
             label="Estate name"
             required
           ></v-text-field>
@@ -24,6 +23,7 @@
             "
             :rules="passwordRules"
             label="password"
+            type="password"
             required
           ></v-text-field>
         </v-col>
@@ -32,6 +32,10 @@
             v-model="repeatPassword"
             label="Repeat password"
             :rules="passwordRules"
+            :error-messages="
+              this.password === this.repeatPassword ? '' : 'Password must match'
+            "
+            type="password"
             required
           ></v-text-field>
         </v-col>
@@ -96,7 +100,6 @@ export default class CreateProperty extends Vue {
   valid = false;
   nameRules = [
     (v) => !!v || "Name is required",
-    (v) => v.length <= 10 || "Name must be less than 10 characters",
   ];
 
   email = "";
