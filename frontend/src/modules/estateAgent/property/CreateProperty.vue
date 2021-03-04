@@ -58,7 +58,7 @@
           ></v-text-field>
         </v-col>
       </v-row>
-      <v-row>
+      <!-- <v-row>
         <v-col cols="12" md="4">
           <v-select
             v-model="value"
@@ -71,7 +71,7 @@
             dense
           ></v-select>
         </v-col>
-      </v-row>
+      </v-row> -->
       <v-row>
         <v-col>
           <v-hover>
