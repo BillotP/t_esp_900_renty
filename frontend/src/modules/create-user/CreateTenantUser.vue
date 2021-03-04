@@ -46,7 +46,7 @@ export default class CreateTenantUser extends Vue {
         }
       });
       if (resp.data.createTenantUser.ID) {
-          this.$data.text = 'User ' + this.$data.username + ' create succesfully !';
+          this.$data.text = 'User ' + this.$data.username + ' create successfully !';
           this.$data.snackbar = true;
       }
     } catch (e) {
