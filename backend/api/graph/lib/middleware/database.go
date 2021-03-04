@@ -35,8 +35,7 @@ func InitDB() {
 	username = os.Getenv("POSTGRES_USER")
 	password = os.Getenv("POSTGRES_PASSWORD")
 	dbName = "rentydb"
-	dbHost = os.Getenv("POSTGRES_HOST")
-
+	dbHost = lib.GetDefVal("POSTGRES_HOST", "127.0.0.1")
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", dbHost, username, dbName, password, "5432") //Build connection string
 	fmt.Println(dbURI)
 
