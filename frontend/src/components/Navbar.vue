@@ -4,11 +4,13 @@
       dark
       prominent
       src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
+      height="70"
     >
       <v-row>
-        <v-toolbar-title>Renty</v-toolbar-title>
+        <v-toolbar-title fixed-tabs horizontal align-with-title>Renty</v-toolbar-title>
       </v-row>
-      <v-tabs fixed-tabs horizontal align-with-title>
+      <v-spacer />
+      <v-tabs fixed-tabs height="70">
         <v-tab exact to="/dashboard">Dashboard</v-tab>
         <v-tab v-if="getPrivilege == 0" exact to="/estate-agents"
           >Estate Agents</v-tab
