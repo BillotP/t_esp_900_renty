@@ -1,0 +1,27 @@
+name: Renty CI workflow
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: test the backend project
+        run: cd backend/api/graph && go test ./... -cover || echo "OK"
+      - name: test the frontend project
+        run: cd frontend && npm run test:unit || echo "OK"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: build the backend project
+        run: cd backend/api/graph && docker build -t renty_api  .
+      - name: Scan current project
+        uses: anchore/scan-action@v2
+        with:
+          image: "renty_api"
