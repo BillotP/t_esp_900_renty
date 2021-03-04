@@ -2,6 +2,10 @@ package middleware
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"github.com/joho/godotenv"
@@ -9,13 +13,11 @@ import (
 	_ "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"time"
 )
 
 var Db *gorm.DB
 
+// InitDB setup the global Db connection pool
 func InitDB() {
 	var (
 		username string
@@ -33,10 +35,10 @@ func InitDB() {
 	username = os.Getenv("POSTGRES_USER")
 	password = os.Getenv("POSTGRES_PASSWORD")
 	dbName = "rentydb"
-	dbHost = "127.0.0.1"
+	dbHost = os.Getenv("POSTGRES_HOST")
 
-	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", dbHost, username, dbName, password, "5432") //Build connection string
-	fmt.Println(dbUri)
+	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", dbHost, username, dbName, password, "5432") //Build connection string
+	fmt.Println(dbURI)
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
@@ -48,7 +50,7 @@ func InitDB() {
 		},
 	)
 
-	Db, err = gorm.Open(postgres.Open(dbUri), &gorm.Config{
+	Db, err = gorm.Open(postgres.Open(dbURI), &gorm.Config{
 		Logger: newLogger,
 	})
 	if err != nil {
