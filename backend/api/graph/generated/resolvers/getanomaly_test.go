@@ -16,7 +16,7 @@ func TestQueryResolver_GetAnomaly(t *testing.T) {
 		output struct {
 			GetAnomaly models.Anomaly
 		}
-		expectedId int64 = 1
+		expectedId string = "1"
 		// err error
 	)
 
