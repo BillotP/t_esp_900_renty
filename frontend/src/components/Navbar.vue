@@ -7,7 +7,9 @@
       height="70"
     >
       <v-row>
-        <v-toolbar-title fixed-tabs horizontal align-with-title>Renty</v-toolbar-title>
+        <v-col>
+          <v-toolbar-title fixed-tabs>Renty</v-toolbar-title>
+        </v-col>
       </v-row>
       <v-spacer />
       <v-tabs fixed-tabs height="70">
