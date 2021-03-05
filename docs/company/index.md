@@ -4,10 +4,10 @@
 
 ## Comment ...
 
-- 1. Crééer le profil de son agence
+1. Crééer le profil de son agence
 
-- 2. Ajouter ses agents immobilier
+2. Ajouter ses agents immobilier
 
-- 3. Ajouter les propriétés sous gestion
+3. Ajouter les propriétés sous gestion
 
-- 4. Conditions d'utilisations
+4. Conditions d'utilisations
