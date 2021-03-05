@@ -10,7 +10,7 @@ type Mutation {
     loginAsEstateAgent(input: UserInput): Credential!
     loginAsTenant(input: UserInput): Credential!
 
-    updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: ESTATE_AGENT)
+    updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: TENANT)
 
     createProperty(input: PropertyInput): Property! @hasRole(role: ESTATE_AGENT)
 
