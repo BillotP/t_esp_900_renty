@@ -1,7 +1,8 @@
 <h1 align="center">Welcome to <strong>TESP-900 Renty</string> 👋</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
-   <img alt="CI" src="https://github.com/BillotP/t_esp_900_renty/actions/workflows/image.yml/badge.svg?branch=main" />
+<a href="https://billotp.github.io/t_esp_900_renty/"><img alt="documentation" src="https://img.shields.io/badge/documentation-Up-green"/></a>
+  <a href="https://github.com/BillotP/t_esp_900_renty/releases"><img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" /></a>
+   <a href="https://github.com/BillotP/t_esp_900_renty/actions/workflows/image.yml"> <img alt="CI" src="https://github.com/BillotP/t_esp_900_renty/actions/workflows/image.yml/badge.svg?branch=main" /></a>
 </p>
 
 > Unite tenants and real estate agencies in a joyful and friction-less relationship since 2019
