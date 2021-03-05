@@ -12,7 +12,7 @@
 
 - B. [Utilisateur Pro (Agence)](/t_esp_900_renty/company)
 
-    - Crééer le profil de son agence
+    - Créer le profil de son agence
     - Ajouter ses agents immobilier
     - Ajouter les propriétés sous gestion
     - Conditions d'utilisations
