@@ -4,7 +4,7 @@
 
 ## Comment ...
 
-1. Crééer le profil de son agence
+1. Créer le profil de son agence
 
 2. Ajouter ses agents immobilier
 
