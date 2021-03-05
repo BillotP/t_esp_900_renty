@@ -3,7 +3,7 @@
 
 ## Vous etes ...
 
-- A. [Utilisateur particulier](/tenants)
+- A. [Utilisateur particulier](/tenant)
 
     - Créer son profil locataire
     - Vérifier / Renseigner les informations sur son logement
