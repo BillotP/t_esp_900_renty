@@ -3,21 +3,21 @@
 
 ## Vous etes ...
 
-- A. [Utilisateur particulier](/tenant)
+- A. [Utilisateur particulier](/t_esp_900_renty/tenant)
 
     - Créer son profil locataire
     - Vérifier / Renseigner les informations sur son logement
     - Modifier son mot de passe / ses informations
     - Conditions d'utilisations
 
-- B. [Utilisateur Pro (Agence)](/company)
+- B. [Utilisateur Pro (Agence)](/t_esp_900_renty/company)
 
     - Crééer le profil de son agence
     - Ajouter ses agents immobilier
     - Ajouter les propriétés sous gestion
     - Conditions d'utilisations
 
-- C. [Intégrateur / Dévellopeur API](/developer)
+- C. [Intégrateur / Dévellopeur API](/t_esp_900_renty/developer)
 
     - Documentation API
     - Demandes d'accés
