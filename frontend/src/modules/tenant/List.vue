@@ -4,6 +4,7 @@
       :items="tenants"
       :items-per-page="5"
       class="elevation-1"
+      @click:row="goToProfile"
   ></v-data-table>
 </template>
 
@@ -56,8 +57,14 @@ export default class TenantList extends Vue {
           value: 'ID',
         },
         {text: 'Username', value: 'user.username'},
+        {text: 'CodeNumber', value: 'properties[0].codeNumber'},
+        {text: 'Address', value: 'properties[0].address'},
       ]
     }
+  }
+
+  goToProfile(tenant: any) {
+    this.$router.push("/tenants/" + tenant.ID);
   }
 }
 </script>
