@@ -11,6 +11,7 @@ type Mutation {
     loginAsTenant(input: UserInput): Credential!
 
     updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: TENANT)
+    uploadDocument(file: Upload!, title: String!): Boolean @hasRole(role: TENANT)
 
     createProperty(input: PropertyInput): Property! @hasRole(role: ESTATE_AGENT)
 

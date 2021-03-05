@@ -10,6 +10,8 @@ func main() {
 
 	middleware.InitDB()
 
+	r.Static("/documents/", "./documents")
+
 	r.Use(middleware.SetContext())
 	r.Use(middleware.CORSMiddleware())
 
