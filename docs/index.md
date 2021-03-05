@@ -1,37 +1,27 @@
-## Welcome to GitHub Pages
+# Documentation utilisateur et intégrateurs
+> Renty Real Estate Management App
 
-You can use the [editor on GitHub](https://github.com/BillotP/t_esp_900_renty/edit/main/docs/index.md) to maintain and preview the content for your website in Markdown files.
+## Vous etes ...
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+- A. [Utilisateur particulier](/t_esp_900_renty/tenant)
 
-### Markdown
+    - Créer son profil locataire
+    - Vérifier / Renseigner les informations sur son logement
+    - Modifier son mot de passe / ses informations
+    - Conditions d'utilisations
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+- B. [Utilisateur Pro (Agence)](/t_esp_900_renty/company)
 
-```markdown
-Syntax highlighted code block
+    - Créer le profil de son agence
+    - Ajouter ses agents immobilier
+    - Ajouter les propriétés sous gestion
+    - Conditions d'utilisations
 
-# Header 1
-## Header 2
-### Header 3
+- C. [Intégrateur / Dévellopeur API](/t_esp_900_renty/developer)
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/BillotP/t_esp_900_renty/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+    - Documentation API
+    - Demandes d'accés
+    - Environnement de test / sandbox
+    - Architecture logicielle
+    - Usage et limites d'utilisations
+    - Conditions d'utilisations
