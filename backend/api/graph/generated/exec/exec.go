@@ -120,6 +120,7 @@ type ComplexityRoot struct {
 		SignupAsCompany       func(childComplexity int, input models.CompanyInput) int
 		UpdateAnomaly         func(childComplexity int, input *models.AnomalyUpdateInput) int
 		UpdateTenantProfile   func(childComplexity int, input *models.TenantUpdateInput) int
+		UploadDocument        func(childComplexity int, file graphql.Upload, title string) int
 	}
 
 	Property struct {
@@ -175,6 +176,7 @@ type MutationResolver interface {
 	LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.Credential, error)
 	LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Credential, error)
 	UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error)
+	UploadDocument(ctx context.Context, file graphql.Upload, title string) (*bool, error)
 	CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error)
 	CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error)
 	UpdateAnomaly(ctx context.Context, input *models.AnomalyUpdateInput) (*models.Anomaly, error)
@@ -650,6 +652,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateTenantProfile(childComplexity, args["input"].(*models.TenantUpdateInput)), true
 
+	case "Mutation.uploadDocument":
+		if e.complexity.Mutation.UploadDocument == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_uploadDocument_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UploadDocument(childComplexity, args["file"].(graphql.Upload), args["title"].(string)), true
+
 	case "Property.address":
 		if e.complexity.Property.Address == nil {
 			break
@@ -1082,6 +1096,7 @@ input EstateAgentInput {
     loginAsTenant(input: UserInput): Credential!
 
     updateTenantProfile(input: TenantUpdateInput): GetTenant! @hasRole(role: TENANT)
+    uploadDocument(file: Upload!, title: String!): Boolean @hasRole(role: TENANT)
 
     createProperty(input: PropertyInput): Property! @hasRole(role: ESTATE_AGENT)
 
@@ -1120,7 +1135,9 @@ input PropertyInput {
     companies: [GetCompany!]! @hasRole(role: ADMIN)
 }
 `, BuiltIn: false},
-	&ast.Source{Name: "schemes/scalars.graphqls", Input: `scalar Time`, BuiltIn: false},
+	&ast.Source{Name: "schemes/scalars.graphqls", Input: `scalar Time
+
+scalar Upload`, BuiltIn: false},
 	&ast.Source{Name: "schemes/tenant.graphqls", Input: `"""
 A GetTenant is a
 """
@@ -1349,6 +1366,28 @@ func (ec *executionContext) field_Mutation_updateTenantProfile_args(ctx context.
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_uploadDocument_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 graphql.Upload
+	if tmp, ok := rawArgs["file"]; ok {
+		arg0, err = ec.unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["file"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["title"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["title"] = arg1
 	return args, nil
 }
 
@@ -3287,6 +3326,68 @@ func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, f
 	res := resTmp.(*models.Tenant)
 	fc.Result = res
 	return ec.marshalNTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenant(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_uploadDocument(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_uploadDocument_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UploadDocument(rctx, args["file"].(graphql.Upload), args["title"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "TENANT")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, role)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*bool); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *bool`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createProperty(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6302,6 +6403,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "uploadDocument":
+			out.Values[i] = ec._Mutation_uploadDocument(ctx, field)
 		case "createProperty":
 			out.Values[i] = ec._Mutation_createProperty(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -7143,6 +7246,20 @@ func (ec *executionContext) marshalNTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900
 		return graphql.Null
 	}
 	return ec._Tenant(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (graphql.Upload, error) {
+	return graphql.UnmarshalUpload(v)
+}
+
+func (ec *executionContext) marshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v graphql.Upload) graphql.Marshaler {
+	res := graphql.MarshalUpload(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalNUser2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx context.Context, sel ast.SelectionSet, v models.User) graphql.Marshaler {
