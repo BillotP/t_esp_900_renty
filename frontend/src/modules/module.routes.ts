@@ -33,7 +33,7 @@ const module: RouteConfig[] = [
         component: Login
     },
     ...CreateUserRoute,
-    ...TenantRoute
+    ...TenantRoute,
     ...EstateAgent
 ];
 
