@@ -2,10 +2,12 @@
   <div>
     <h1>Create Estate Agent User account</h1>
     <v-text-field v-model="username" label="Username"></v-text-field>
-    <v-text-field type="password" v-model="password" label="Password"></v-text-field>
-    <v-btn depressed color="primary" v-on:click="createUser()">
-      Create
-    </v-btn>
+    <v-text-field
+      type="password"
+      v-model="password"
+      label="Password"
+    ></v-text-field>
+    <v-btn depressed color="primary" v-on:click="createUser()"> Create </v-btn>
     <v-snackbar v-model="snackbar" :timeout="timeout">
       {{ text }}
       <template v-slot:action="{ attrs }">
@@ -19,28 +21,28 @@
 
 <script>
 import Vue from "vue";
-import Component from 'vue-class-component';
+import Component from "vue-class-component";
 import gql from "graphql-tag";
+import { setContext } from "apollo-link-context";
 
 const CREATE_ESTATE_AGENT_USER_MUTATION = gql`
-mutation ($input: EstateAgentInput) {
-  createEstateAgentUser(input: $input) {
-    ID
+  mutation($input: EstateAgentInput) {
+    createEstateAgentUser(input: $input) {
+      ID
+    }
   }
-}
 `;
 
 @Component
 export default class CreateEstateAgentUser extends Vue {
-
   data() {
     return {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
       snackbar: false,
-      text: '',
+      text: "",
       timeout: 2000,
-    }
+    };
   }
 
   async createUser() {
@@ -51,13 +53,14 @@ export default class CreateEstateAgentUser extends Vue {
           input: {
             user: {
               username: this.$data.username,
-              password: this.$data.password
-            }
-          }
-        }
+              password: this.$data.password,
+            },
+          },
+      }
       });
       if (resp.data.createEstateAgentUser.ID) {
-        this.$data.text = 'User ' + this.$data.username + ' create successfully !';
+        this.$data.text =
+          "User " + this.$data.username + " create successfully !";
         this.$data.snackbar = true;
       }
     } catch (e) {
@@ -68,5 +71,4 @@ export default class CreateEstateAgentUser extends Vue {
 </script>
 
 <style>
-
 </style>
