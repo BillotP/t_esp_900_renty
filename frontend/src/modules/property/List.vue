@@ -1,20 +1,25 @@
 <template>
-  <v-data-table
-      :headers="headers"
-      :items="properties"
-      :items-per-page="5"
-      class="elevation-1"
-  >
-    <template v-slot:item.actions="{ item }">
-      <v-icon
-          small
-          class="mr-2"
-          @click="goToProfile(item)"
-      >
-        mdi-eye
-      </v-icon>
-    </template>
-  </v-data-table>
+  <v-container>
+    <v-btn right color="primary" v-on:click="goToCreateProperty">
+      Create Property
+    </v-btn>
+    <v-data-table
+        :headers="headers"
+        :items="properties"
+        :items-per-page="5"
+        class="elevation-1"
+    >
+      <template v-slot:item.actions="{ item }">
+        <v-icon
+            small
+            class="mr-2"
+            @click="goToProfile(item)"
+        >
+          mdi-eye
+        </v-icon>
+      </template>
+    </v-data-table>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -67,6 +72,10 @@ export default class PropertyList extends Vue {
 
   goToProfile(property: any) {
     this.$router.push("/property/" + property.ID);
+  }
+
+  goToCreateProperty() {
+    this.$router.push("/create/property/");
   }
 }
 </script>

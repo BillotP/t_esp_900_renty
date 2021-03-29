@@ -9,19 +9,24 @@ import (
 
 func (r *QueryResolver) Tenants(ctx context.Context) ([]*models.Tenant, error) {
 	var (
-		tenants []models.Tenant
+		estateAgent models.EstateAgent
+
+		tenants []*models.Tenant
 
 		err error
 	)
 
-	if err = r.DB.Preload(clause.Associations).Find(&tenants).Error; err == nil {
-		var tenantsfmt []*models.Tenant
+	username := ctx.Value(lib.ContextKey("username")).(string)
 
-		for i := range tenants {
-			tenantsfmt = append(tenantsfmt, &tenants[i])
-		}
-		return tenantsfmt, nil
+	if err = r.DB.Joins("User").Where("username = ?", username).First(&estateAgent).Error; err != nil {
+		lib.LogError("mutation/GetTenants", err.Error())
+		return nil, err
 	}
-	lib.LogError("mutation/GetTenants", err.Error())
-	return nil, err
+
+	if err = r.DB.Preload(clause.Associations).Where("estate_agent_id = ?", estateAgent.ID).Find(&tenants).Error; err != nil {
+		lib.LogError("mutation/GetTenants", err.Error())
+		return nil, err
+	}
+
+	return tenants, err
 }

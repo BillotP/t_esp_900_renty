@@ -1,5 +1,8 @@
 <template>
   <v-container>
+    <v-btn right color="primary" v-on:click="goToCreateTenant">
+      Create Tenant
+    </v-btn>
     <v-data-table
         :headers="headers"
         :items="tenants"
@@ -148,6 +151,10 @@ export default class TenantList extends Vue {
     this.$router.push("/tenants/" + tenant.ID);
   }
 
+  goToCreateTenant() {
+    this.$router.push("/create/tenant/");
+  }
+
   selectTenant(tenant: any) {
     this.dialog = true;
     this.tenant = tenant;
@@ -160,6 +167,7 @@ export default class TenantList extends Vue {
       mutation: ASSIGN_PROPERTY_MUTATION,
       variables: {tenantId: this.tenant.ID, propertyId: this.property.ID}
     }).then((res) => {
+      this.dialog = false;
       console.log(res);
     }).catch((err) => {
       console.error(err);

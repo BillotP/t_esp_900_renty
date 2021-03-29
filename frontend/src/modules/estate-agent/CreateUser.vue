@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <h1>Create Estate Agent User account</h1>
     <v-text-field v-model="username" label="Username"></v-text-field>
     <v-text-field
@@ -16,7 +16,7 @@
         </v-btn>
       </template>
     </v-snackbar>
-  </div>
+  </v-container>
 </template>
 
 <script>

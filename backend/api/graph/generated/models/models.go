@@ -34,9 +34,9 @@ type Anomaly struct {
 	AssignedToID *int64         `json:"assignedToID"`
 	AssignedTo   *EstateAgent   `json:"assignedTo" gorm:"foreignKey:AssignedToID"`
 	CreateByID   *int64         `json:"createByID"`
-	CreateBy     *Tenant        `json:"createBy" gorm:"foreignKey:AssignedToID"`
+	CreateBy     *Tenant        `json:"createBy" gorm:"foreignKey:CreateByID"`
 	PropertyID   *int64         `json:"propertyID"`
-	Property     *Property      `json:"property" gorm:"foreignKey:AssignedToID"`
+	Property     *Property      `json:"property" gorm:"foreignKey:PropertyID"`
 	Description  string         `json:"description"`
 	Type         string         `json:"type"`
 	State        *AnomalyStates `json:"state"`

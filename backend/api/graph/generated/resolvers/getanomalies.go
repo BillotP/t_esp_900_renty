@@ -9,18 +9,33 @@ import (
 
 func (r *QueryResolver) Anomalies(ctx context.Context) ([]*models.Anomaly, error) {
 	var (
-		anomalies []models.Anomaly
-		err error
+		estateAgent models.EstateAgent
+		tenant      models.Tenant
+
+		anomalies []*models.Anomaly
+		err       error
 	)
 
-	if err = r.DB.Preload(clause.Associations).Find(&anomalies).Error; err == nil {
-		var anomaliesfmt []*models.Anomaly
+	username := ctx.Value(lib.ContextKey("username")).(string)
 
-		for i := range anomalies {
-			anomaliesfmt = append(anomaliesfmt, &anomalies[i])
+	if err = r.DB.Joins("User").Where("username = ?", username).First(&tenant).Error; err == nil {
+		if err = r.DB.Preload(clause.Associations).Where("create_by_id = ?", tenant.ID).Find(&anomalies).Error; err != nil {
+			lib.LogError("mutation/GetAnomalies", err.Error())
+			return nil, err
 		}
-		return anomaliesfmt, nil
+		return anomalies, nil
 	}
+
+	lib.LogError("mutation/GetAnomalies", err.Error())
+
+	if err = r.DB.Joins("User").Where("username = ?", username).First(&estateAgent).Error; err == nil {
+		if err = r.DB.Preload(clause.Associations).Where("assigned_to_id = ?", estateAgent.ID).Find(&anomalies).Error; err != nil {
+			lib.LogError("mutation/GetAnomalies", err.Error())
+			return nil, err
+		}
+		return anomalies, nil
+	}
+
 	lib.LogError("mutation/GetAnomalies", err.Error())
 	return nil, err
 }

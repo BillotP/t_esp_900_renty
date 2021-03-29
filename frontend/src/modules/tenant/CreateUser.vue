@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <v-container>
     <h1>Create Tenant User account</h1>
     <v-text-field v-model="username" label="Username"></v-text-field>
     <v-text-field type="password" v-model="password" label="Password"></v-text-field>
     <v-btn depressed color="primary" v-on:click="createUser()">
       Create
     </v-btn>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -46,8 +46,8 @@ export default class CreateTenantUser extends Vue {
         }
       });
       if (resp.data.createTenantUser.ID) {
-          this.$data.text = 'User ' + this.$data.username + ' create successfully !';
-          this.$data.snackbar = true;
+        this.$data.text = 'User ' + this.$data.username + ' create successfully !';
+        this.$data.snackbar = true;
       }
     } catch (e) {
       console.error(e);

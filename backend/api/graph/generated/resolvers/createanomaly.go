@@ -9,21 +9,49 @@ import (
 
 func (r *MutationResolver) CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error) {
 	var (
-		anomaly *models.Anomaly
-		err error
-	)
-	anomaly = &models.Anomaly{
-		PropertyID:     input.Property,
-		Type: 			input.Type,
-		Description:	input.Description,
-	}
+		tenant models.Tenant
 
-	if err = r.DB.Where(&anomaly).First(&anomaly).Error; err == nil {
-		return nil, fmt.Errorf("anomaly already created")
-	}
-	if err = r.DB.Create(&anomaly).Error; err != nil {
-		lib.LogError("mutation/Register/GetAnomaly", err.Error())
+		anomaly models.Anomaly
+		err     error
+	)
+
+	username := ctx.Value(lib.ContextKey("username")).(string)
+	tenant = models.Tenant{User: &models.User{Username: username}}
+	if err = r.DB.Preload("EstateAgent").Joins("User").Where("username = ?", tenant.User.Username).First(&tenant).Error; err != nil {
+		lib.LogError("mutation/CreateAnomaly", err.Error())
 		return nil, err
 	}
-	return anomaly, nil
+
+	if err = r.DB.Model(&tenant).Association("Properties").Find(&tenant.Properties); err != nil {
+		lib.LogError("mutation/CreateAnomaly", err.Error())
+		return nil, err
+	}
+
+
+	anomaly = models.Anomaly{
+		PropertyID:   tenant.Properties[0].ID,
+		Type:         input.Type,
+		Description:  input.Description,
+		CreateByID:   tenant.ID,
+		AssignedToID: tenant.EstateAgent.ID,
+	}
+
+	fmt.Println(*tenant.Properties[0].ID)
+	fmt.Println(tenant.Properties[0])
+	fmt.Println(input.Type)
+	fmt.Println(input.Description)
+	fmt.Println(tenant)
+	fmt.Println(*tenant.ID)
+	fmt.Println(tenant.EstateAgent)
+	fmt.Println(*tenant.EstateAgent.ID)
+
+	if err = r.DB.Where(anomaly).First(&anomaly).Error; err == nil {
+		return nil, fmt.Errorf("anomaly already created")
+	}
+
+	if err = r.DB.Create(&anomaly).Error; err != nil {
+		lib.LogError("mutation/CreateAnomaly", err.Error())
+		return nil, err
+	}
+	return &anomaly, nil
 }

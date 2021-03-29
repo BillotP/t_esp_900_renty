@@ -10,23 +10,30 @@ import (
 
 func (r *MutationResolver) CreateTenantUser(ctx context.Context, input *models.TenantInput) (*models.Tenant, error) {
 	var (
-		usernameCtx = lib.ContextKey("username")
-
-		estateAgent *models.EstateAgent
+		estateAgent models.EstateAgent
 		tenant      *models.Tenant
 		pwdHash     []byte
 
 		err error
 	)
 
-	estateAgentUsername := ctx.Value(usernameCtx).(string)
+	username := ctx.Value(lib.ContextKey("username")).(string)
 
-	estateAgent = &models.EstateAgent{
-		User: &models.User{
-			Username: estateAgentUsername,
-		},
-	}
-	if err = r.DB.Where(&estateAgent).First(&estateAgent).Error; err != nil {
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+	fmt.Println(username)
+
+	if err = r.DB.Joins("User").Where("username = ?", username).First(&estateAgent).Error; err != nil {
 		return nil, err
 	}
 
