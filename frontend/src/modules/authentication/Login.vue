@@ -5,8 +5,18 @@
       <v-container fluid>
         <v-row>
           <v-radio-group v-model="role" mandatory>
-            <v-radio color="primary" label="Company" value="0" key="0"></v-radio>
-            <v-radio color="primary" label="Estate Agent" value="1" key="1"></v-radio>
+            <v-radio
+              color="primary"
+              label="Company"
+              value="0"
+              key="0"
+            ></v-radio>
+            <v-radio
+              color="primary"
+              label="Estate Agent"
+              value="1"
+              key="1"
+            ></v-radio>
             <v-radio color="primary" label="Tenant" value="2" key="2"></v-radio>
           </v-radio-group>
         </v-row>
@@ -16,9 +26,9 @@
         </v-row>
         <v-row>
           <v-text-field
-              type="password"
-              v-model="modelPassword"
-              label="Password"
+            type="password"
+            v-model="modelPassword"
+            label="Password"
           ></v-text-field>
         </v-row>
         <v-row>
@@ -112,6 +122,7 @@ const LOGIN_TENANT_MUTATION = gql`
 export default class Auth extends Vue {
   private username: string = "";
   private password: string = "";
+  private role: number = -1;
 
   data() {
     return {
@@ -135,6 +146,13 @@ export default class Auth extends Vue {
 
   set modelPassword(password: string) {
     this.password = password;
+  }
+
+  get modelRole(): number {
+    return +this.role as number;
+  }
+  set modelRole(role: number) {
+    this.role = +role as number;
   }
 
   @authModule.Action("login")
@@ -166,23 +184,23 @@ export default class Auth extends Vue {
           },
         },
       });
-<<<<<<< HEAD
       if (resp.data[loginAs[this.modelRole].key].token) {
         //this.setInformationsLogin({ username: this.modelUsername, privilege: 0 });
         localStorage.setItem("username", this.modelUsername);
         localStorage.setItem("privilege", this.modelRole.toString());
-        localStorage.setItem("token", resp.data[loginAs[this.modelRole].key].token);
-        localStorage.setItem("id", resp.data[loginAs[this.modelRole].key].ID);
-=======
-      if (resp.data[loginAs[this.$data.roleSelected].key].token) {
-        //this.setInformationsLogin({ username: this.modelUsername, privilege: 0 });
-        localStorage.setItem("username", this.modelUsername);
-        localStorage.setItem("privilege", this.$data.roleSelected.toString());
         localStorage.setItem(
           "token",
-          resp.data[loginAs[this.$data.roleSelected].key].token
+          resp.data[loginAs[this.modelRole].key].token
         );
->>>>>>> 2c9126d (create ticket + responsive #WIP)
+        localStorage.setItem("id", resp.data[loginAs[this.modelRole].key].ID);
+        // if (resp.data[loginAs[this.$data.roleSelected].key].token) {
+        //   //this.setInformationsLogin({ username: this.modelUsername, privilege: 0 });
+        //   localStorage.setItem("username", this.modelUsername);
+        //   localStorage.setItem("privilege", this.$data.roleSelected.toString());
+        //   localStorage.setItem(
+        //     "token",
+        //     resp.data[loginAs[this.$data.roleSelected].key].token
+        //   );
         this.$router.push("/");
       }
     } catch (e) {
@@ -190,13 +208,11 @@ export default class Auth extends Vue {
     }
   }
 
-  public mounted()
-  {
-    if (localStorage.getItem('token')) {
-        this.$router.push("/");
+  public mounted() {
+    if (localStorage.getItem("token")) {
+      this.$router.push("/");
     }
   }
-
 }
 </script>
 
