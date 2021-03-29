@@ -49,7 +49,7 @@ func InitMockDB(userrole models.Role) {
 	c := exec.Config{
 		Resolvers: &resolvers.Resolver{DB: db},
 		Directives: exec.DirectiveRoot{
-			HasRole: func(ctx context.Context, obj interface{}, next graphql.Resolver, role models.Role) (res interface{}, err error) {
+			HasRole: func(ctx context.Context, obj interface{}, next graphql.Resolver, roles []*models.Role) (res interface{}, err error) {
 				return next(ctx)
 			},
 		}}

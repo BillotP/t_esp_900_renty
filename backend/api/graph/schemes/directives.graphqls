@@ -1,4 +1,4 @@
-directive @hasRole(role: Role!) on FIELD_DEFINITION
+directive @hasRole(roles: [Role]!) on FIELD_DEFINITION
 
 enum Role {
     ESTATE_AGENT

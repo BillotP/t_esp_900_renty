@@ -42,7 +42,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	HasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, role models.Role) (res interface{}, err error)
+	HasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, roles []*models.Role) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -127,6 +127,8 @@ type ComplexityRoot struct {
 		Address    func(childComplexity int) int
 		Area       func(childComplexity int) int
 		CodeNumber func(childComplexity int) int
+		Company    func(childComplexity int) int
+		CompanyID  func(childComplexity int) int
 		CreatedAt  func(childComplexity int) int
 		ID         func(childComplexity int) int
 		Type       func(childComplexity int) int
@@ -141,6 +143,8 @@ type ComplexityRoot struct {
 		EstateAgent  func(childComplexity int, id int64) int
 		EstateAgents func(childComplexity int) int
 		Profile      func(childComplexity int) int
+		Properties   func(childComplexity int) int
+		Property     func(childComplexity int, id int64) int
 		Tenant       func(childComplexity int, id int64) int
 		Tenants      func(childComplexity int) int
 	}
@@ -191,6 +195,8 @@ type QueryResolver interface {
 	EstateAgents(ctx context.Context) ([]*models.EstateAgent, error)
 	Company(ctx context.Context, id int64) (*models.Company, error)
 	Companies(ctx context.Context) ([]*models.Company, error)
+	Property(ctx context.Context, id int64) (*models.Property, error)
+	Properties(ctx context.Context) ([]*models.Property, error)
 	Profile(ctx context.Context) (models.Profile, error)
 }
 
@@ -687,6 +693,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Property.CodeNumber(childComplexity), true
 
+	case "Property.company":
+		if e.complexity.Property.Company == nil {
+			break
+		}
+
+		return e.complexity.Property.Company(childComplexity), true
+
+	case "Property.companyID":
+		if e.complexity.Property.CompanyID == nil {
+			break
+		}
+
+		return e.complexity.Property.CompanyID(childComplexity), true
+
 	case "Property.createdAt":
 		if e.complexity.Property.CreatedAt == nil {
 			break
@@ -778,6 +798,25 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Profile(childComplexity), true
+
+	case "Query.properties":
+		if e.complexity.Query.Properties == nil {
+			break
+		}
+
+		return e.complexity.Query.Properties(childComplexity), true
+
+	case "Query.property":
+		if e.complexity.Query.Property == nil {
+			break
+		}
+
+		args, err := ec.field_Query_property_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Property(childComplexity, args["id"].(int64)), true
 
 	case "Query.tenant":
 		if e.complexity.Query.Tenant == nil {
@@ -1065,7 +1104,7 @@ type Credential {
     user: User
     token: String
 }`, BuiltIn: false},
-	&ast.Source{Name: "schemes/directives.graphqls", Input: `directive @hasRole(role: Role!) on FIELD_DEFINITION
+	&ast.Source{Name: "schemes/directives.graphqls", Input: `directive @hasRole(roles: [Role]!) on FIELD_DEFINITION
 
 enum Role {
     ESTATE_AGENT
@@ -1127,6 +1166,8 @@ type Property {
     address: String
     codeNumber: Int
     type: String
+    companyID: Int
+    company: Company! @extraTag(gorm:"foreignKey:CompanyID")
 }
 
 input PropertyInput {
@@ -1138,13 +1179,15 @@ input PropertyInput {
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/query.graphqls", Input: `type Query {
     anomaly(id: String!): Anomaly!
-    anomalies: [Anomaly!]! @hasRole(role: ESTATE_AGENT)
+    anomalies: [Anomaly!]! @hasRole(roles: [ESTATE_AGENT])
     tenant(id: Int!): Tenant!
-    tenants: [Tenant!]! @hasRole(role: ESTATE_AGENT)
-    estateAgent(id: Int!): EstateAgent! @hasRole(role: COMPANY)
-    estateAgents: [EstateAgent!]! @hasRole(role: COMPANY)
-    company(id: Int!): Company! @hasRole(role: ADMIN)
-    companies: [Company!]! @hasRole(role: ADMIN)
+    tenants: [Tenant!]! @hasRole(roles: [ESTATE_AGENT])
+    estateAgent(id: Int!): EstateAgent! @hasRole(roles: [COMPANY])
+    estateAgents: [EstateAgent!]! @hasRole(roles: [COMPANY])
+    company(id: Int!): Company! @hasRole(roles: [ADMIN])
+    companies: [Company!]! @hasRole(roles: [ADMIN])
+    property(id: Int!): Property! @hasRole(roles: [ESTATE_AGENT, TENANT])
+    properties: [Property!]! @hasRole(roles: [ESTATE_AGENT])
     profile: Profile
 }
 `, BuiltIn: false},
@@ -1203,14 +1246,14 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 models.Role
-	if tmp, ok := rawArgs["role"]; ok {
-		arg0, err = ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, tmp)
+	var arg0 []*models.Role
+	if tmp, ok := rawArgs["roles"]; ok {
+		arg0, err = ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["role"] = arg0
+	args["roles"] = arg0
 	return args, nil
 }
 
@@ -1447,6 +1490,20 @@ func (ec *executionContext) field_Query_company_args(ctx context.Context, rawArg
 }
 
 func (ec *executionContext) field_Query_estateAgent_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int64
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNInt2int64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_property_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int64
@@ -2986,14 +3043,10 @@ func (ec *executionContext) _Mutation_createEstateAgentUser(ctx context.Context,
 			return ec.resolvers.Mutation().CreateEstateAgentUser(rctx, args["input"].(*models.EstateAgentInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
-			if err != nil {
-				return nil, err
-			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, nil)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3051,14 +3104,10 @@ func (ec *executionContext) _Mutation_createTenantUser(ctx context.Context, fiel
 			return ec.resolvers.Mutation().CreateTenantUser(rctx, args["input"].(*models.TenantInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
-			if err != nil {
-				return nil, err
-			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, nil)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3116,14 +3165,10 @@ func (ec *executionContext) _Mutation_acceptCompany(ctx context.Context, field g
 			return ec.resolvers.Mutation().AcceptCompany(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
-			if err != nil {
-				return nil, err
-			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, nil)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3304,14 +3349,10 @@ func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, f
 			return ec.resolvers.Mutation().UpdateTenantProfile(rctx, args["input"].(*models.TenantUpdateInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "TENANT")
-			if err != nil {
-				return nil, err
-			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, nil)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3369,14 +3410,10 @@ func (ec *executionContext) _Mutation_uploadDocument(ctx context.Context, field 
 			return ec.resolvers.Mutation().UploadDocument(rctx, args["file"].(graphql.Upload), args["title"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "TENANT")
-			if err != nil {
-				return nil, err
-			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, nil)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3431,14 +3468,10 @@ func (ec *executionContext) _Mutation_createProperty(ctx context.Context, field 
 			return ec.resolvers.Mutation().CreateProperty(rctx, args["input"].(*models.PropertyInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
-			if err != nil {
-				return nil, err
-			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, nil)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3496,14 +3529,10 @@ func (ec *executionContext) _Mutation_createAnomaly(ctx context.Context, field g
 			return ec.resolvers.Mutation().CreateAnomaly(rctx, args["input"].(*models.AnomalyInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "TENANT")
-			if err != nil {
-				return nil, err
-			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, nil)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3561,14 +3590,10 @@ func (ec *executionContext) _Mutation_updateAnomaly(ctx context.Context, field g
 			return ec.resolvers.Mutation().UpdateAnomaly(rctx, args["input"].(*models.AnomalyUpdateInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
-			if err != nil {
-				return nil, err
-			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, nil)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3815,6 +3840,71 @@ func (ec *executionContext) _Property_type(ctx context.Context, field graphql.Co
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Property_companyID(ctx context.Context, field graphql.CollectedField, obj *models.Property) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CompanyID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Property_company(ctx context.Context, field graphql.CollectedField, obj *models.Property) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Property",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Company, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Company)
+	fc.Result = res
+	return ec.marshalNCompany2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompany(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_anomaly(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3877,14 +3967,14 @@ func (ec *executionContext) _Query_anomalies(ctx context.Context, field graphql.
 			return ec.resolvers.Query().Anomalies(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
 			if err != nil {
 				return nil, err
 			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3976,14 +4066,14 @@ func (ec *executionContext) _Query_tenants(ctx context.Context, field graphql.Co
 			return ec.resolvers.Query().Tenants(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ESTATE_AGENT")
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
 			if err != nil {
 				return nil, err
 			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -4041,14 +4131,14 @@ func (ec *executionContext) _Query_estateAgent(ctx context.Context, field graphq
 			return ec.resolvers.Query().EstateAgent(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY"})
 			if err != nil {
 				return nil, err
 			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -4099,14 +4189,14 @@ func (ec *executionContext) _Query_estateAgents(ctx context.Context, field graph
 			return ec.resolvers.Query().EstateAgents(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "COMPANY")
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY"})
 			if err != nil {
 				return nil, err
 			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -4164,14 +4254,14 @@ func (ec *executionContext) _Query_company(ctx context.Context, field graphql.Co
 			return ec.resolvers.Query().Company(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ADMIN"})
 			if err != nil {
 				return nil, err
 			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -4222,14 +4312,14 @@ func (ec *executionContext) _Query_companies(ctx context.Context, field graphql.
 			return ec.resolvers.Query().Companies(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, "ADMIN")
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ADMIN"})
 			if err != nil {
 				return nil, err
 			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, role)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -4257,6 +4347,129 @@ func (ec *executionContext) _Query_companies(ctx context.Context, field graphql.
 	res := resTmp.([]*models.Company)
 	fc.Result = res
 	return ec.marshalNCompany2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCompanyᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_property(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_property_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Property(rctx, args["id"].(int64))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT", "TENANT"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.Property); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Property`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Property)
+	fc.Result = res
+	return ec.marshalNProperty2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐProperty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_properties(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Properties(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*models.Property); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Property`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Property)
+	fc.Result = res
+	return ec.marshalNProperty2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_profile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6530,6 +6743,13 @@ func (ec *executionContext) _Property(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._Property_codeNumber(ctx, field, obj)
 		case "type":
 			out.Values[i] = ec._Property_type(ctx, field, obj)
+		case "companyID":
+			out.Values[i] = ec._Property_companyID(ctx, field, obj)
+		case "company":
+			out.Values[i] = ec._Property_company(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6663,6 +6883,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_companies(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "property":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_property(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "properties":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_properties(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -7249,6 +7497,43 @@ func (ec *executionContext) marshalNProperty2githubᚗcomᚋBillotPᚋt_esp_900_
 	return ec._Property(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNProperty2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Property) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNProperty2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐProperty(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
 func (ec *executionContext) marshalNProperty2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐProperty(ctx context.Context, sel ast.SelectionSet, v *models.Property) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -7266,6 +7551,63 @@ func (ec *executionContext) unmarshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_re
 
 func (ec *executionContext) marshalNRole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, sel ast.SelectionSet, v models.Role) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, v interface{}) ([]*models.Role, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*models.Role, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalORole2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, sel ast.SelectionSet, v []*models.Role) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalORole2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -7890,6 +8232,30 @@ func (ec *executionContext) unmarshalOPropertyInput2ᚖgithubᚗcomᚋBillotPᚋ
 	}
 	res, err := ec.unmarshalOPropertyInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPropertyInput(ctx, v)
 	return &res, err
+}
+
+func (ec *executionContext) unmarshalORole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, v interface{}) (models.Role, error) {
+	var res models.Role
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalORole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, sel ast.SelectionSet, v models.Role) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, v interface{}) (*models.Role, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalORole2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalORole2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, sel ast.SelectionSet, v *models.Role) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
