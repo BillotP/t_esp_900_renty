@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestQueryResolver_GetCompany(t *testing.T) {
+func TestQueryResolver_Company(t *testing.T) {
 	var (
 		query  string
 		output struct {

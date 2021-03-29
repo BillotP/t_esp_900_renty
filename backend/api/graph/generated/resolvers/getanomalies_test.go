@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestQueryResolver_GetAnomalies(t *testing.T) {
+func TestQueryResolver_Anomalies(t *testing.T) {
 	var (
 		query  string
 		output struct {

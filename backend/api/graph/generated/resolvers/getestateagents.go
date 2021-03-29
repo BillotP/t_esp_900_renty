@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (r *QueryResolver) GetEstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
+func (r *QueryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
 	var (
 		estateAgents []models.EstateAgent
 

@@ -7,4 +7,5 @@ type Query {
     estateAgents: [EstateAgent!]! @hasRole(role: COMPANY)
     company(id: Int!): Company! @hasRole(role: ADMIN)
     companies: [Company!]! @hasRole(role: ADMIN)
+    profile: Profile
 }

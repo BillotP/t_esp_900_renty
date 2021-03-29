@@ -36,7 +36,7 @@ RUN go build -ldflags="-w -s" -o bin/server .
 ############################
 # STEP 2 build a small image
 ############################
-FROM scratch
+FROM golang:alpine
 WORKDIR /go
 # Import missing files in scratch image like the user and group files from the builder.
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo

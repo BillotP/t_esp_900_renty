@@ -1,7 +1,7 @@
 """
 An EstateAgent is a
 """
-type EstateAgent {
+type EstateAgent implements Profile {
     ID: Int @extraTag(gorm:"primarykey")
     createdAt: Time
     updatedAt: Time

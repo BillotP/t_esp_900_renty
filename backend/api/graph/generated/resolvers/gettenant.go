@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (r *QueryResolver) GetTenant(ctx context.Context, id int64) (*models.Tenant, error) {
+func (r *QueryResolver) Tenant(ctx context.Context, id int64) (*models.Tenant, error) {
 	var (
 		tenant models.Tenant
 

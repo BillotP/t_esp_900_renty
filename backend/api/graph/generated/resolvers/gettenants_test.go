@@ -9,7 +9,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-func TestQueryResolver_GetTenants(t *testing.T) {
+func TestQueryResolver_Tenants(t *testing.T) {
 	var (
 		query  string
 		output struct {
