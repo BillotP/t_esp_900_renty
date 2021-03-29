@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+type Profile interface {
+	IsProfile()
+}
+
 // An Admin is a
 type Admin struct {
 	ID        *int64     `json:"ID" gorm:"primarykey"`
@@ -74,6 +78,8 @@ type Company struct {
 	Verified    *bool      `json:"verified"`
 }
 
+func (Company) IsProfile() {}
+
 type CompanyInput struct {
 	Name        string     `json:"name"`
 	User        *UserInput `json:"user"`
@@ -98,6 +104,8 @@ type EstateAgent struct {
 	UserID    *int64     `json:"userID"`
 	User      *User      `json:"user" gorm:"foreignKey:UserID"`
 }
+
+func (EstateAgent) IsProfile() {}
 
 type EstateAgentInput struct {
 	User *UserInput `json:"user"`
@@ -133,6 +141,8 @@ type Tenant struct {
 	EstateAgent   *EstateAgent `json:"estateAgent" gorm:"foreignKey:EstateAgentID"`
 	Documents     []*Asset     `json:"documents" gorm:"many2many:tenant_documents"`
 }
+
+func (Tenant) IsProfile() {}
 
 type TenantInput struct {
 	User *UserInput `json:"user"`

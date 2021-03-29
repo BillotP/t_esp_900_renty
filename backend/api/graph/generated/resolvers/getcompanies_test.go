@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestQueryResolver_GetCompanies(t *testing.T) {
+func TestQueryResolver_Companies(t *testing.T) {
 
 	var (
 		query  string

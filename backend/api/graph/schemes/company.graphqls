@@ -1,7 +1,7 @@
 """
 A Company is a
 """
-type Company {
+type Company implements Profile {
     ID: Int @extraTag(gorm:"primarykey")
     createdAt: Time
     updatedAt: Time

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestQueryResolver_GetEstateAgent(t *testing.T) {
+func TestQueryResolver_EstateAgent(t *testing.T) {
 	var (
 		query  string
 		output struct {

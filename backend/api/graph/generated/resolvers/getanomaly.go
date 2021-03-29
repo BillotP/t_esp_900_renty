@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (r *QueryResolver) GetAnomaly(ctx context.Context, id string) (*models.Anomaly, error) {
+func (r *QueryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly, error) {
 	var (
 		anomaly *models.Anomaly
 		err error

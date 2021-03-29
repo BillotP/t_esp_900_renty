@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (r *QueryResolver) GetCompany(ctx context.Context, id int64) (*models.Company, error) {
+func (r *QueryResolver) Company(ctx context.Context, id int64) (*models.Company, error) {
 	var (
 		company models.Company
 

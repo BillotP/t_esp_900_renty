@@ -1,0 +1,3 @@
+interface Profile {
+    ID: Int @extraTag(gorm:"primarykey")
+}
