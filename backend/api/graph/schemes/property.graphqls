@@ -9,6 +9,8 @@ type Property {
     address: String
     codeNumber: Int
     type: String
+    companyID: Int
+    company: Company! @extraTag(gorm:"foreignKey:CompanyID")
 }
 
 input PropertyInput {

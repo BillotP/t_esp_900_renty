@@ -1,11 +1,13 @@
 type Query {
     anomaly(id: String!): Anomaly!
-    anomalies: [Anomaly!]! @hasRole(role: ESTATE_AGENT)
+    anomalies: [Anomaly!]! @hasRole(roles: [ESTATE_AGENT])
     tenant(id: Int!): Tenant!
-    tenants: [Tenant!]! @hasRole(role: ESTATE_AGENT)
-    estateAgent(id: Int!): EstateAgent! @hasRole(role: COMPANY)
-    estateAgents: [EstateAgent!]! @hasRole(role: COMPANY)
-    company(id: Int!): Company! @hasRole(role: ADMIN)
-    companies: [Company!]! @hasRole(role: ADMIN)
+    tenants: [Tenant!]! @hasRole(roles: [ESTATE_AGENT])
+    estateAgent(id: Int!): EstateAgent! @hasRole(roles: [COMPANY])
+    estateAgents: [EstateAgent!]! @hasRole(roles: [COMPANY])
+    company(id: Int!): Company! @hasRole(roles: [ADMIN])
+    companies: [Company!]! @hasRole(roles: [ADMIN])
+    property(id: Int!): Property! @hasRole(roles: [ESTATE_AGENT, TENANT])
+    properties: [Property!]! @hasRole(roles: [ESTATE_AGENT])
     profile: Profile
 }

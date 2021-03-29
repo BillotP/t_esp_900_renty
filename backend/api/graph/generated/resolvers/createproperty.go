@@ -9,14 +9,27 @@ import (
 
 func (r *MutationResolver) CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error) {
 	var (
+		estateAgent models.EstateAgent
+
 		property *models.Property
-		err error
+		err      error
 	)
+
+	username := ctx.Value(lib.ContextKey("username")).(string)
+	estateAgent = models.EstateAgent{User: &models.User{Username: username}}
+
+	if err = r.DB.Joins("User").Joins("Company").Where("username = ?", estateAgent.User.Username).First(&estateAgent).Error; err != nil {
+		lib.LogError("mutation/CreateProperty", err.Error())
+		return nil, err
+	}
+
 	property = &models.Property{
 		Area:       input.Area,
-		Address: 	input.Address,
+		Address:    input.Address,
 		CodeNumber: input.CodeNumber,
-		Type:		input.Type,
+		Type:       input.Type,
+		Company:    estateAgent.Company,
+		CompanyID:  estateAgent.CompanyID,
 	}
 	if err = r.DB.Where("address = ?", property.Address).First(&property).Error; err == nil {
 		return nil, fmt.Errorf("there is already a property at this address")

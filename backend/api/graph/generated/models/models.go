@@ -120,6 +120,8 @@ type Property struct {
 	Address    *string    `json:"address"`
 	CodeNumber *int64     `json:"codeNumber"`
 	Type       *string    `json:"type"`
+	CompanyID  *int64     `json:"companyID"`
+	Company    *Company   `json:"company" gorm:"foreignKey:CompanyID"`
 }
 
 type PropertyInput struct {

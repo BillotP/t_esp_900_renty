@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 const TenantList = (resolve: any) => require(["@/modules/tenant/List.vue"], (m: any) => resolve(m.default));
 const TenantProfile = (resolve: any) => require(["@/modules/tenant/Profile.vue"], (m: any) => resolve(m.default));
 const TenantEdit = (resolve: any) => require(["@/modules/tenant/Edit.vue"], (m: any) => resolve(m.default));
+const TenantCreateUser = (resolve: any) => require(["@/modules/tenant/CreateUser.vue"], (m: any) => resolve(m.default));
 
 const PROFILE_QUERY = gql`
   query profile {
@@ -45,6 +46,10 @@ const module: RouteConfig[] = [
 
       next('/');
     }
+  },
+  {
+    path: '/create/tenant',
+    component: TenantCreateUser,
   }
 ];
 
