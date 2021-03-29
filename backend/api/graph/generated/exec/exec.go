@@ -109,6 +109,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AcceptCompany         func(childComplexity int, id int64) int
+		AssignProperty        func(childComplexity int, tenantID int64, propertyID int64) int
 		CreateAnomaly         func(childComplexity int, input *models.AnomalyInput) int
 		CreateEstateAgentUser func(childComplexity int, input *models.EstateAgentInput) int
 		CreateProperty        func(childComplexity int, input *models.PropertyInput) int
@@ -119,7 +120,6 @@ type ComplexityRoot struct {
 		SignupAsAdmin         func(childComplexity int, input models.AdminInput) int
 		SignupAsCompany       func(childComplexity int, input models.CompanyInput) int
 		UpdateAnomaly         func(childComplexity int, input *models.AnomalyUpdateInput) int
-		UpdateTenantProfile   func(childComplexity int, input *models.TenantUpdateInput) int
 		UploadDocument        func(childComplexity int, file graphql.Upload, title string) int
 	}
 
@@ -180,7 +180,7 @@ type MutationResolver interface {
 	LoginAsCompany(ctx context.Context, input *models.UserInput) (*models.Credential, error)
 	LoginAsEstateAgent(ctx context.Context, input *models.UserInput) (*models.Credential, error)
 	LoginAsTenant(ctx context.Context, input *models.UserInput) (*models.Credential, error)
-	UpdateTenantProfile(ctx context.Context, input *models.TenantUpdateInput) (*models.Tenant, error)
+	AssignProperty(ctx context.Context, tenantID int64, propertyID int64) (*models.Tenant, error)
 	UploadDocument(ctx context.Context, file graphql.Upload, title string) (*bool, error)
 	CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error)
 	CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error)
@@ -528,6 +528,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AcceptCompany(childComplexity, args["id"].(int64)), true
 
+	case "Mutation.assignProperty":
+		if e.complexity.Mutation.AssignProperty == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_assignProperty_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AssignProperty(childComplexity, args["tenantId"].(int64), args["propertyId"].(int64)), true
+
 	case "Mutation.createAnomaly":
 		if e.complexity.Mutation.CreateAnomaly == nil {
 			break
@@ -647,18 +659,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateAnomaly(childComplexity, args["input"].(*models.AnomalyUpdateInput)), true
-
-	case "Mutation.updateTenantProfile":
-		if e.complexity.Mutation.UpdateTenantProfile == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_updateTenantProfile_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.UpdateTenantProfile(childComplexity, args["input"].(*models.TenantUpdateInput)), true
 
 	case "Mutation.uploadDocument":
 		if e.complexity.Mutation.UploadDocument == nil {
@@ -1137,22 +1137,22 @@ input EstateAgentInput {
 	&ast.Source{Name: "schemes/mutation.graphqls", Input: `type Mutation {
     signupAsAdmin(input: AdminInput!): Credential!
     signupAsCompany(input: CompanyInput!): Credential!
-    createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(role: COMPANY)
-    createTenantUser(input: TenantInput): Tenant! @hasRole(role: ESTATE_AGENT)
+    createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(roles: [COMPANY])
+    createTenantUser(input: TenantInput): Tenant! @hasRole(roles: [ESTATE_AGENT])
 
-    acceptCompany(id: Int!): Company! @hasRole(role: ADMIN)
+    acceptCompany(id: Int!): Company! @hasRole(roles: [ADMIN])
 
     loginAsCompany(input: UserInput): Credential!
     loginAsEstateAgent(input: UserInput): Credential!
     loginAsTenant(input: UserInput): Credential!
 
-    updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: TENANT)
-    uploadDocument(file: Upload!, title: String!): Boolean @hasRole(role: TENANT)
+    assignProperty(tenantId: Int!, propertyId: Int!): Tenant! @hasRole(roles: [ESTATE_AGENT])
+    uploadDocument(file: Upload!, title: String!): Boolean @hasRole(roles: [TENANT])
 
-    createProperty(input: PropertyInput): Property! @hasRole(role: ESTATE_AGENT)
+    createProperty(input: PropertyInput): Property! @hasRole(roles: [ESTATE_AGENT])
 
-    createAnomaly(input: AnomalyInput): Anomaly! @hasRole(role: TENANT)
-    updateAnomaly(input: AnomalyUpdateInput): Anomaly! @hasRole(role: ESTATE_AGENT)
+    createAnomaly(input: AnomalyInput): Anomaly! @hasRole(roles: [TENANT])
+    updateAnomaly(input: AnomalyUpdateInput): Anomaly! @hasRole(roles: [ESTATE_AGENT])
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/property.graphqls", Input: `"""
@@ -1268,6 +1268,28 @@ func (ec *executionContext) field_Mutation_acceptCompany_args(ctx context.Contex
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_assignProperty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int64
+	if tmp, ok := rawArgs["tenantId"]; ok {
+		arg0, err = ec.unmarshalNInt2int64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["tenantId"] = arg0
+	var arg1 int64
+	if tmp, ok := rawArgs["propertyId"]; ok {
+		arg1, err = ec.unmarshalNInt2int64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["propertyId"] = arg1
 	return args, nil
 }
 
@@ -1403,20 +1425,6 @@ func (ec *executionContext) field_Mutation_updateAnomaly_args(ctx context.Contex
 	var arg0 *models.AnomalyUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		arg0, err = ec.unmarshalOAnomalyUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyUpdateInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_updateTenantProfile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *models.TenantUpdateInput
-	if tmp, ok := rawArgs["input"]; ok {
-		arg0, err = ec.unmarshalOTenantUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3043,10 +3051,14 @@ func (ec *executionContext) _Mutation_createEstateAgentUser(ctx context.Context,
 			return ec.resolvers.Mutation().CreateEstateAgentUser(rctx, args["input"].(*models.EstateAgentInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY"})
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, nil)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3104,10 +3116,14 @@ func (ec *executionContext) _Mutation_createTenantUser(ctx context.Context, fiel
 			return ec.resolvers.Mutation().CreateTenantUser(rctx, args["input"].(*models.TenantInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, nil)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3165,10 +3181,14 @@ func (ec *executionContext) _Mutation_acceptCompany(ctx context.Context, field g
 			return ec.resolvers.Mutation().AcceptCompany(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ADMIN"})
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, nil)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3321,7 +3341,7 @@ func (ec *executionContext) _Mutation_loginAsTenant(ctx context.Context, field g
 	return ec.marshalNCredential2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐCredential(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_assignProperty(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3337,7 +3357,7 @@ func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, f
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_updateTenantProfile_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_assignProperty_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3346,13 +3366,17 @@ func (ec *executionContext) _Mutation_updateTenantProfile(ctx context.Context, f
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateTenantProfile(rctx, args["input"].(*models.TenantUpdateInput))
+			return ec.resolvers.Mutation().AssignProperty(rctx, args["tenantId"].(int64), args["propertyId"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, nil)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3410,10 +3434,14 @@ func (ec *executionContext) _Mutation_uploadDocument(ctx context.Context, field 
 			return ec.resolvers.Mutation().UploadDocument(rctx, args["file"].(graphql.Upload), args["title"].(string))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"TENANT"})
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, nil)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3468,10 +3496,14 @@ func (ec *executionContext) _Mutation_createProperty(ctx context.Context, field 
 			return ec.resolvers.Mutation().CreateProperty(rctx, args["input"].(*models.PropertyInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, nil)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3529,10 +3561,14 @@ func (ec *executionContext) _Mutation_createAnomaly(ctx context.Context, field g
 			return ec.resolvers.Mutation().CreateAnomaly(rctx, args["input"].(*models.AnomalyInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"TENANT"})
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, nil)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -3590,10 +3626,14 @@ func (ec *executionContext) _Mutation_updateAnomaly(ctx context.Context, field g
 			return ec.resolvers.Mutation().UpdateAnomaly(rctx, args["input"].(*models.AnomalyUpdateInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
+			if err != nil {
+				return nil, err
+			}
 			if ec.directives.HasRole == nil {
 				return nil, errors.New("directive hasRole is not implemented")
 			}
-			return ec.directives.HasRole(ctx, nil, directive0, nil)
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
 		}
 
 		tmp, err := directive1(rctx)
@@ -6685,8 +6725,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "updateTenantProfile":
-			out.Values[i] = ec._Mutation_updateTenantProfile(ctx, field)
+		case "assignProperty":
+			out.Values[i] = ec._Mutation_assignProperty(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -8333,18 +8373,6 @@ func (ec *executionContext) unmarshalOTenantInput2ᚖgithubᚗcomᚋBillotPᚋt_
 		return nil, nil
 	}
 	res, err := ec.unmarshalOTenantInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantInput(ctx, v)
-	return &res, err
-}
-
-func (ec *executionContext) unmarshalOTenantUpdateInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantUpdateInput(ctx context.Context, v interface{}) (models.TenantUpdateInput, error) {
-	return ec.unmarshalInputTenantUpdateInput(ctx, v)
-}
-
-func (ec *executionContext) unmarshalOTenantUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantUpdateInput(ctx context.Context, v interface{}) (*models.TenantUpdateInput, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalOTenantUpdateInput2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐTenantUpdateInput(ctx, v)
 	return &res, err
 }
 
