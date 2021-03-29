@@ -11,6 +11,7 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+    next();
     if (to.path !== '/login' && !localStorage.getItem('username')) next({path: '/login'})
     else next();
 })
