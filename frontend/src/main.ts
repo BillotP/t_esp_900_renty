@@ -9,14 +9,14 @@ import vuetify from './plugins/vuetify';
 import "./plugins/forms";
 import { ApolloClient } from 'apollo-client'
 import {ApolloLink, concat} from 'apollo-link'
-import { createHttpLink } from 'apollo-link-http'
+import { createUploadLink } from 'apollo-upload-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
 
 Vue.use(VueApollo)
 
 // HTTP connection to the API
-const httpLink = createHttpLink({
+const httpLink = createUploadLink({
   // You should use an absolute URL here
   uri: 'http://localhost:8080/query',
 })
@@ -35,7 +35,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 const cache = new InMemoryCache()
 
 // Create the apollo client
-const apolloClient = new ApolloClient({
+export const apolloClient = new ApolloClient({
   link: concat(authMiddleware, httpLink),
   cache,
 })

@@ -115,6 +115,7 @@ export default class Auth extends Vue {
         localStorage.setItem("username", this.modelUsername);
         localStorage.setItem("privilege", this.modelRole.toString());
         localStorage.setItem("token", resp.data[loginAs[this.modelRole].key].token);
+        localStorage.setItem("id", resp.data[loginAs[this.modelRole].key].ID);
         this.$router.push("/");
       }
     } catch (e) {
