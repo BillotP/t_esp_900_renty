@@ -4,8 +4,17 @@
       :items="properties"
       :items-per-page="5"
       class="elevation-1"
-      @click:row="goToProfile"
-  ></v-data-table>
+  >
+    <template v-slot:item.actions="{ item }">
+      <v-icon
+          small
+          class="mr-2"
+          @click="goToProfile(item)"
+      >
+        mdi-eye
+      </v-icon>
+    </template>
+  </v-data-table>
 </template>
 
 <script lang="ts">
@@ -51,6 +60,7 @@ export default class PropertyList extends Vue {
         {text: 'CodeNumber', value: 'codeNumber'},
         {text: 'Address', value: 'address'},
         {text: 'Area', value: 'area'},
+        {text: 'Actions', value: 'actions', sortable: false},
       ]
     }
   }

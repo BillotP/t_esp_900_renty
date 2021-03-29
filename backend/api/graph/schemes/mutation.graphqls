@@ -1,20 +1,20 @@
 type Mutation {
     signupAsAdmin(input: AdminInput!): Credential!
     signupAsCompany(input: CompanyInput!): Credential!
-    createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(role: COMPANY)
-    createTenantUser(input: TenantInput): Tenant! @hasRole(role: ESTATE_AGENT)
+    createEstateAgentUser(input: EstateAgentInput): EstateAgent! @hasRole(roles: [COMPANY])
+    createTenantUser(input: TenantInput): Tenant! @hasRole(roles: [ESTATE_AGENT])
 
-    acceptCompany(id: Int!): Company! @hasRole(role: ADMIN)
+    acceptCompany(id: Int!): Company! @hasRole(roles: [ADMIN])
 
     loginAsCompany(input: UserInput): Credential!
     loginAsEstateAgent(input: UserInput): Credential!
     loginAsTenant(input: UserInput): Credential!
 
-    updateTenantProfile(input: TenantUpdateInput): Tenant! @hasRole(role: TENANT)
-    uploadDocument(file: Upload!, title: String!): Boolean @hasRole(role: TENANT)
+    assignProperty(tenantId: Int!, propertyId: Int!): Tenant! @hasRole(roles: [ESTATE_AGENT])
+    uploadDocument(file: Upload!, title: String!): Boolean @hasRole(roles: [TENANT])
 
-    createProperty(input: PropertyInput): Property! @hasRole(role: ESTATE_AGENT)
+    createProperty(input: PropertyInput): Property! @hasRole(roles: [ESTATE_AGENT])
 
-    createAnomaly(input: AnomalyInput): Anomaly! @hasRole(role: TENANT)
-    updateAnomaly(input: AnomalyUpdateInput): Anomaly! @hasRole(role: ESTATE_AGENT)
+    createAnomaly(input: AnomalyInput): Anomaly! @hasRole(roles: [TENANT])
+    updateAnomaly(input: AnomalyUpdateInput): Anomaly! @hasRole(roles: [ESTATE_AGENT])
 }
