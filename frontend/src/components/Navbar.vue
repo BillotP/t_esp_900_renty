@@ -12,7 +12,8 @@
         </v-col>
       </v-row>
       <v-spacer />
-      <v-tabs fixed-tabs height="70" v-if="!getRoute()">
+
+      <v-tabs fixed-tabs height="70">
         <v-tab exact to="/dashboard">Dashboard</v-tab>
         <v-tab v-if="getPrivilege == 0" exact to="/estate-agents">Estate Agents</v-tab>
         <v-tab v-if="getPrivilege == 1" exact to="/tenants">Tenants</v-tab>
@@ -80,18 +81,6 @@ export default class NavBar extends Vue {
   signOut() {
     localStorage.clear();
     this.$router.push("/login");
-  }
-
-  private getName()
-  {
-    if (localStorage.getItem('username')) {
-      return localStorage.getItem('username');
-    }
-    return "Undefined";
-  }
-
-  private getRoute() {
-    return this.$route.path.toString().includes("login");
   }
 }
 </script>

@@ -21,12 +21,7 @@ func (r *MutationResolver) CreateEstateAgentUser(ctx context.Context, input *mod
 
 	companyUsername := ctx.Value(usernameCtx).(string)
 
-	company = &models.Company{
-		User: &models.User{
-			Username: companyUsername,
-		},
-	}
-	if err = r.DB.Where(&company).First(&company).Error; err != nil {
+	if err = r.DB.Joins("User").Where("username = ?", companyUsername).First(&company).Error; err != nil {
 		return nil, err
 	}
 

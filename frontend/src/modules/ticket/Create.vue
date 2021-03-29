@@ -49,7 +49,6 @@ export default class CreateTicket extends Vue {
       description: "",
       valid: false,
       timeout: 2000,
-      property: this.$route.params.id,
       type: "",
     };
   }
@@ -60,7 +59,6 @@ export default class CreateTicket extends Vue {
         mutation: CREATE_ANOMALY_MUTATION,
         variables: {
           input: {
-            property: this.$data.property,
             type: this.$data.type,
             description: this.$data.description,
           },

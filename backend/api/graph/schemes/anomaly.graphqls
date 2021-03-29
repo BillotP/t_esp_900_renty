@@ -17,9 +17,9 @@ type Anomaly {
     assignedToID: Int
     assignedTo: EstateAgent @extraTag(gorm:"foreignKey:AssignedToID")
     createByID: Int
-    createBy: Tenant @extraTag(gorm:"foreignKey:AssignedToID")
+    createBy: Tenant @extraTag(gorm:"foreignKey:CreateByID")
     propertyID: Int
-    property: Property @extraTag(gorm:"foreignKey:AssignedToID")
+    property: Property @extraTag(gorm:"foreignKey:PropertyID")
     description: String!
     type: String!
     state: AnomalyStates

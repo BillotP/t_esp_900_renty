@@ -10,7 +10,7 @@ import (
 func (r *QueryResolver) Properties(ctx context.Context) ([]*models.Property, error) {
 	var (
 		estateAgent models.EstateAgent
-		properties  []models.Property
+		properties  []*models.Property
 		err         error
 	)
 
@@ -21,14 +21,9 @@ func (r *QueryResolver) Properties(ctx context.Context) ([]*models.Property, err
 		return nil, err
 	}
 
-	if err = r.DB.Joins("Company").Preload(clause.Associations).Where("company_id = ?", estateAgent.CompanyID).Find(&properties).Error; err == nil {
-		var propertiesfmt []*models.Property
-
-		for i := range properties {
-			propertiesfmt = append(propertiesfmt, &properties[i])
-		}
-		return propertiesfmt, nil
+	if err = r.DB.Preload(clause.Associations).Where("company_id = ?", estateAgent.CompanyID).Find(&properties).Error; err != nil {
+		lib.LogError("mutation/GetProperties", err.Error())
+		return nil, err
 	}
-	lib.LogError("mutation/GetProperties", err.Error())
-	return nil, err
+	return properties, err
 }
