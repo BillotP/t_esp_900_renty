@@ -42,6 +42,6 @@ export default new Vuetify({
     current: 'fr',
   },
   icons: {
-    iconfont: 'fa4' || 'mdi',
+    iconfont: 'mdi',
   },
 });

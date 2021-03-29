@@ -1,23 +1,32 @@
 <template>
-  <div>
-    <h1>Login</h1>
-    <input type="radio" id="company" value="0" v-model="role">
-    <label for="company">Company</label>
-    <br>
-    <input type="radio" id="estate-agent" value="1" v-model="role">
-    <label for="estate-agent">Estate Agent</label>
-    <br>
-    <input type="radio" id="tenant" value="2" v-model="role">
-    <label for="tenant">Tenant</label>
-    <br>
-    <v-text-field v-model="modelUsername" label="Username"></v-text-field>
-    <v-text-field
-        type="password"
-        v-model="modelPassword"
-        label="Password"
-    ></v-text-field>
-    <v-btn depressed color="primary" v-on:click="login()"> Login</v-btn>
-  </div>
+  <v-card flat>
+    <v-card-title>Login</v-card-title>
+    <v-card-text>
+      <v-container fluid>
+        <v-row>
+          <v-radio-group v-model="role" mandatory>
+            <v-radio color="primary" label="Company" value="0" key="0"></v-radio>
+            <v-radio color="primary" label="Estate Agent" value="1" key="1"></v-radio>
+            <v-radio color="primary" label="Tenant" value="2" key="2"></v-radio>
+          </v-radio-group>
+        </v-row>
+        <v-divider></v-divider>
+        <v-row>
+          <v-text-field v-model="modelUsername" label="Username"></v-text-field>
+        </v-row>
+        <v-row>
+          <v-text-field
+              type="password"
+              v-model="modelPassword"
+              label="Password"
+          ></v-text-field>
+        </v-row>
+        <v-row>
+          <v-btn depressed color="primary" v-on:click="login()"> Login</v-btn>
+        </v-row>
+      </v-container>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -109,7 +118,6 @@ export default class Auth extends Vue {
           },
         },
       });
-      debugger;
       if (resp.data[loginAs[this.modelRole].key].token) {
         //this.setInformationsLogin({ username: this.modelUsername, privilege: 0 });
         localStorage.setItem("username", this.modelUsername);
