@@ -7,20 +7,15 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (r *QueryResolver) Anomaly(ctx context.Context, id string) (*models.Anomaly, error) {
+func (r *QueryResolver) Anomaly(ctx context.Context, id int64) (*models.Anomaly, error) {
 	var (
-		anomaly *models.Anomaly
+		anomaly models.Anomaly
 		err error
 	)
 
-	/*if err = r.DB.Where("ID = ?", id).First(&anomaly).Error; err != nil {
-		return nil, fmt.Errorf("anomaly not found")
+	if err = r.DB.Preload(clause.Associations).Preload("CreateBy.User").Preload("AssignedTo.User").Where("id = ?", id).First(&anomaly).Error; err != nil {
+		lib.LogError("mutation/GetAnomaly", err.Error())
+		return nil, err
 	}
-	return anomaly, nil*/
-
-	if err = r.DB.Preload(clause.Associations).Where("id = ?", id).First(&anomaly).Error; err == nil {
-		return anomaly, nil
-	}
-	lib.LogError("mutation/GetAnomaly", err.Error())
-	return nil, err
+	return &anomaly, nil
 }
