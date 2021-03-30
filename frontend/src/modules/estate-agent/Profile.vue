@@ -1,21 +1,21 @@
 <template>
   <v-container>
     <v-card
-        v-if="property"
+        v-if="estateAgent"
         tile
     >
       <v-list>
         <v-list-item>
           <v-list-item-avatar>
             <v-img
-                src="https://as2.ftcdn.net/jpg/01/35/38/75/500_F_135387578_vKyGn4NM9E2ipUS9j1GRCDLs40CwRNyC.jpg"></v-img>
+                src="https://www.flaticon.com/svg/vstatic/svg/1029/1029022.svg?token=exp=1617065368~hmac=568d1fdbc9fbf86cf32adff388f85872"></v-img>
           </v-list-item-avatar>
         </v-list-item>
 
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title class="title">
-              {{ property.type }}
+              {{ estateAgent.user.username }}
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -24,13 +24,10 @@
       <v-list-item>
         <v-list>
           <v-list-item-title class="title">
-            {{ property.address }}
+            {{ estateAgent.company.name }}
           </v-list-item-title>
-          <i>{{ property.codeNumber }}</i>
         </v-list>
       </v-list-item>
-      <v-divider></v-divider>
-      <v-alert>{{ property.area }}</v-alert>
     </v-card>
   </v-container>
 </template>
@@ -41,28 +38,30 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import gql from "graphql-tag";
 
-const PROPERTY_QUERY = gql`
-  query property($id: Int!) {
-    property(id: $id) {
+const ESTATE_AGENT_QUERY = gql`
+  query estateAgent($id: Int!) {
+    estateAgent(id: $id) {
       ID
-      area
-      address
-      codeNumber
-      type
+      user {
+        username
+      }
+      company {
+        name
+      }
     }
   }
 `;
 
 @Component
-export default class PropertyProfile extends Vue {
-  public property: any = {};
+export default class EstateAgentProfile extends Vue {
+  public estateAgent: any = {};
 
   beforeMount() {
     this.$apollo.getClient().query({
-      query: PROPERTY_QUERY,
+      query: ESTATE_AGENT_QUERY,
       variables: {id: this.$route.params.id}
     }).then((res) => {
-      this.property = res.data.property;
+      this.estateAgent = res.data.estateAgent;
       console.log(res);
     }).catch((err) => {
       console.error(err);
