@@ -30,7 +30,7 @@
         </v-list>
       </v-list-item>
       <v-divider></v-divider>
-      <v-alert>{{ property.area }}</v-alert>
+      <v-alert>{{ property.area }} m²</v-alert>
     </v-card>
   </v-container>
 </template>

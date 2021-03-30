@@ -9,8 +9,11 @@ import (
 
 func (r *QueryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent, error) {
 	var (
-		company models.Company
+		estateAgent  models.EstateAgent
+		company      models.Company
 		estateAgents []*models.EstateAgent
+
+		companyId int64
 
 		err error
 	)
@@ -19,10 +22,18 @@ func (r *QueryResolver) EstateAgents(ctx context.Context) ([]*models.EstateAgent
 
 	if err = r.DB.Joins("User").Where("username = ?", username).First(&company).Error; err != nil {
 		lib.LogError("mutation/GetEstateAgents", err.Error())
-		return nil, err
+
+		if err = r.DB.Joins("User").Where("username = ?", username).First(&estateAgent).Error; err != nil {
+			lib.LogError("mutation/GetEstateAgents", err.Error())
+			return nil, err
+		} else {
+			companyId = *estateAgent.CompanyID
+		}
+	} else {
+		companyId = *company.ID
 	}
 
-	if err = r.DB.Preload(clause.Associations).Where("company_id = ?", company.ID).Find(&estateAgents).Error; err != nil {
+	if err = r.DB.Preload(clause.Associations).Where("company_id = ?", companyId).Find(&estateAgents).Error; err != nil {
 		lib.LogError("mutation/GetEstateAgents", err.Error())
 		return nil, err
 	}

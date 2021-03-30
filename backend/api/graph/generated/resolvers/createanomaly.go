@@ -27,23 +27,15 @@ func (r *MutationResolver) CreateAnomaly(ctx context.Context, input *models.Anom
 		return nil, err
 	}
 
-
+	state := models.AnomalyStatesTodo
 	anomaly = models.Anomaly{
 		PropertyID:   tenant.Properties[0].ID,
 		Type:         input.Type,
 		Description:  input.Description,
 		CreateByID:   tenant.ID,
 		AssignedToID: tenant.EstateAgent.ID,
+		State:        &state,
 	}
-
-	fmt.Println(*tenant.Properties[0].ID)
-	fmt.Println(tenant.Properties[0])
-	fmt.Println(input.Type)
-	fmt.Println(input.Description)
-	fmt.Println(tenant)
-	fmt.Println(*tenant.ID)
-	fmt.Println(tenant.EstateAgent)
-	fmt.Println(*tenant.EstateAgent.ID)
 
 	if err = r.DB.Where(anomaly).First(&anomaly).Error; err == nil {
 		return nil, fmt.Errorf("anomaly already created")

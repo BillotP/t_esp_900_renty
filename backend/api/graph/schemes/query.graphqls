@@ -4,7 +4,7 @@ type Query {
     tenant(id: Int!): Tenant!
     tenants: [Tenant!]! @hasRole(roles: [ESTATE_AGENT])
     estateAgent(id: Int!): EstateAgent! @hasRole(roles: [COMPANY])
-    estateAgents: [EstateAgent!]! @hasRole(roles: [COMPANY])
+    estateAgents: [EstateAgent!]! @hasRole(roles: [COMPANY, ESTATE_AGENT])
     company(id: Int!): Company! @hasRole(roles: [ADMIN])
     companies: [Company!]! @hasRole(roles: [ADMIN])
     property(id: Int!): Property! @hasRole(roles: [ESTATE_AGENT, TENANT])
