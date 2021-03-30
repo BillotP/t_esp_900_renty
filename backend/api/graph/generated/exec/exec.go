@@ -137,7 +137,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Anomalies    func(childComplexity int) int
-		Anomaly      func(childComplexity int, id string) int
+		Anomaly      func(childComplexity int, id int64) int
 		Companies    func(childComplexity int) int
 		Company      func(childComplexity int, id int64) int
 		EstateAgent  func(childComplexity int, id int64) int
@@ -187,7 +187,7 @@ type MutationResolver interface {
 	UpdateAnomaly(ctx context.Context, input *models.AnomalyUpdateInput) (*models.Anomaly, error)
 }
 type QueryResolver interface {
-	Anomaly(ctx context.Context, id string) (*models.Anomaly, error)
+	Anomaly(ctx context.Context, id int64) (*models.Anomaly, error)
 	Anomalies(ctx context.Context) ([]*models.Anomaly, error)
 	Tenant(ctx context.Context, id int64) (*models.Tenant, error)
 	Tenants(ctx context.Context) ([]*models.Tenant, error)
@@ -752,7 +752,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Anomaly(childComplexity, args["id"].(string)), true
+		return e.complexity.Query.Anomaly(childComplexity, args["id"].(int64)), true
 
 	case "Query.companies":
 		if e.complexity.Query.Companies == nil {
@@ -1178,7 +1178,7 @@ input PropertyInput {
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/query.graphqls", Input: `type Query {
-    anomaly(id: String!): Anomaly! @hasRole(roles: [ESTATE_AGENT, TENANT])
+    anomaly(id: Int!): Anomaly! @hasRole(roles: [ESTATE_AGENT, TENANT])
     anomalies: [Anomaly!]! @hasRole(roles: [ESTATE_AGENT, TENANT])
     tenant(id: Int!): Tenant!
     tenants: [Tenant!]! @hasRole(roles: [ESTATE_AGENT])
@@ -1472,9 +1472,9 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_anomaly_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 int64
 	if tmp, ok := rawArgs["id"]; ok {
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		arg0, err = ec.unmarshalNInt2int64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3970,7 +3970,7 @@ func (ec *executionContext) _Query_anomaly(ctx context.Context, field graphql.Co
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Query().Anomaly(rctx, args["id"].(string))
+			return ec.resolvers.Query().Anomaly(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT", "TENANT"})

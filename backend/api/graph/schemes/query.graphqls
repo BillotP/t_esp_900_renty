@@ -1,5 +1,5 @@
 type Query {
-    anomaly(id: String!): Anomaly! @hasRole(roles: [ESTATE_AGENT, TENANT])
+    anomaly(id: Int!): Anomaly! @hasRole(roles: [ESTATE_AGENT, TENANT])
     anomalies: [Anomaly!]! @hasRole(roles: [ESTATE_AGENT, TENANT])
     tenant(id: Int!): Tenant!
     tenants: [Tenant!]! @hasRole(roles: [ESTATE_AGENT])
