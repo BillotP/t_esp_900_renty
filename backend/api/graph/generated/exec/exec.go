@@ -119,7 +119,7 @@ type ComplexityRoot struct {
 		LoginAsTenant         func(childComplexity int, input *models.UserInput) int
 		SignupAsAdmin         func(childComplexity int, input models.AdminInput) int
 		SignupAsCompany       func(childComplexity int, input models.CompanyInput) int
-		UpdateAnomaly         func(childComplexity int, input *models.AnomalyUpdateInput) int
+		UpdateAnomaly         func(childComplexity int, id int64, input *models.AnomalyUpdateInput) int
 		UploadDocument        func(childComplexity int, file graphql.Upload, title string) int
 	}
 
@@ -184,7 +184,7 @@ type MutationResolver interface {
 	UploadDocument(ctx context.Context, file graphql.Upload, title string) (*bool, error)
 	CreateProperty(ctx context.Context, input *models.PropertyInput) (*models.Property, error)
 	CreateAnomaly(ctx context.Context, input *models.AnomalyInput) (*models.Anomaly, error)
-	UpdateAnomaly(ctx context.Context, input *models.AnomalyUpdateInput) (*models.Anomaly, error)
+	UpdateAnomaly(ctx context.Context, id int64, input *models.AnomalyUpdateInput) (*models.Anomaly, error)
 }
 type QueryResolver interface {
 	Anomaly(ctx context.Context, id int64) (*models.Anomaly, error)
@@ -658,7 +658,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateAnomaly(childComplexity, args["input"].(*models.AnomalyUpdateInput)), true
+		return e.complexity.Mutation.UpdateAnomaly(childComplexity, args["id"].(int64), args["input"].(*models.AnomalyUpdateInput)), true
 
 	case "Mutation.uploadDocument":
 		if e.complexity.Mutation.UploadDocument == nil {
@@ -1152,7 +1152,7 @@ input EstateAgentInput {
     createProperty(input: PropertyInput): Property! @hasRole(roles: [ESTATE_AGENT])
 
     createAnomaly(input: AnomalyInput): Anomaly! @hasRole(roles: [TENANT])
-    updateAnomaly(input: AnomalyUpdateInput): Anomaly! @hasRole(roles: [ESTATE_AGENT])
+    updateAnomaly(id: Int!, input: AnomalyUpdateInput): Anomaly! @hasRole(roles: [ESTATE_AGENT])
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/property.graphqls", Input: `"""
@@ -1183,7 +1183,7 @@ input PropertyInput {
     tenant(id: Int!): Tenant!
     tenants: [Tenant!]! @hasRole(roles: [ESTATE_AGENT])
     estateAgent(id: Int!): EstateAgent! @hasRole(roles: [COMPANY])
-    estateAgents: [EstateAgent!]! @hasRole(roles: [COMPANY])
+    estateAgents: [EstateAgent!]! @hasRole(roles: [COMPANY, ESTATE_AGENT])
     company(id: Int!): Company! @hasRole(roles: [ADMIN])
     companies: [Company!]! @hasRole(roles: [ADMIN])
     property(id: Int!): Property! @hasRole(roles: [ESTATE_AGENT, TENANT])
@@ -1422,14 +1422,22 @@ func (ec *executionContext) field_Mutation_signupAsCompany_args(ctx context.Cont
 func (ec *executionContext) field_Mutation_updateAnomaly_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *models.AnomalyUpdateInput
-	if tmp, ok := rawArgs["input"]; ok {
-		arg0, err = ec.unmarshalOAnomalyUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyUpdateInput(ctx, tmp)
+	var arg0 int64
+	if tmp, ok := rawArgs["id"]; ok {
+		arg0, err = ec.unmarshalNInt2int64(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["id"] = arg0
+	var arg1 *models.AnomalyUpdateInput
+	if tmp, ok := rawArgs["input"]; ok {
+		arg1, err = ec.unmarshalOAnomalyUpdateInput2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyUpdateInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -3623,7 +3631,7 @@ func (ec *executionContext) _Mutation_updateAnomaly(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdateAnomaly(rctx, args["input"].(*models.AnomalyUpdateInput))
+			return ec.resolvers.Mutation().UpdateAnomaly(rctx, args["id"].(int64), args["input"].(*models.AnomalyUpdateInput))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
@@ -4253,7 +4261,7 @@ func (ec *executionContext) _Query_estateAgents(ctx context.Context, field graph
 			return ec.resolvers.Query().EstateAgents(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY"})
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY", "ESTATE_AGENT"})
 			if err != nil {
 				return nil, err
 			}

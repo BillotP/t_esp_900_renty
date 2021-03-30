@@ -34,6 +34,7 @@
 
         <v-list-item
             v-for="(property, i) in tenant.properties"
+            v-on:click="goToProperty(property)"
             :key="i"
             link
         >
@@ -123,6 +124,7 @@ const TENANT_QUERY = gql`
         username
       }
       properties {
+        ID
         area
         address
         codeNumber
@@ -188,6 +190,10 @@ export default class TenantEdit extends Vue {
     }).catch((err) => {
       console.error(err);
     });
+  }
+
+  goToProperty(property: any) {
+    this.$router.push('/property/' + property.ID);
   }
 }
 
