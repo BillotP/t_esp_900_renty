@@ -17,7 +17,7 @@
         <v-tab exact to="/dashboard">Dashboard</v-tab>
         <v-tab v-if="getPrivilege == 0" exact to="/estate-agents">Estate Agents</v-tab>
         <v-tab v-if="getPrivilege == 1" exact to="/tenants">Tenants</v-tab>
-        <v-tab exact to="/tickets">Tickets</v-tab>
+        <v-tab v-if="getPrivilege != 0" exact to="/tickets">Tickets</v-tab>
         <v-tab v-if="getPrivilege == 1" exact to="/properties">Properties</v-tab>
       </v-tabs>
       <v-tab exact>
