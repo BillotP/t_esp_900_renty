@@ -1,9 +1,9 @@
 {
-    "name": "Renty",
+    "name": "renty",
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "serve": "cross-env CURRENT_ENV=local vue-cli-service serve",
+        "serve": "cross-env CURRENT_ENV=local PORT=8081 vue-cli-service serve",
         "test:unit": "vue-cli-service test:unit",
         "lint": "vue-cli-service lint",
         "build:local": "cross-env CURRENT_ENV=local vue-cli-service build",

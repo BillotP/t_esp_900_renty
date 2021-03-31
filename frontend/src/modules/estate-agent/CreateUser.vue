@@ -8,7 +8,11 @@
       label="Password"
     ></v-text-field>
     <v-btn depressed color="primary" v-on:click="createUser()"> Create </v-btn>
-    <v-snackbar v-model="snackbar" :timeout="timeout">
+    <v-snackbar
+      v-model="snackbar"
+      :color="hasError ? 'red' : ''"
+      :timeout="timeout"
+    >
       {{ text }}
       <template v-slot:action="{ attrs }">
         <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
@@ -23,7 +27,6 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import gql from "graphql-tag";
-import { setContext } from "apollo-link-context";
 
 const CREATE_ESTATE_AGENT_USER_MUTATION = gql`
   mutation($input: EstateAgentInput) {
@@ -42,6 +45,7 @@ export default class CreateEstateAgentUser extends Vue {
       snackbar: false,
       text: "",
       timeout: 2000,
+      hasError: false,
     };
   }
 
@@ -56,15 +60,21 @@ export default class CreateEstateAgentUser extends Vue {
               password: this.$data.password,
             },
           },
-      }
+        },
       });
       if (resp.data.createEstateAgentUser.ID) {
         this.$data.text =
-          "User " + this.$data.username + " create successfully !";
+          "Estate agent " + this.$data.username + " successfully created !";
+        this.$data.hasError = false;
         this.$data.snackbar = true;
+        // this.$router.("/estate-agents");
+        this.$router.go(-1);
       }
     } catch (e) {
-      console.error(e);
+      this.$data.text =
+        "⚠️ Failed to create estate agent :" + e["graphQLErrors"][0]["message"];
+      this.$data.hasError = true;
+      this.$data.snackbar = true;
     }
   }
 }

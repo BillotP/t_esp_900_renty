@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 	"fmt"
+
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"golang.org/x/crypto/bcrypt"
@@ -10,15 +11,19 @@ import (
 
 func (r *MutationResolver) SignupAsCompany(ctx context.Context, input models.CompanyInput) (*models.Credential, error) {
 	var (
-		token   string
-		company *models.Company
-		pwdHash []byte
+		token    string
+		company  *models.Company
+		pwdHash  []byte
+		verified bool
 
 		err error
 	)
-
-	verified := false
-
+	switch {
+	case input.User == nil:
+		return nil, fmt.Errorf("a company user must be provided")
+	case input.User.Password == "":
+		return nil, fmt.Errorf("user password can't be empty")
+	}
 	company = &models.Company{
 		Name: input.Name,
 		User: &models.User{

@@ -1,40 +1,65 @@
 <template>
-  <v-card flat>
-    <v-card-title>Login</v-card-title>
-    <v-card-text>
-      <v-container fluid>
-        <v-row>
-          <v-radio-group v-model="role" mandatory>
-            <v-radio color="primary" label="Company" value="0" key="0"></v-radio>
-            <v-radio color="primary" label="Estate Agent" value="1" key="1"></v-radio>
-            <v-radio color="primary" label="Tenant" value="2" key="2"></v-radio>
-          </v-radio-group>
-        </v-row>
-        <v-divider></v-divider>
-        <v-row>
-          <v-text-field v-model="modelUsername" label="Username"></v-text-field>
-        </v-row>
-        <v-row>
-          <v-text-field
+  <v-content
+    style="
+      margin-top: 10vh;
+      margin-bottom: 10vh;
+      margin-right: 10vh;
+      margin-left: 10vh;
+    "
+  >
+    <v-card max-width="80vw" max-height="40vh">
+      <v-card-text>
+        <v-container fluid>
+          <v-row>
+            <v-text-field
+              v-model="modelUsername"
+              label="Username"
+            ></v-text-field>
+          </v-row>
+          <v-row>
+            <v-text-field
               type="password"
               v-model="modelPassword"
               label="Password"
-          ></v-text-field>
-        </v-row>
-        <v-row>
-          <v-btn depressed color="primary" v-on:click="login()"> Login</v-btn>
-        </v-row>
-      </v-container>
-    </v-card-text>
-  </v-card>
+            ></v-text-field>
+          </v-row>
+          <v-row>
+            <v-radio-group row v-model="role" mandatory>
+              <v-radio
+                color="primary"
+                label="Company"
+                value="0"
+                key="0"
+              ></v-radio>
+              <v-radio
+                color="primary"
+                label="Estate Agent"
+                value="1"
+                key="1"
+              ></v-radio>
+              <v-radio
+                color="primary"
+                label="Tenant"
+                value="2"
+                key="2"
+              ></v-radio>
+            </v-radio-group>
+          </v-row>
+          <v-btn depressed block color="primary" v-on:click="login()">
+            Login</v-btn
+          >
+        </v-container>
+      </v-card-text>
+    </v-card>
+  </v-content>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
 import gql from "graphql-tag";
-import {Login, privilege} from "@/store/authentificationStore";
-import {Action, Getter, namespace} from "vuex-class";
+import { Login } from "@/store/authentificationStore";
+import { namespace } from "vuex-class";
 
 const authModule = namespace("authentificationStore");
 const LOGIN_COMPANY_MUTATION = gql`
@@ -82,11 +107,11 @@ export default class Auth extends Vue {
   }
 
   get modelRole(): number {
-    return (+this.role) as number;
+    return +this.role as number;
   }
 
   set modelRole(role: number) {
-    this.role = (+role) as number;
+    this.role = +role as number;
   }
 
   @authModule.Action("login")
@@ -96,16 +121,16 @@ export default class Auth extends Vue {
     const loginAs = [
       {
         mutation: LOGIN_COMPANY_MUTATION,
-        key: 'loginAsCompany'
+        key: "loginAsCompany",
       },
       {
         mutation: LOGIN_ESTATE_AGENT_MUTATION,
-        key: 'loginAsEstateAgent'
+        key: "loginAsEstateAgent",
       },
       {
         mutation: LOGIN_TENANT_MUTATION,
-        key: 'loginAsTenant'
-      }
+        key: "loginAsTenant",
+      },
     ];
 
     try {
@@ -122,7 +147,10 @@ export default class Auth extends Vue {
         //this.setInformationsLogin({ username: this.modelUsername, privilege: 0 });
         localStorage.setItem("username", this.modelUsername);
         localStorage.setItem("privilege", this.modelRole.toString());
-        localStorage.setItem("token", resp.data[loginAs[this.modelRole].key].token);
+        localStorage.setItem(
+          "token",
+          resp.data[loginAs[this.modelRole].key].token
+        );
         localStorage.setItem("id", resp.data[loginAs[this.modelRole].key].ID);
         this.$router.push("/");
       }

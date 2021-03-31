@@ -1,6 +1,8 @@
-**/*.git
-**/*.cache
-**/*.md
-**/node_modules
-**/tests
-**/*.gitlab-ci.yml
+*.git
+*.cache
+*.md
+node_modules
+tests
+*.yml
+Dockerfile
+jest.config.js

@@ -3,6 +3,10 @@ package middleware
 import (
 	"context"
 	"database/sql"
+	"log"
+	"os"
+	"time"
+
 	"github.com/99designs/gqlgen/client"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -14,9 +18,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"time"
 )
 
 var (
@@ -32,7 +33,9 @@ func InitMockDB(userrole models.Role) {
 	)
 
 	sqlDb, Mock, err = sqlmock.New()
-
+	if err != nil {
+		panic(err.Error())
+	}
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
