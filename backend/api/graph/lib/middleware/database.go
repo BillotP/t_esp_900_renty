@@ -10,7 +10,6 @@ import (
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
-	_ "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -20,6 +19,7 @@ var Db *gorm.DB
 // InitDB setup the global Db connection pool
 func InitDB() {
 	var (
+		stage    string
 		username string
 		password string
 		dbName   string
@@ -31,13 +31,15 @@ func InitDB() {
 	if err = godotenv.Load(".dev.env"); err != nil {
 		lib.LogError("InitDb", err.Error())
 	}
-
+	stage = lib.GetDefVal("STAGE", "dev")
 	username = os.Getenv("POSTGRES_USER")
 	password = os.Getenv("POSTGRES_PASSWORD")
-	dbName = "rentydb"
+	dbName = lib.GetDefVal("DB_NAME", "rentydb")
 	dbHost = lib.GetDefVal("POSTGRES_HOST", "127.0.0.1")
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", dbHost, username, dbName, password, "5432") //Build connection string
-	fmt.Println(dbURI)
+	if stage == "dev" {
+		lib.LogInfo("InitDB", fmt.Sprintf("will connect to db with URI : %s", dbURI))
+	}
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
