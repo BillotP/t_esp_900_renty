@@ -4,22 +4,15 @@
       Create EstateAgent
     </v-btn>
     <v-data-table
-        :headers="headers"
-        :items="estateAgents"
-        :items-per-page="5"
-        class="elevation-1"
+      :headers="headers"
+      :items="estateAgents"
+      :items-per-page="5"
+      class="elevation-1"
     >
       <template v-slot:item.actions="{ item }">
-        <v-icon
-            small
-            class="mr-2"
-            @click="goToProfile(item)"
-        >
-          mdi-eye
-        </v-icon>
+        <v-icon small class="mr-2" @click="goToProfile(item)"> mdi-eye </v-icon>
       </template>
     </v-data-table>
-
   </v-container>
 </template>
 
@@ -47,37 +40,41 @@ export default class EstateAgentList extends Vue {
   public estateAgents: any[] = [];
 
   beforeMount() {
-    this.$apollo.getClient().query({
-      query: ESTATE_AGENT_QUERY
-    }).then((res) => {
-      this.estateAgents = res.data.estateAgents;
-      console.log(res);
-    }).catch((err) => {
-      console.error(err);
-    });
+    this.$apollo
+      .getClient()
+      .query({
+        query: ESTATE_AGENT_QUERY,
+      })
+      .then((res) => {
+        this.estateAgents = res.data.estateAgents;
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
   data() {
     return {
       headers: [
         {
-          text: 'ID',
-          align: 'start',
+          text: "ID",
+          align: "start",
           sortable: false,
-          value: 'ID',
+          value: "ID",
         },
-        {text: 'Username', value: 'user.username'},
-        {text: 'Company', value: 'company.name'},
-        {text: 'Actions', value: 'actions', sortable: false},
-      ]
-    }
+        { text: "Username", value: "user.username" },
+        { text: "Company", value: "company.name" },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
+    };
   }
 
-  goToProfile(estateAgent: any) {
+  public goToProfile(estateAgent: any) {
     this.$router.push("/estate-agent/" + estateAgent.ID);
   }
 
-  goToCreateEstateAgent() {
+  public goToCreateEstateAgent() {
     this.$router.push("/create/estate-agent/");
   }
 }

@@ -10,7 +10,7 @@ mutation ($input: UserInput) {
 }
 `;
 
-export enum privilege{
+export enum privilege {
     client,
     company,
     estateAgent
@@ -32,23 +32,20 @@ const state: AuthentificationState = {
 };
 
 const getters: GetterTree<AuthentificationState, RootState> = {
-    getConnected(state) : boolean
-    {
+    getConnected(state): boolean {
         return state.connected;
     },
 };
 
 
 const actions: ActionTree<AuthentificationState, RootState> = {
-    login({commit}, login: Login)
-    {
+    login({ commit }, login: Login) {
         commit("setLogin")
     }
 };
 
 const mutations: MutationTree<AuthentificationState> = {
-    setLogin(state, login: Login)
-    {
+    setLogin(state, login: Login) {
         state.connected = true;
     }
 };

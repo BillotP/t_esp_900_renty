@@ -9,10 +9,13 @@ const router = new Router({
     routes
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, _, next) => {
     next();
-    if (to.path !== '/login' && !localStorage.getItem('username')) next({ path: '/login' })
-    else next();
+    if (to.path !== '/login' && !localStorage.getItem('username')) {
+        next({ path: '/login' })
+    } else {
+        next()
+    };
 })
 
 
