@@ -3,6 +3,9 @@
     <div v-if="!getRoute()">
       <navBar-field></navBar-field>
     </div>
+    <div v-else>
+      <navBarUnlogged-field />
+    </div>
     <div>
       <router-view></router-view>
     </div>
@@ -12,18 +15,13 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { RootState } from "@/store/types";
 
 @Component({})
 export default class Root extends Vue {
-
-  private getRoute() {
+  public getRoute() {
     return this.$route.path.toString().includes("login");
   }
 
-  public mounted()
-  {
-    
-  }
+  public mounted() {}
 }
 </script>
