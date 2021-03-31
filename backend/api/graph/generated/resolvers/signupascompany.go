@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 	"fmt"
+
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib"
 	"golang.org/x/crypto/bcrypt"
@@ -18,7 +19,9 @@ func (r *MutationResolver) SignupAsCompany(ctx context.Context, input models.Com
 	)
 
 	verified := false
-
+	if input.User == nil {
+		return nil, fmt.Errorf("a company user must be provided")
+	}
 	company = &models.Company{
 		Name: input.Name,
 		User: &models.User{
