@@ -10,9 +10,10 @@ const router = new Router({
 });
 
 const unAuthPath = ["/login", "/register"];
-const isLogged = localStorage.getItem("token") ? true : false;
 
 router.beforeEach((to, _, next) => {
+    var isLogged = localStorage.getItem("token") !== null ? true : false;
+
     if (!isLogged && !unAuthPath.includes(to.path)) {
         next({ path: unAuthPath[0] })
     }

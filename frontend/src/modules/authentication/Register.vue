@@ -106,6 +106,18 @@
         </p></v-card-text
       >
     </v-card>
+    <v-snackbar
+      v-model="snackbar"
+      :color="hasError ? 'red' : ''"
+      :timeout="timeout"
+    >
+      {{ snackBarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-main>
 </template>
 
@@ -115,17 +127,11 @@ import Component from "vue-class-component";
 import gql from "graphql-tag";
 
 const REGISTER_AS_COMPANY = gql`
-  mutation {
-    signupAsCompany(
-      input: {
-        name: $companyName
-        user: { username: $companyUserName, password: $companyUserPwd }
-        logo: $companyLogoUrl
-        description: $companyDescription
-        tel: $companyPhone
+  mutation($input: CompanyInput!) {
+    signupAsCompany(input: $input) {
+      user {
+        ID
       }
-    ) {
-      ID
       token
     }
   }
@@ -142,43 +148,69 @@ export default class Register extends Vue {
   public role: number = 0;
   public isLoading: boolean = false;
   public hasError: boolean = false;
+  public snackbar: boolean = false;
+  public snackBarText: string = "";
+  public timeout: number = 2000;
 
   async register() {
-    const registerAs = [
-      {
-        mutation: REGISTER_AS_COMPANY,
-        key: "registerAsCompany",
-      },
-    ];
+    // const registerAs = [
+    //   {
+    //     mutation: REGISTER_AS_COMPANY,
+    //     key: "registerAsCompany",
+    //   },
+    // ];
     this.hasError = false;
     this.isLoading = true;
     try {
       const resp = await this.$apollo.getClient().mutate({
-        mutation: registerAs[this.role].mutation,
+        mutation: REGISTER_AS_COMPANY,
         variables: {
           input: {
-            companyName: this.companyName,
-            companyLogoUrl: this.companyLogoUrl,
-            companyUserName: this.companyUserName,
-            companyUserPwd: this.companyUserPwd,
+            name: this.companyName,
+            logo: this.companyLogoUrl,
+            description: this.companyDescription,
+            tel: this.companyPhone,
+            user: {
+              username: this.companyUserName,
+              password: this.companyUserPwd,
+            },
           },
         },
       });
-      if (resp.data[registerAs[this.role].key].token) {
+      if (!resp.errors && resp.data["signupAsCompany"].token) {
         localStorage.setItem("username", this.companyUserName);
         localStorage.setItem("privilege", this.role.toString());
-        localStorage.setItem(
-          "token",
-          resp.data[registerAs[this.role].key].token
-        );
-        localStorage.setItem("id", resp.data[registerAs[this.role].key].ID);
+        localStorage.setItem("token", resp.data["signupAsCompany"].token);
+        localStorage.setItem("id", resp.data["signupAsCompany"].user.ID);
+        this.snackBarText = `Welcome ${this.companyUserName}, you have successfully registered company ${this.companyName}`;
+        this.snackbar = true;
         this.$router.push("/");
+      } else if (resp.errors) {
+        console.log(resp.errors);
+        let errmsg = "";
+        if (resp.errors.length) {
+          errmsg = resp.errors[0]["message"];
+        } else {
+          errmsg = "Something went wrong, try again later";
+        }
+        this.snackBarText = "⚠️ Failed to register your company :" + errmsg;
+        this.snackbar = true;
+        this.hasError = true;
       }
+      this.isLoading = false;
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      let errmsg = "";
+      if (e.errors.length && e["graphQLErrors"]) {
+        errmsg = e["graphQLErrors"][0]["message"];
+      } else {
+        errmsg = "Something went wrong, try again later";
+      }
+      this.snackBarText = "⚠️ Failed to register your company :" + errmsg;
+      this.snackbar = true;
       this.hasError = true;
+      this.isLoading = false;
     }
-    this.isLoading = false;
   }
 }
 </script>

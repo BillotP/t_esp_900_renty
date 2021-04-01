@@ -1,5 +1,5 @@
 <template>
-  <v-content
+  <v-main
     style="
       margin-top: 10vh;
       margin-bottom: 10vh;
@@ -55,7 +55,7 @@
         </p>
       </v-card-text>
     </v-card>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">

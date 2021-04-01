@@ -1,9 +1,11 @@
 <template>
   <v-container>
     <v-row align="center" justify="center" style="height: 10vh">
-      <v-row align="center" justify="center">
-        <h3>{{ companyName }} estate agents</h3>
-      </v-row>
+      <v-col align="center" justify="center">
+        <h3>{{ companyName }}</h3>
+        <v-row align="center" justify="center"><h5>estate agents</h5></v-row>
+      </v-col>
+
       <v-row align="center" justify="center">
         <v-btn
           style="margin: 5px"
@@ -17,7 +19,7 @@
           style="margin: 5px"
           right
           color="primary"
-          v-on:click="foo.refetch()"
+          v-on:click="$apollo.queries['estateAgents'].refetch()"
         >
           🔄
         </v-btn>
@@ -52,11 +54,8 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+<script>
 import gql from "graphql-tag";
-
 const ESTATE_AGENT_QUERY = gql`
   query estateAgents {
     estateAgents {
@@ -73,37 +72,21 @@ const ESTATE_AGENT_QUERY = gql`
   }
 `;
 
-@Component
-export default class EstateAgentList extends Vue {
-  public estateAgents: any[] = [];
-
-  async beforeMount() {
-    this.$data.$foo = this.$apollo.getClient().watchQuery({
+export default {
+  apollo: {
+    estateAgents: {
       query: ESTATE_AGENT_QUERY,
       pollInterval: 3000,
-      fetchResults: true,
-    });
-    this.$data.$foo.startPolling(3000);
-    var res = await this.$data.$foo.result();
-    if (res.errors) {
-      console.error(res.errors);
-      this.$data.text =
-        "⚠️ Failed to list estate agents :" + res.errors[0]["message"];
-      this.$data.hasError = true;
-      this.$data.snackbar = true;
-    } else {
-      this.estateAgents = res.data.estateAgents;
-    }
-  }
-
+    },
+  },
   data() {
     return {
-      $foo: null,
       snackbar: false,
       text: "",
+      estateAgents: [],
       timeout: 2000,
       hasError: false,
-      companyName: "My company",
+      companyName: localStorage.getItem("username").toString().toUpperCase(),
       headers: [
         {
           text: "ID",
@@ -117,16 +100,93 @@ export default class EstateAgentList extends Vue {
         { text: "Actions", value: "actions", sortable: false },
       ],
     };
-  }
+  },
+  methods: {
+    goToProfile(estateAgent) {
+      this.$router.push("/estate-agent/" + estateAgent.ID);
+    },
+    goToCreateEstateAgent() {
+      this.$router.push("/create/estate-agent/");
+    },
+  },
+};
 
-  public goToProfile(estateAgent: any) {
-    this.$router.push("/estate-agent/" + estateAgent.ID);
-  }
+// import Vue from "vue";
+// import Component from "vue-class-component";
+// import gql from "graphql-tag";
 
-  public goToCreateEstateAgent() {
-    this.$router.push("/create/estate-agent/");
-  }
-}
+// const ESTATE_AGENT_QUERY = gql`
+//   query estateAgents {
+//     estateAgents {
+//       ID
+//       user {
+//         username
+//       }
+//       company {
+//         name
+//       }
+//       createdAt
+//       updatedAt
+//     }
+//   }
+// `;
+
+// @Component
+// export default class EstateAgentList extends Vue {
+//   async beforeMount() {
+//     // this.$data.query = this.$apollo.getClient().watchQuery({
+//     //   query: ESTATE_AGENT_QUERY,
+//     //   pollInterval: 3000,
+//     //   fetchResults: true,
+//     // });
+
+//     // this.$data.query.startPolling(3000);
+//     // var res = await this.$data.query.result();
+//     // if (res.errors) {
+//     //   console.error(res.errors);
+//     //   this.$data.text =
+//     //     "⚠️ Failed to list estate agents :" + res.errors[0]["message"];
+//     //   this.$data.hasError = true;
+//     //   this.$data.snackbar = true;
+//     // } else {
+//     //   this.$data.estateAgents = res.data.estateAgents;
+//     // }
+//   }
+//   public apollo: any = {
+//     estateAgents: ESTATE_AGENT_QUERY,
+//   };
+//   data() {
+//     return {
+//       query: null,
+//       snackbar: false,
+//       text: "",
+//       estateAgents: [],
+//       timeout: 2000,
+//       hasError: false,
+//       companyName: "My company",
+//       headers: [
+//         {
+//           text: "ID",
+//           align: "start",
+//           sortable: false,
+//           value: "ID",
+//         },
+//         { text: "Username", value: "user.username" },
+//         { text: "Registration Date", value: "createdAt" },
+//         { text: "Company", value: "company.name" },
+//         { text: "Actions", value: "actions", sortable: false },
+//       ],
+//     };
+//   }
+
+//   public goToProfile(estateAgent: any) {
+//     this.$router.push("/estate-agent/" + estateAgent.ID);
+//   }
+
+//   public goToCreateEstateAgent() {
+//     this.$router.push("/create/estate-agent/");
+//   }
+// }
 </script>
 
 <style>
