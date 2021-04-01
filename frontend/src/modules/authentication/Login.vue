@@ -49,6 +49,10 @@
             Login</v-btn
           >
         </v-container>
+        <p>
+          Dont have an account yet ?
+          <router-link to="/register">register</router-link>
+        </p>
       </v-card-text>
     </v-card>
   </v-content>

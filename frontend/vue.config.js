@@ -4,6 +4,13 @@ process.env.VUE_APP_VERSION = require('./package.json').version;
 const config = require('./config');
 
 module.exports = {
+    pwa: {
+        iconPaths: {
+            favicon16: 'img/icon/favicon-16x16.png',
+            favicon32: 'img/icon/favicon-32x32.png',
+            appleTouchIcon: 'img/icon/apple-touch-icon.png',
+        }
+    },
     configureWebpack: {
         plugins: [
             new webpack.DefinePlugin({
@@ -22,5 +29,6 @@ module.exports = {
             })
         ]
     },
-    transpileDependencies: ['vuetify']
+    transpileDependencies: ['vuetify'],
+    lintOnSave: false,
 };

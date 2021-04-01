@@ -4,9 +4,7 @@ import './registerServiceWorker';
 import router from './router';
 import store from './store';
 import "./plugins/components";
-import "./plugins/forms";
 import vuetify from './plugins/vuetify';
-import "./plugins/forms";
 import { ApolloClient } from 'apollo-client'
 import {ApolloLink, concat} from 'apollo-link'
 import { createUploadLink } from 'apollo-upload-client'
