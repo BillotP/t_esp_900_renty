@@ -12,9 +12,15 @@ const router = new Router({
 const unAuthPath = ["/login", "/register"];
 
 router.beforeEach((to, _, next) => {
-    var isLogged = localStorage.getItem("token") !== null ? true : false;
+    let isLogged = localStorage.getItem("token") !== null ? true : false;
+    let isExpired = true
 
-    if (!isLogged && !unAuthPath.includes(to.path)) {
+    if (isLogged) {
+        let exp = localStorage.getItem("exp")
+        isExpired = Date.now() >= Number(exp) * 1000 ? true : false;
+    }
+
+    if ((!isLogged || isExpired) && !unAuthPath.includes(to.path)) {
         next({ path: unAuthPath[0] })
     }
     next();
