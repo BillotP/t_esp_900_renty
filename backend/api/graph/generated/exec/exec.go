@@ -1184,7 +1184,7 @@ input PropertyInput {
     tenants: [Tenant!]! @hasRole(roles: [ESTATE_AGENT])
     estateAgent(id: Int!): EstateAgent! @hasRole(roles: [COMPANY])
     estateAgents: [EstateAgent!]! @hasRole(roles: [COMPANY, ESTATE_AGENT])
-    company(id: Int!): Company! @hasRole(roles: [ADMIN])
+    company(id: Int!): Company! @hasRole(roles: [COMPANY, ADMIN])
     companies: [Company!]! @hasRole(roles: [ADMIN])
     property(id: Int!): Property! @hasRole(roles: [ESTATE_AGENT, TENANT])
     properties: [Property!]! @hasRole(roles: [ESTATE_AGENT])
@@ -4326,7 +4326,7 @@ func (ec *executionContext) _Query_company(ctx context.Context, field graphql.Co
 			return ec.resolvers.Query().Company(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ADMIN"})
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY", "ADMIN"})
 			if err != nil {
 				return nil, err
 			}
