@@ -1,6 +1,18 @@
 <template>
   <v-main>
-    <v-card style="margin: 10px">
+    <v-card v-if="this.$apollo.queries.company.loading" height="200">
+      <v-layout align-center justify-center column fill-height>
+        <v-flex row align-center>
+          <v-progress-circular
+            indeterminate
+            :size="50"
+            color="primary"
+            class=""
+          ></v-progress-circular>
+        </v-flex>
+      </v-layout>
+    </v-card>
+    <v-card v-else style="margin: 10px">
       <v-card-title class="justify-center"
         ><b style="text-transform: capitalize">{{ company.name }} 🖊️</b>
       </v-card-title>
@@ -77,8 +89,8 @@ export default {
           }
         }
       `,
-      variables: {
-        id: localStorage.getItem("companyID"),
+      variables() {
+        return { id: this.$route.params.id };
       },
       pollInterval: 2000,
     },
@@ -98,10 +110,6 @@ export default {
       isLoading: false,
       companyID: this.$route.params.id,
     };
-  },
-  beforeMount() {
-    const companyID = this.$route.params.id;
-    localStorage.setItem("companyID", companyID);
   },
 };
 </script>
