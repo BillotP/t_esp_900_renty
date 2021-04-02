@@ -44,6 +44,18 @@ func (r *MutationResolver) SignupAsCompany(ctx context.Context, input models.Com
 	}
 
 	company.User.Password = string(pwdHash)
+	if input.Logo != nil {
+		nLogo := models.Asset{
+			URL:     *input.Logo,
+			Type:    "PICTURE",
+			Storage: "EXTERNAL",
+		}
+		if err = r.DB.Create(&nLogo).Error; err != nil {
+			lib.LogError("mutation/Register/Company", err.Error())
+			return nil, err
+		}
+		company.LogoID = nLogo.ID
+	}
 	if err = r.DB.Create(&company).Error; err != nil {
 		lib.LogError("mutation/Register/Company", err.Error())
 		return nil, err
