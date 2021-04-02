@@ -2,7 +2,7 @@ import { RouteConfig } from "vue-router";
 import { apolloClient } from '@/main';
 import gql from "graphql-tag";
 
-
+const Dashboard = (resolve: any) => require(["@/modules/dashboard/Dashboard.vue"], (m: any) => resolve(m.default));
 const TenantList = (resolve: any) => require(["@/modules/tenant/List.vue"], (m: any) => resolve(m.default));
 const TenantProfile = (resolve: any) => require(["@/modules/tenant/Profile.vue"], (m: any) => resolve(m.default));
 const TenantEdit = (resolve: any) => require(["@/modules/tenant/Edit.vue"], (m: any) => resolve(m.default));
@@ -50,7 +50,12 @@ const module: RouteConfig[] = [
   {
     path: '/create/tenant',
     component: TenantCreateUser,
-  }
+  },
+  {
+    path: '/dashboard',
+    component: Dashboard
+  },
+
 ];
 
 export default module;

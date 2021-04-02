@@ -1,14 +1,12 @@
 <template>
   <v-container>
-    <v-card
-        v-if="property"
-        tile
-    >
+    <v-card v-if="property" tile>
       <v-list>
         <v-list-item>
           <v-list-item-avatar>
             <v-img
-                src="https://as2.ftcdn.net/jpg/01/35/38/75/500_F_135387578_vKyGn4NM9E2ipUS9j1GRCDLs40CwRNyC.jpg"></v-img>
+              src="https://as2.ftcdn.net/jpg/01/35/38/75/500_F_135387578_vKyGn4NM9E2ipUS9j1GRCDLs40CwRNyC.jpg"
+            ></v-img>
           </v-list-item-avatar>
         </v-list-item>
 
@@ -58,18 +56,21 @@ export default class PropertyProfile extends Vue {
   public property: any = {};
 
   beforeMount() {
-    this.$apollo.getClient().query({
-      query: PROPERTY_QUERY,
-      variables: {id: this.$route.params.id}
-    }).then((res) => {
-      this.property = res.data.property;
-      console.log(res);
-    }).catch((err) => {
-      console.error(err);
-    });
+    this.$apollo
+      .getClient()
+      .query({
+        query: PROPERTY_QUERY,
+        variables: { id: this.$route.params.id },
+      })
+      .then((res) => {
+        this.property = res.data.property;
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 }
-
 </script>
 
 <style>

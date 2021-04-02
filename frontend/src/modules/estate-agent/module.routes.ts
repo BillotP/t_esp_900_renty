@@ -1,9 +1,10 @@
 import { RouteConfig } from "vue-router";
 
-const CompanyDashboard = (resolve: any) => require(["@/modules/dashboard/Dashboard.vue"], (m: any) => resolve(m.default));
+const Dashboard = (resolve: any) => require(["@/modules/dashboard/Dashboard.vue"], (m: any) => resolve(m.default));
 const EstateAgentCreateUser = (resolve: any) => require(["@/modules/estate-agent/CreateUser.vue"], (m: any) => resolve(m.default));
 const EstateAgentList = (resolve: any) => require(["@/modules/estate-agent/List.vue"], (m: any) => resolve(m.default));
 const EstateAgentProfile = (resolve: any) => require(["@/modules/estate-agent/Profile.vue"], (m: any) => resolve(m.default));
+const EstateAgentEditProfile = (resolve: any) => require(["@/modules/estate-agent/EditEstateAgent.vue"], (m: any) => resolve(m.default));
 
 
 const module: RouteConfig[] = [
@@ -20,8 +21,12 @@ const module: RouteConfig[] = [
     component: EstateAgentProfile,
   },
   {
-    path: '/**',
-    component: CompanyDashboard
+    path: '/estate-agents/:id/edit',
+    component: EstateAgentEditProfile,
+  },
+  {
+    path: '/dashboard',
+    component: Dashboard
   }
 ];
 
