@@ -152,6 +152,20 @@ export default class Register extends Vue {
   public snackBarText: string = "";
   public timeout: number = 2000;
 
+  private parseJwt(token: string): Object {
+    var base64Url = token.split(".")[1];
+    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    var jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+
+    return JSON.parse(jsonPayload);
+  }
   async register() {
     // const registerAs = [
     //   {
@@ -178,6 +192,9 @@ export default class Register extends Vue {
         },
       });
       if (!resp.errors && resp.data["signupAsCompany"].token) {
+        const payload = this.parseJwt(resp.data["signupAsCompany"].token);
+        console.log(payload);
+        localStorage.setItem("exp", payload["exp"]);
         localStorage.setItem("username", this.companyUserName);
         localStorage.setItem("privilege", this.role.toString());
         localStorage.setItem("token", resp.data["signupAsCompany"].token);
