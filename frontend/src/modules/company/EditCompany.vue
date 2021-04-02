@@ -2,42 +2,42 @@
   <v-main>
     <v-card style="margin: 10px">
       <v-card-title class="justify-center"
-        ><b style="text-transform: capitalize">{{ companyName }} 🖊️</b>
+        ><b style="text-transform: capitalize">{{ company.name }} 🖊️</b>
       </v-card-title>
       <v-card-text>
         <v-row>
           <v-text-field
             hint="Update your company name"
-            v-model="companyName"
+            v-model="company.name"
             label="Name"
           ></v-text-field>
         </v-row>
         <v-row>
           <v-text-field
             hint="Update your company description"
-            v-model="companyDescription"
+            v-model="company.description"
             label="Description"
           ></v-text-field>
         </v-row>
         <v-row>
           <v-img
-            v-if="companyLogoUrl"
+            v-if="company.logo"
             style="margin-right: 10px; border: 1px solid black"
             max-height="64px"
             max-width="64px"
-            :src="companyLogoUrl"
+            :src="company.logo.url"
             left
           ></v-img>
           <v-text-field
             hint="Update your company logo URL"
-            v-model="companyLogoUrl"
+            v-model="company.logo.url"
             label="Logo URL"
           ></v-text-field>
         </v-row>
         <v-row>
           <v-text-field
             hint="Update your company phone number"
-            v-model="companyPhoneNumber"
+            v-model="company.tel"
             label="Phone number"
           ></v-text-field>
         </v-row>
@@ -45,7 +45,7 @@
           depressed
           block
           color="primary"
-          style="margin: 10px;"
+          style="margin: 10px"
           :disabled="isLoading"
           v-on:click="update()"
         >
@@ -57,7 +57,32 @@
 </template>
 
 <script>
+import gql from "graphql-tag";
 export default {
+  apollo: {
+    company: {
+      query: gql`
+        query company($id: Int!) {
+          company(id: $id) {
+            ID
+            logo {
+              url
+            }
+            logoID
+            name
+            createdAt
+            updatedAt
+            description
+            tel
+          }
+        }
+      `,
+      variables: {
+        id: localStorage.getItem("companyID"),
+      },
+      pollInterval: 2000,
+    },
+  },
   methods: {
     udpate() {
       console.log("Update !");
@@ -65,12 +90,18 @@ export default {
   },
   data() {
     return {
+      company: {},
       companyDescription: "",
       companyLogoUrl: "",
       companyPhoneNumber: "",
       companyName: localStorage.getItem("username"),
       isLoading: false,
+      companyID: this.$route.params.id,
     };
+  },
+  beforeMount() {
+    const companyID = this.$route.params.id;
+    localStorage.setItem("companyID", companyID);
   },
 };
 </script>
