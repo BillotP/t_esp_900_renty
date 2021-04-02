@@ -45,9 +45,20 @@
               ></v-radio>
             </v-radio-group>
           </v-row>
-          <v-btn depressed block color="primary" v-on:click="login()">
-            Login</v-btn
+          <v-btn
+            :disabled="isLoading"
+            depressed
+            block
+            color="primary"
+            v-on:click="login()"
           >
+            <span v-if="!isLoading">Login</span>
+            <v-progress-circular
+              indeterminate
+              v-else
+              color="primary"
+            ></v-progress-circular>
+          </v-btn>
         </v-container>
         <p>
           Dont have an account yet ?
@@ -90,6 +101,9 @@ const LOGIN_TENANT_MUTATION = gql`
 
 @Component
 export default class Auth extends Vue {
+  public isLoading: boolean = false;
+  public hasError: boolean = false;
+
   private username: string = "";
   private password: string = "";
   private role: number = -1;
@@ -117,7 +131,20 @@ export default class Auth extends Vue {
   set modelRole(role: number) {
     this.role = +role as number;
   }
+  private parseJwt(token: string): Object {
+    var base64Url = token.split(".")[1];
+    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    var jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
 
+    return JSON.parse(jsonPayload);
+  }
   @authModule.Action("login")
   private setInformationsLogin!: (log: Login) => void;
 
@@ -136,7 +163,7 @@ export default class Auth extends Vue {
         key: "loginAsTenant",
       },
     ];
-
+    this.isLoading = true;
     try {
       const resp = await this.$apollo.getClient().mutate({
         mutation: loginAs[this.modelRole].mutation,
@@ -148,7 +175,11 @@ export default class Auth extends Vue {
         },
       });
       if (resp.data[loginAs[this.modelRole].key].token) {
-        //this.setInformationsLogin({ username: this.modelUsername, privilege: 0 });
+        const payload = this.parseJwt(
+          resp.data[loginAs[this.modelRole].key].token
+        );
+        console.log(payload);
+        localStorage.setItem("exp", payload["exp"]);
         localStorage.setItem("username", this.modelUsername);
         localStorage.setItem("privilege", this.modelRole.toString());
         localStorage.setItem(
@@ -159,8 +190,10 @@ export default class Auth extends Vue {
         this.$router.push("/");
       }
     } catch (e) {
+      this.hasError = true;
       console.error(e);
     }
+    this.isLoading = false;
   }
 }
 </script>
