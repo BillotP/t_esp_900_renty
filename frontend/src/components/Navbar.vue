@@ -78,8 +78,10 @@ export default class NavBar extends Vue {
     );
   }
 
-  signOut() {
+  async signOut() {
     localStorage.clear();
+    let cli = this.$apollo.getClient();
+    await cli.clearStore();
     this.$router.push("/login");
   }
 }
