@@ -1180,14 +1180,14 @@ input PropertyInput {
 	&ast.Source{Name: "schemes/query.graphqls", Input: `type Query {
     anomaly(id: Int!): Anomaly! @hasRole(roles: [ESTATE_AGENT, TENANT])
     anomalies: [Anomaly!]! @hasRole(roles: [ESTATE_AGENT, TENANT])
-    tenant(id: Int!): Tenant!
+    tenant(id: Int!): Tenant! @hasRole(roles: [COMPANY, ESTATE_AGENT, TENANT])
     tenants: [Tenant!]! @hasRole(roles: [ESTATE_AGENT])
-    estateAgent(id: Int!): EstateAgent! @hasRole(roles: [COMPANY])
+    estateAgent(id: Int!): EstateAgent! @hasRole(roles: [COMPANY, ESTATE_AGENT])
     estateAgents: [EstateAgent!]! @hasRole(roles: [COMPANY, ESTATE_AGENT])
     company(id: Int!): Company! @hasRole(roles: [COMPANY, ADMIN])
     companies: [Company!]! @hasRole(roles: [ADMIN])
-    property(id: Int!): Property! @hasRole(roles: [ESTATE_AGENT, TENANT])
-    properties: [Property!]! @hasRole(roles: [ESTATE_AGENT])
+    property(id: Int!): Property! @hasRole(roles: [COMPANY, ESTATE_AGENT, TENANT])
+    properties: [Property!]! @hasRole(roles: [COMPANY, ESTATE_AGENT])
     profile: Profile
 }
 `, BuiltIn: false},
@@ -4099,8 +4099,32 @@ func (ec *executionContext) _Query_tenant(ctx context.Context, field graphql.Col
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Tenant(rctx, args["id"].(int64))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().Tenant(rctx, args["id"].(int64))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY", "ESTATE_AGENT", "TENANT"})
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive0, roles)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, err
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*models.Tenant); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models.Tenant`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4203,7 +4227,7 @@ func (ec *executionContext) _Query_estateAgent(ctx context.Context, field graphq
 			return ec.resolvers.Query().EstateAgent(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY"})
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY", "ESTATE_AGENT"})
 			if err != nil {
 				return nil, err
 			}
@@ -4449,7 +4473,7 @@ func (ec *executionContext) _Query_property(ctx context.Context, field graphql.C
 			return ec.resolvers.Query().Property(rctx, args["id"].(int64))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT", "TENANT"})
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY", "ESTATE_AGENT", "TENANT"})
 			if err != nil {
 				return nil, err
 			}
@@ -4507,7 +4531,7 @@ func (ec *executionContext) _Query_properties(ctx context.Context, field graphql
 			return ec.resolvers.Query().Properties(rctx)
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
-			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"ESTATE_AGENT"})
+			roles, err := ec.unmarshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx, []interface{}{"COMPANY", "ESTATE_AGENT"})
 			if err != nil {
 				return nil, err
 			}
