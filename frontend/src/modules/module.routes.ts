@@ -13,7 +13,11 @@ const module: RouteConfig[] = [
     ...CompanyRoute,
     ...EstateAgentRoute,
     ...PropertyRoute,
-    ...TicketRoute
+    ...TicketRoute,
+    {
+        path: "/**",
+        redirect: "/dashboard"
+    }
 ];
 
 export default module;
