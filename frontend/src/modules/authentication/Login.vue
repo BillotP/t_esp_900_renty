@@ -14,6 +14,7 @@
             <v-text-field
               v-model="modelUsername"
               label="Username"
+              :error-messages="userErrorText"
             ></v-text-field>
           </v-row>
           <v-row>
@@ -21,6 +22,7 @@
               type="password"
               v-model="modelPassword"
               label="Password"
+              :error-messages="passwordErrorText"
             ></v-text-field>
           </v-row>
           <v-row>
@@ -66,6 +68,14 @@
         </p>
       </v-card-text>
     </v-card>
+    <v-snackbar v-model="snackbar" color="red" timeout="3000">
+      {{ errorText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-main>
 </template>
 
@@ -73,10 +83,8 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import gql from "graphql-tag";
-import { Login } from "@/store/authentificationStore";
-import { namespace } from "vuex-class";
+import { GraphQLError } from "graphql";
 
-const authModule = namespace("authentificationStore");
 const LOGIN_COMPANY_MUTATION = gql`
   mutation($input: UserInput) {
     loginAsCompany(input: $input) {
@@ -99,10 +107,30 @@ const LOGIN_TENANT_MUTATION = gql`
   }
 `;
 
+const loginAs = [
+  {
+    mutation: LOGIN_COMPANY_MUTATION,
+    key: "loginAsCompany",
+  },
+  {
+    mutation: LOGIN_ESTATE_AGENT_MUTATION,
+    key: "loginAsEstateAgent",
+  },
+  {
+    mutation: LOGIN_TENANT_MUTATION,
+    key: "loginAsTenant",
+  },
+];
+
 @Component
 export default class Auth extends Vue {
   public isLoading: boolean = false;
   public hasError: boolean = false;
+  public snackbar: boolean = false;
+  public passwordErrorText: string = "";
+  public userErrorText: string = "";
+  public hasOtherError: boolean = false;
+  public errorText: string = "";
 
   private username: string = "";
   private password: string = "";
@@ -145,25 +173,13 @@ export default class Auth extends Vue {
 
     return JSON.parse(jsonPayload);
   }
-  @authModule.Action("login")
-  private setInformationsLogin!: (log: Login) => void;
 
   async login() {
-    const loginAs = [
-      {
-        mutation: LOGIN_COMPANY_MUTATION,
-        key: "loginAsCompany",
-      },
-      {
-        mutation: LOGIN_ESTATE_AGENT_MUTATION,
-        key: "loginAsEstateAgent",
-      },
-      {
-        mutation: LOGIN_TENANT_MUTATION,
-        key: "loginAsTenant",
-      },
-    ];
     this.isLoading = true;
+    this.hasError = false;
+    this.passwordErrorText = "";
+    this.userErrorText = "";
+    this.errorText = "";
     try {
       const resp = await this.$apollo.getClient().mutate({
         mutation: loginAs[this.modelRole].mutation,
@@ -178,7 +194,6 @@ export default class Auth extends Vue {
         const payload = this.parseJwt(
           resp.data[loginAs[this.modelRole].key].token
         );
-        console.log(payload);
         localStorage.setItem("exp", payload["exp"]);
         localStorage.setItem("username", this.modelUsername);
         localStorage.setItem("privilege", this.modelRole.toString());
@@ -191,7 +206,16 @@ export default class Auth extends Vue {
       }
     } catch (e) {
       this.hasError = true;
-      console.error(e);
+      let gqlerror = e as GraphQLError;
+      let errMsq = gqlerror.message.replaceAll("GraphQL error: ", "");
+      if (errMsq.includes("record not found")) {
+        this.userErrorText = "Unknow user, please register first";
+      } else if (errMsq.includes("bad password")) {
+        this.passwordErrorText = "Wrong password, try again";
+      } else {
+        this.snackbar = true;
+        this.errorText = "Something wrong happen, please try again later";
+      }
     }
     this.isLoading = false;
   }
