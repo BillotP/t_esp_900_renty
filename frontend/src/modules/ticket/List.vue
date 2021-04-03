@@ -99,9 +99,7 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+<script>
 import gql from "graphql-tag";
 
 const TICKET_QUERY = gql`
@@ -149,58 +147,91 @@ const ESTATE_AGENTS_QUERY = gql`
     }
   }
 `;
+export default {
+  apollo: {
+    anomalies: {
+      query: TICKET_QUERY,
+      pollInterval: 4000,
+    },
+  },
+  methods: {
+    get getPrivilege() {
+      return Number(localStorage.getItem("privilege")) || 0;
+    },
+    goToProfile(ticket) {
+      this.$router.push("/ticket/" + ticket.ID);
+    },
 
-@Component
-export default class TicketList extends Vue {
-  public state = null;
-  public assignedToID = -1;
-  public ticket: any = {};
-  public anomalies: any[] = [];
-  public estateAgents: any[] = [];
-  public dialogSetTicketState = false;
-  public dialogAssignTicket = false;
+    goToCreateTicket() {
+      this.$router.push("/create/ticket/");
+    },
 
-  beforeMount() {
-    this.fetchTickets();
-  }
+    selectTicketState(ticket) {
+      this.ticket = ticket;
+      this.state = ticket.state;
+      this.dialogSetTicketState = true;
+    },
 
-  get getPrivilege() {
-    return Number(localStorage.getItem("privilege")) || 0;
-  }
+    selectTicketAssign(ticket) {
+      this.ticket = ticket;
+      this.assignedToID = ticket.assignedToID;
+      this.dialogAssignTicket = true;
+    },
 
-  fetchTickets() {
-    this.$apollo
-      .getClient()
-      .query({
-        query: TICKET_QUERY,
-        fetchPolicy: "network-only",
-      })
-      .then((res) => {
-        this.anomalies = res.data.anomalies;
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    if (this.getPrivilege == 1) {
-      this.$apollo
-        .getClient()
-        .query({
-          query: ESTATE_AGENTS_QUERY,
-          fetchPolicy: "network-only",
+    setTicketState() {
+      console.log(this.ticket);
+      this.cli
+        .mutate({
+          mutation: ASSIGN_TICKET_MUTATION,
+          variables: {
+            id: this.ticket.ID,
+            input: { state: this.state, assignedTo: this.ticket.assignedToID },
+          },
         })
         .then((res) => {
-          this.estateAgents = res.data.estateAgents;
           console.log(res);
+          this.dialogSetTicketState = false;
+          this.ticket = {};
+          this.state = null;
+          this.fetchTickets();
         })
         .catch((err) => {
           console.error(err);
         });
-    }
-  }
+    },
 
+    setTicketAssign() {
+      console.log(this.ticket);
+      this.cli
+        .mutate({
+          mutation: ASSIGN_TICKET_MUTATION,
+          variables: {
+            id: this.ticket.ID,
+            input: { state: this.ticket.state, assignedTo: this.assignedToID },
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          this.dialogAssignTicket = false;
+          this.ticket = {};
+          this.assignedToID = -1;
+          this.fetchTickets();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+  },
   data() {
     return {
+      cli: this.$apollo.getClient(),
+      state: null,
+      assignedToID: -1,
+      ticket: {},
+      anomalies: [],
+      estateAgents: [],
+      dialogSetTicketState: false,
+      dialogAssignTicket: false,
       headers: [
         {
           text: "ID",
@@ -217,75 +248,10 @@ export default class TicketList extends Vue {
       ],
       states: ["TODO", "IN_PROGRESS", "DONE"],
     };
-  }
-
-  goToProfile(ticket: any) {
-    this.$router.push("/ticket/" + ticket.ID);
-  }
-
-  goToCreateTicket() {
-    this.$router.push("/create/ticket/");
-  }
-
-  selectTicketState(ticket: any) {
-    this.ticket = ticket;
-    this.state = ticket.state;
-    this.dialogSetTicketState = true;
-  }
-
-  selectTicketAssign(ticket: any) {
-    this.ticket = ticket;
-    this.assignedToID = ticket.assignedToID;
-    this.dialogAssignTicket = true;
-  }
-
-  setTicketState() {
-    console.log(this.ticket);
-    this.$apollo
-      .getClient()
-      .mutate({
-        mutation: ASSIGN_TICKET_MUTATION,
-        variables: {
-          id: this.ticket.ID,
-          input: { state: this.state, assignedTo: this.ticket.assignedToID },
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        this.dialogSetTicketState = false;
-        this.ticket = {};
-        this.state = null;
-        this.fetchTickets();
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
-  setTicketAssign() {
-    console.log(this.ticket);
-    this.$apollo
-      .getClient()
-      .mutate({
-        mutation: ASSIGN_TICKET_MUTATION,
-        variables: {
-          id: this.ticket.ID,
-          input: { state: this.ticket.state, assignedTo: this.assignedToID },
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        this.dialogAssignTicket = false;
-        this.ticket = {};
-        this.assignedToID = -1;
-        this.fetchTickets();
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-}
+  },
+};
 </script>
+
 
 <style>
 .v-data-table {
