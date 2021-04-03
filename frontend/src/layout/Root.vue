@@ -19,7 +19,10 @@ import Component from "vue-class-component";
 @Component({})
 export default class Root extends Vue {
   public getRoute() {
-    return this.$route.path.toString().includes("login");
+    return (
+      this.$route.path.toString().includes("login") ||
+      this.$route.path.toString().includes("register")
+    );
   }
 
   public mounted() {}

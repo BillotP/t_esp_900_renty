@@ -4,19 +4,13 @@
       Create Property
     </v-btn>
     <v-data-table
-        :headers="headers"
-        :items="properties"
-        :items-per-page="5"
-        class="elevation-1"
+      :headers="headers"
+      :items="properties"
+      :items-per-page="5"
+      class="elevation-1"
     >
-      <template v-slot:item.actions="{ item }">
-        <v-icon
-            small
-            class="mr-2"
-            @click="goToProfile(item)"
-        >
-          mdi-eye
-        </v-icon>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small class="mr-2" @click="goToProfile(item)"> mdi-eye </v-icon>
       </template>
     </v-data-table>
   </v-container>
@@ -43,31 +37,35 @@ export default class PropertyList extends Vue {
   public properties = [];
 
   beforeMount() {
-    this.$apollo.getClient().query({
-      query: PROPERTIES_QUERY
-    }).then((res) => {
-      this.properties = res.data.properties;
-      console.log(res);
-    }).catch((err) => {
-      console.error(err);
-    });
+    this.$apollo
+      .getClient()
+      .query({
+        query: PROPERTIES_QUERY,
+      })
+      .then((res) => {
+        this.properties = res.data.properties;
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
   data() {
     return {
       headers: [
         {
-          text: 'ID',
-          align: 'start',
+          text: "ID",
+          align: "start",
           sortable: false,
-          value: 'ID',
+          value: "ID",
         },
-        {text: 'CodeNumber', value: 'codeNumber'},
-        {text: 'Address', value: 'address'},
-        {text: 'Area', value: 'area'},
-        {text: 'Actions', value: 'actions', sortable: false},
-      ]
-    }
+        { text: "CodeNumber", value: "codeNumber" },
+        { text: "Address", value: "address" },
+        { text: "Area", value: "area" },
+        { text: "Actions", value: "actions", sortable: false },
+      ],
+    };
   }
 
   goToProfile(property: any) {

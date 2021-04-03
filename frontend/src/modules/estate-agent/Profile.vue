@@ -1,14 +1,10 @@
 <template>
-  <v-container>
-    <v-card
-        v-if="estateAgent"
-        tile
-    >
+  <v-main>
+    <!-- <v-card v-if="estateAgent" tile>
       <v-list>
         <v-list-item>
           <v-list-item-avatar>
-            <v-img
-                src="https://www.flaticon.com/svg/vstatic/svg/1029/1029022.svg?token=exp=1617065368~hmac=568d1fdbc9fbf86cf32adff388f85872"></v-img>
+            <v-img :src="'https://robohash.org/' + id + '.png?set=set4'"></v-img>
           </v-list-item-avatar>
         </v-list-item>
 
@@ -28,8 +24,35 @@
           </v-list-item-title>
         </v-list>
       </v-list-item>
+    </v-card> -->
+    <v-card class="mx-auto" max-width="434" tile>
+      <v-img height="100%" :src="banneer"></v-img>
+      <v-col>
+        <v-avatar size="100" style="position: absolute; top: 130px">
+          <v-img
+            :src="`https://robohash.org/${estateAgent.user.username}.png?set=set5&bgset=bg1&size=100x100`"
+          ></v-img>
+        </v-avatar>
+      </v-col>
+      <v-list-item color="rgba(0, 0, 0, .4)">
+        <v-list-item-content>
+          <v-list-item-title style="text-transform: capitalize" class="title">{{
+            estateAgent.user.username
+          }}</v-list-item-title>
+          <v-list-item-subtitle
+            >RealEstate Agent N° {{ id }}</v-list-item-subtitle
+          >
+          <v-list-item-subtitle
+            >@
+            <strong>{{
+              estateAgent.company.name
+            }}</strong></v-list-item-subtitle
+          >
+        </v-list-item-content>
+        <v-list-item-content> </v-list-item-content>
+      </v-list-item>
     </v-card>
-  </v-container>
+  </v-main>
 </template>
 
 
@@ -55,20 +78,29 @@ const ESTATE_AGENT_QUERY = gql`
 @Component
 export default class EstateAgentProfile extends Vue {
   public estateAgent: any = {};
-
+  data() {
+    return {
+      id: this.$route.params.id,
+      banneer:
+        "https://image.freepik.com/free-photo/real-estate-agent-customer-face-mask-looking-new-project_53876-97516.jpg",
+    };
+  }
   beforeMount() {
-    this.$apollo.getClient().query({
-      query: ESTATE_AGENT_QUERY,
-      variables: {id: this.$route.params.id}
-    }).then((res) => {
-      this.estateAgent = res.data.estateAgent;
-      console.log(res);
-    }).catch((err) => {
-      console.error(err);
-    });
+    this.$apollo
+      .getClient()
+      .query({
+        query: ESTATE_AGENT_QUERY,
+        variables: { id: this.$route.params.id },
+      })
+      .then((res) => {
+        this.estateAgent = res.data.estateAgent;
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 }
-
 </script>
 
 <style>

@@ -1,6 +1,4 @@
 import { RouteConfig } from "vue-router";
-import { apolloClient } from '@/main';
-import gql from "graphql-tag";
 
 const TicketCreate = (resolve: any) => require(["@/modules/ticket/Create.vue"], (m: any) => resolve(m.default));
 const TicketList = (resolve: any) => require(["@/modules/ticket/List.vue"], (m: any) => resolve(m.default));

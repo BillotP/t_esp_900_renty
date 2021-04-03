@@ -9,13 +9,21 @@ const router = new Router({
     routes
 });
 
+const unAuthPath = ["/login", "/register"];
+
 router.beforeEach((to, _, next) => {
+    let isLogged = localStorage.getItem("token") !== null ? true : false;
+    let isExpired = true
+
+    if (isLogged) {
+        let exp = localStorage.getItem("exp")
+        isExpired = Date.now() >= Number(exp) * 1000 ? true : false;
+    }
+
+    if ((!isLogged || isExpired) && !unAuthPath.includes(to.path)) {
+        next({ path: unAuthPath[0] })
+    }
     next();
-    if (to.path !== '/login' && !localStorage.getItem('username')) {
-        next({ path: '/login' })
-    } else {
-        next()
-    };
 })
 
 

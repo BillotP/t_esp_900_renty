@@ -16,6 +16,12 @@ import (
 
 var Db *gorm.DB
 
+// ExitCodeECOMM is linux exit code representing a communication error on send
+const ExitCodeECOMM = 70
+
+// ExitCodeEBADE is linux exit code representing an invalid exchange
+const ExitCodeEBADE = 52
+
 // InitDB setup the global Db connection pool
 func InitDB() {
 	var (
@@ -37,28 +43,36 @@ func InitDB() {
 	dbName = lib.GetDefVal("DB_NAME", "rentydb")
 	dbHost = lib.GetDefVal("POSTGRES_HOST", "127.0.0.1")
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", dbHost, username, dbName, password, "5432") //Build connection string
+	logrConf := logger.Config{
+		SlowThreshold: time.Second, // Slow SQL threshold
+		LogLevel:      logger.Warn, // Log level
+		Colorful:      false,       // Disable color,
+	}
 	if stage == "dev" {
 		lib.LogInfo("InitDB", fmt.Sprintf("will connect to db with URI : %s", dbURI))
+		logrConf.LogLevel = logger.Info
 	}
-
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-		logger.Config{
-			SlowThreshold: time.Second, // Slow SQL threshold
-			LogLevel:      logger.Info, // Log level
-			Colorful:      false,       // Disable color,
-
-		},
+		logrConf,
 	)
-
-	Db, err = gorm.Open(postgres.Open(dbURI), &gorm.Config{
+	if Db, err = gorm.Open(postgres.Open(dbURI), &gorm.Config{
 		Logger: newLogger,
-	})
-	if err != nil {
-		fmt.Print(err)
+	}); err != nil {
+		lib.LogError("InitDB", "Failed to connect to database, exiting")
+		os.Exit(ExitCodeECOMM)
 	}
 
-	if err = Db.AutoMigrate(&models.Admin{}, &models.Anomaly{}, models.Asset{}, &models.Company{}, &models.EstateAgent{}, &models.Property{}, &models.Tenant{}, &models.User{}); err != nil {
-		os.Exit(84)
+	if err = Db.AutoMigrate(
+		&models.Admin{},
+		&models.Anomaly{},
+		&models.Asset{},
+		&models.Company{},
+		&models.EstateAgent{},
+		&models.Property{},
+		&models.Tenant{},
+		&models.User{}); err != nil {
+		lib.LogError("InitDB/AutoMigrate", "Failed to migrate db schemes, exiting")
+		os.Exit(ExitCodeEBADE)
 	}
 }

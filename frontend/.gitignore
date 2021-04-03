@@ -3,7 +3,8 @@ Thumbs.db
 db.json
 *.log
 node_modules/
-public/
+#public/
+dist
 .deploy*/
 src/_drafts
 package-lock.json

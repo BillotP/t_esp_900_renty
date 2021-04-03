@@ -1,4 +1,4 @@
-import {RouteConfig} from "vue-router";
+import { RouteConfig } from "vue-router";
 
 const PropertyCreate = (resolve: any) => require(["@/modules/property/Create.vue"], (m: any) => resolve(m.default));
 const PropertyList = (resolve: any) => require(["@/modules/property/List.vue"], (m: any) => resolve(m.default));

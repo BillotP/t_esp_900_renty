@@ -1,14 +1,6 @@
 import { RootState } from '@/store/types';
 import { Module, ActionTree, MutationTree, GetterTree } from "vuex";
-import gql from "graphql-tag";
 
-const LOGIN_COMPANY_MUTATION = gql`
-mutation ($input: UserInput) {
-  loginAsCompany(input: $input) {
-    token
-  }
-}
-`;
 
 export enum privilege {
     client,
@@ -45,7 +37,7 @@ const actions: ActionTree<AuthentificationState, RootState> = {
 };
 
 const mutations: MutationTree<AuthentificationState> = {
-    setLogin(state, login: Login) {
+    setLogin(state, _login: Login) {
         state.connected = true;
     }
 };
