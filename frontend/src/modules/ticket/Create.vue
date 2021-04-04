@@ -3,7 +3,15 @@
     <v-container>
       <v-row>
         <v-col cols="12" md="4">
-          <v-text-field v-model="type" label="Type" required></v-text-field>
+          <v-select
+            v-model="type"
+            :items="ticketTypes"
+            item-text="label"
+            item-value="value"
+            label="Ticket kind"
+            hint="Select the appropriate issue type"
+            required
+          ></v-select>
         </v-col>
       </v-row>
       <v-row>
@@ -12,6 +20,7 @@
             v-model="description"
             value="Description"
             label="Description"
+            hint="Describe your issue"
             required
           ></v-textarea>
         </v-col>
@@ -50,6 +59,14 @@ export default class CreateTicket extends Vue {
       valid: false,
       timeout: 2000,
       type: "",
+      ticketTypes: [
+        { label: "Maintenance", value: "MAINTENANCE" },
+        { label: "Rent payment method", value: "PAYMENT" },
+        { label: "Rent issue", value: "RENT" },
+        { label: "Document request", value: "DOCUMENTS" },
+        { label: "Accomodation issue", value: "ACCOMODATION" },
+        { label: "Other", value: "OTHER" },
+      ],
     };
   }
 
@@ -65,19 +82,12 @@ export default class CreateTicket extends Vue {
         },
       });
       if (resp.data.createProperty) {
-        console.log("coucou");
+        this.$router.back();
       }
     } catch (e) {
       console.error(e);
     }
   }
-
-  // public mounted() {
-  //   const resolved = this.$router.resolve({
-  //     name: "SomeRouteName",
-  //     params: { id: item.id },
-  //   });
-  // }
 }
 </script>
 

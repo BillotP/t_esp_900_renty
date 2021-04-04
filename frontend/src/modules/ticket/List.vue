@@ -1,8 +1,9 @@
 <template>
   <v-container>
     <v-btn
-      v-if="getPrivilege == 2"
+      v-if="privilege == '2'"
       right
+      block
       color="primary"
       v-on:click="goToCreateTicket"
     >
@@ -30,7 +31,7 @@
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="goToProfile(item)"> mdi-eye </v-icon>
         <v-icon
-          v-if="getPrivilege == 1"
+          v-if="privilege == '1'"
           small
           class="mr-2"
           @click="selectTicketAssign(item)"
@@ -38,7 +39,7 @@
           mdi-account-convert
         </v-icon>
         <v-icon
-          v-if="getPrivilege == 1"
+          v-if="privilege == '1'"
           small
           class="mr-2"
           @click="selectTicketState(item)"
@@ -155,9 +156,6 @@ export default {
     },
   },
   methods: {
-    get getPrivilege() {
-      return Number(localStorage.getItem("privilege")) || 0;
-    },
     goToProfile(ticket) {
       this.$router.push("/ticket/" + ticket.ID);
     },
@@ -247,6 +245,7 @@ export default {
         { text: "Actions", value: "actions", sortable: false },
       ],
       states: ["TODO", "IN_PROGRESS", "DONE"],
+      privilege: localStorage.getItem("privilege"),
     };
   },
 };
