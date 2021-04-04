@@ -1,8 +1,30 @@
 <template>
   <v-container>
-    <v-btn right color="primary" v-on:click="goToCreateProperty">
-      Create Property
-    </v-btn>
+    <v-row align="center" justify="center" style="height: 10vh">
+      <v-col align="center" justify="center">
+        <h3 style="text-transform: capitalize">properties</h3>
+      </v-col>
+
+      <v-row align="center" justify="center">
+        <v-btn
+          style="margin: 5px"
+          right
+          color="primary"
+          v-on:click="goToCreateProperty"
+        >
+          +
+        </v-btn>
+        <v-btn
+          style="margin: 5px"
+          right
+          color="primary"
+          v-on:click="$apollo.queries['properties'].refetch()"
+        >
+          🔄
+        </v-btn>
+      </v-row>
+    </v-row>
+
     <v-data-table
       :headers="headers"
       :items="properties"
@@ -16,9 +38,7 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+<script>
 import gql from "graphql-tag";
 
 const PROPERTIES_QUERY = gql`
@@ -31,26 +51,13 @@ const PROPERTIES_QUERY = gql`
     }
   }
 `;
-
-@Component
-export default class PropertyList extends Vue {
-  public properties = [];
-
-  beforeMount() {
-    this.$apollo
-      .getClient()
-      .query({
-        query: PROPERTIES_QUERY,
-      })
-      .then((res) => {
-        this.properties = res.data.properties;
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-
+export default {
+  apollo: {
+    properties: {
+      query: PROPERTIES_QUERY,
+      pollInterval: 3000,
+    },
+  },
   data() {
     return {
       headers: [
@@ -60,22 +67,23 @@ export default class PropertyList extends Vue {
           sortable: false,
           value: "ID",
         },
-        { text: "CodeNumber", value: "codeNumber" },
+        { text: "Postal Code", value: "codeNumber" },
         { text: "Address", value: "address" },
-        { text: "Area", value: "area" },
+        { text: "Property Area (m²)", value: "area" },
         { text: "Actions", value: "actions", sortable: false },
       ],
     };
-  }
+  },
+  methods: {
+    goToProfile(property) {
+      this.$router.push("/property/" + property.ID);
+    },
 
-  goToProfile(property: any) {
-    this.$router.push("/property/" + property.ID);
-  }
-
-  goToCreateProperty() {
-    this.$router.push("/create/property/");
-  }
-}
+    goToCreateProperty() {
+      this.$router.push("/create/property/");
+    },
+  },
+};
 </script>
 
 <style>
