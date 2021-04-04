@@ -207,7 +207,7 @@ export default class Auth extends Vue {
     } catch (e) {
       this.hasError = true;
       let gqlerror = e as GraphQLError;
-      let errMsq = gqlerror.message.replaceAll("GraphQL error: ", "");
+      let errMsq = gqlerror.message.replace("GraphQL error: ", "");
       if (errMsq.includes("record not found")) {
         this.userErrorText = "Unknow user, please register first";
       } else if (errMsq.includes("bad password")) {
