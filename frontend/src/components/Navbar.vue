@@ -1,11 +1,9 @@
 <template>
   <v-toolbar dark prominent height="70">
-    <v-col align="center" justify="center">
-      <v-toolbar-title>🏡 Renty</v-toolbar-title>
-    </v-col>
-    <v-spacer />
-
-    <v-tabs fixed-tabs>
+    <v-tabs show-arrows>
+      <v-col align="center" justify="center">
+        <v-toolbar-title>🏡 Renty</v-toolbar-title>
+      </v-col>
       <v-tab exact to="/dashboard">Dashboard</v-tab>
       <v-tab v-if="getPrivilege == 0" exact to="/estate-agents"
         >Estate Agents</v-tab
@@ -13,18 +11,18 @@
       <v-tab v-if="getPrivilege == 1" exact to="/tenants">Tenants</v-tab>
       <v-tab v-if="getPrivilege != 0" exact to="/tickets">Tickets</v-tab>
       <v-tab v-if="getPrivilege == 1" exact to="/properties">Properties</v-tab>
+      <v-tab exact style="margin-top: auto; margin-bottom: auto">
+        <v-btn text v-on:click="goToEditProfile" color="white">
+          <v-icon>mdi-account-circle</v-icon>
+        </v-btn>
+      </v-tab>
+      <v-tab exact style="margin-top: auto; margin-bottom: auto">
+        <v-btn text v-on:click="signOut" color="white">
+          Sign out
+          <v-icon right>mdi-exit-to-app</v-icon>
+        </v-btn>
+      </v-tab>
     </v-tabs>
-    <v-tab exact style="margin-top: auto; margin-bottom: auto">
-      <v-btn text v-on:click="goToEditProfile" color="white">
-        <v-icon>mdi-account-circle</v-icon>
-      </v-btn>
-    </v-tab>
-    <v-tab exact style="margin-top: auto; margin-bottom: auto">
-      <v-btn text v-on:click="signOut" color="white">
-        Sign out
-        <v-icon right>mdi-exit-to-app</v-icon>
-      </v-btn>
-    </v-tab>
   </v-toolbar>
 </template>
 
