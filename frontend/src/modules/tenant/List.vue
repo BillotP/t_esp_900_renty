@@ -110,6 +110,7 @@ export default {
   apollo: {
     tenants: {
       query: TENANT_QUERY,
+      pollInterval: 3000,
     },
     properties: {
       query: PROPERTIES_QUERY,
