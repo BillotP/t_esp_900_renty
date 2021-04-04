@@ -42,7 +42,8 @@
           ></v-img>
           <v-text-field
             hint="Update your company logo URL"
-            v-model="company.logo.url"
+            :value="company.logo ? company.logo.url : companyLogoUrl"
+            @input="companyLogoUrl = $event.target.value"
             label="Logo URL"
           ></v-text-field>
         </v-row>
