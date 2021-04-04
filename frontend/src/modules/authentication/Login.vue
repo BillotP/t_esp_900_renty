@@ -7,7 +7,7 @@
       margin-left: 10vh;
     "
   >
-    <v-card max-width="80vw" max-height="40vh">
+    <v-card>
       <v-card-text>
         <v-container fluid>
           <v-row>
@@ -26,7 +26,7 @@
             ></v-text-field>
           </v-row>
           <v-row>
-            <v-radio-group row v-model="role" mandatory>
+            <v-radio-group :row="$vuetify.breakpoint.mobile"  v-model="role" mandatory>
               <v-radio
                 color="primary"
                 label="Company"
@@ -207,7 +207,7 @@ export default class Auth extends Vue {
     } catch (e) {
       this.hasError = true;
       let gqlerror = e as GraphQLError;
-      let errMsq = gqlerror.message.replaceAll("GraphQL error: ", "");
+      let errMsq = gqlerror.message.replace("GraphQL error: ", "");
       if (errMsq.includes("record not found")) {
         this.userErrorText = "Unknow user, please register first";
       } else if (errMsq.includes("bad password")) {

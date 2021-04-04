@@ -7,7 +7,7 @@
       margin-left: 10vh;
     "
   >
-    <v-card max-width="80vw" max-height="71vh">
+    <v-card>
       <v-card-text>
         <h3>My Company</h3>
         <v-container fluid>
