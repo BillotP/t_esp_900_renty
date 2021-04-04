@@ -13,7 +13,8 @@ func main() {
 	middleware.InitDB()
 	port := lib.GetDefVal("PORT", "8080")
 
-	r.Static("/documents/", "./documents")
+	// r.StaticFile("/documents/", "./documents")
+	r.GET("/documents/:id/:filename", middleware.FileDownload)
 
 	r.Use(middleware.SetContext())
 	r.Use(middleware.CORSMiddleware())
