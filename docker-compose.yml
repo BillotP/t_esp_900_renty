@@ -43,9 +43,9 @@ services:
     container_name: "front-container"
     build: ./frontend
     ports:
-    - "8081:80"
+      - "8081:80"
     expose:
-    - "8081"
+      - "8081"
 volumes:
   postgres_renty: ~
   userdocuments_renty: ~
