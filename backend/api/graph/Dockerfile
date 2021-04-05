@@ -48,6 +48,12 @@ COPY --from=builder /lib/*.so.1 /lib/
 ENV LD_LIBRARY_PATH=/lib/    
 # Copy our static executable.
 COPY --from=builder /build/bin/server /go/bin/server
+# Create storage folders
+RUN mkdir ./data || echo "directory already exist"
+RUN mkdir ./data/documents || echo "directory already exist"
+RUN mkdir ./data/photos || echo "directory already exist"
+RUN mkdir ./data/models3d || echo "directory already exist"
+RUN chown -R appuser:appuser ./data
 # Use an unprivileged user.
 USER appuser:appuser
 # Run the server binary.
