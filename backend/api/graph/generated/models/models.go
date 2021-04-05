@@ -7,6 +7,8 @@ import (
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/99designs/gqlgen/graphql"
 )
 
 type Profile interface {
@@ -63,6 +65,11 @@ type Asset struct {
 	Storage   string     `json:"storage"`
 }
 
+type Badge struct {
+	ID   *int64     `json:"ID" gorm:"primarykey"`
+	Type *BadgeType `json:"type"`
+}
+
 // A Company is a
 type Company struct {
 	ID          *int64     `json:"ID" gorm:"primarykey"`
@@ -113,22 +120,49 @@ type EstateAgentInput struct {
 
 // A Property  is a
 type Property struct {
-	ID         *int64     `json:"ID" gorm:"primarykey"`
-	CreatedAt  *time.Time `json:"createdAt"`
-	UpdatedAt  *time.Time `json:"updatedAt"`
-	Area       *float64   `json:"area"`
-	Address    *string    `json:"address"`
-	CodeNumber *int64     `json:"codeNumber"`
-	Type       *string    `json:"type"`
-	CompanyID  *int64     `json:"companyID"`
-	Company    *Company   `json:"company" gorm:"foreignKey:CompanyID"`
+	ID               *int64     `json:"ID" gorm:"primarykey"`
+	CreatedAt        *time.Time `json:"createdAt"`
+	UpdatedAt        *time.Time `json:"updatedAt"`
+	Area             float64    `json:"area"`
+	Country          string     `json:"country"`
+	CityName         string     `json:"cityName"`
+	Address          string     `json:"address"`
+	PostalCode       string     `json:"postalCode"`
+	Type             string     `json:"type"`
+	CompanyID        *int64     `json:"companyID"`
+	Company          *Company   `json:"company" gorm:"foreignKey:CompanyID"`
+	Photos           []*Asset   `json:"photos" gorm:"many2many:property_photos"`
+	ModelID          *int64     `json:"modelID"`
+	Model            *Asset     `json:"model" gorm:"foreignKey:ModelID"`
+	Badges           []*Badge   `json:"badges" gorm:"many2many:property_badges"`
+	Description      *string    `json:"description"`
+	Rooms            int64      `json:"rooms"`
+	Bedrooms         int64      `json:"bedrooms"`
+	Furnished        bool       `json:"furnished"`
+	ConstructionDate *time.Time `json:"constructionDate"`
+	EnergyRating     Energy     `json:"energyRating"`
+	RentAmount       float64    `json:"rentAmount"`
+	ChargesAmount    float64    `json:"chargesAmount"`
 }
 
 type PropertyInput struct {
-	Area       *float64 `json:"area"`
-	Address    *string  `json:"address"`
-	CodeNumber *int64   `json:"codeNumber"`
-	Type       *string  `json:"type"`
+	Area             float64           `json:"area"`
+	Country          string            `json:"country"`
+	CityName         string            `json:"cityName"`
+	Address          string            `json:"address"`
+	PostalCode       string            `json:"postalCode"`
+	Type             string            `json:"type"`
+	Photos           []*graphql.Upload `json:"photos"`
+	Model            *graphql.Upload   `json:"model"`
+	Badges           []*BadgeType      `json:"badges"`
+	Description      *string           `json:"description"`
+	Rooms            int64             `json:"rooms"`
+	Bedrooms         int64             `json:"bedrooms"`
+	Furnished        bool              `json:"furnished"`
+	ConstructionDate *time.Time        `json:"constructionDate"`
+	EnergyRating     Energy            `json:"energyRating"`
+	RentAmount       float64           `json:"rentAmount"`
+	ChargesAmount    float64           `json:"chargesAmount"`
 }
 
 // A Tenant is a
@@ -211,6 +245,116 @@ func (e *AnomalyStates) UnmarshalGQL(v interface{}) error {
 }
 
 func (e AnomalyStates) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// A Badge is a
+type BadgeType string
+
+const (
+	BadgeTypeGarden       BadgeType = "Garden"
+	BadgeTypeFireplace    BadgeType = "Fireplace"
+	BadgeTypeCaretaker    BadgeType = "Caretaker"
+	BadgeTypeGreatView    BadgeType = "GreatView"
+	BadgeTypeBalcony      BadgeType = "Balcony"
+	BadgeTypeSwimmingPool BadgeType = "SwimmingPool"
+	BadgeTypeLift         BadgeType = "Lift"
+	BadgeTypeTerrace      BadgeType = "Terrace"
+	BadgeTypeGarage       BadgeType = "Garage"
+	BadgeTypeOrientation  BadgeType = "Orientation"
+)
+
+var AllBadgeType = []BadgeType{
+	BadgeTypeGarden,
+	BadgeTypeFireplace,
+	BadgeTypeCaretaker,
+	BadgeTypeGreatView,
+	BadgeTypeBalcony,
+	BadgeTypeSwimmingPool,
+	BadgeTypeLift,
+	BadgeTypeTerrace,
+	BadgeTypeGarage,
+	BadgeTypeOrientation,
+}
+
+func (e BadgeType) IsValid() bool {
+	switch e {
+	case BadgeTypeGarden, BadgeTypeFireplace, BadgeTypeCaretaker, BadgeTypeGreatView, BadgeTypeBalcony, BadgeTypeSwimmingPool, BadgeTypeLift, BadgeTypeTerrace, BadgeTypeGarage, BadgeTypeOrientation:
+		return true
+	}
+	return false
+}
+
+func (e BadgeType) String() string {
+	return string(e)
+}
+
+func (e *BadgeType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BadgeType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BadgeType", str)
+	}
+	return nil
+}
+
+func (e BadgeType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// An Energy is a
+type Energy string
+
+const (
+	EnergyA Energy = "A"
+	EnergyB Energy = "B"
+	EnergyC Energy = "C"
+	EnergyD Energy = "D"
+	EnergyE Energy = "E"
+	EnergyF Energy = "F"
+	EnergyG Energy = "G"
+)
+
+var AllEnergy = []Energy{
+	EnergyA,
+	EnergyB,
+	EnergyC,
+	EnergyD,
+	EnergyE,
+	EnergyF,
+	EnergyG,
+}
+
+func (e Energy) IsValid() bool {
+	switch e {
+	case EnergyA, EnergyB, EnergyC, EnergyD, EnergyE, EnergyF, EnergyG:
+		return true
+	}
+	return false
+}
+
+func (e Energy) String() string {
+	return string(e)
+}
+
+func (e *Energy) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Energy(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Energy", str)
+	}
+	return nil
+}
+
+func (e Energy) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
