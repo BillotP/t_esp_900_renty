@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,9 +17,14 @@ func FileDownload(c *gin.Context) {
 	if !ok {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
-	fpath := fmt.Sprintf("%s/%s", userIDDirectory, filename)
-	fmt.Printf("%s\n", fpath)
+	scopeDirectory, ok := c.Params.Get("scope")
+	if !ok {
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+	fpath := fmt.Sprintf("%s/%s/%s", scopeDirectory, userIDDirectory, filename)
 	c.Writer.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	c.Writer.Header().Add("Content-Type", "application/octet-stream")
-	c.File("./documents/" + fpath)
+	dir, _ := os.Getwd()
+	fmt.Println(dir + "/data/" + fpath)
+	c.File(dir + "/data/" + fpath)
 }

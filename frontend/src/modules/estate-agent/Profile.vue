@@ -1,30 +1,5 @@
 <template>
   <v-main>
-    <!-- <v-card v-if="estateAgent" tile>
-      <v-list>
-        <v-list-item>
-          <v-list-item-avatar>
-            <v-img :src="'https://robohash.org/' + id + '.png?set=set4'"></v-img>
-          </v-list-item-avatar>
-        </v-list-item>
-
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title class="title">
-              {{ estateAgent.user.username }}
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-      <v-divider></v-divider>
-      <v-list-item>
-        <v-list>
-          <v-list-item-title class="title">
-            {{ estateAgent.company.name }}
-          </v-list-item-title>
-        </v-list>
-      </v-list-item>
-    </v-card> -->
     <v-card class="mx-auto" max-width="434" tile>
       <v-img height="100%" :src="banneer"></v-img>
       <v-col>

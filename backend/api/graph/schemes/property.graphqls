@@ -5,17 +5,78 @@ type Property {
     ID: Int @extraTag(gorm:"primarykey")
     createdAt: Time
     updatedAt: Time
-    area: Float
-    address: String
-    codeNumber: Int
-    type: String
+    area: Float!
+    country: String!
+    cityName: String!
+    address: String!
+    postalCode: String!
+    type: String!
     companyID: Int
     company: Company! @extraTag(gorm:"foreignKey:CompanyID")
+    photos: [Asset] @extraTag(gorm:"many2many:property_photos")
+    modelID: Int
+    model: Asset @extraTag(gorm:"foreignKey:ModelID")
+    badges: [Badge] @extraTag(gorm:"many2many:property_badges")
+    description: String
+    rooms: Int!
+    bedrooms: Int!
+    furnished: Boolean!
+    constructionDate: Time
+    energyRating: Energy!
+    rentAmount: Float!
+    chargesAmount: Float!
+}
+
+type Badge {
+    ID: Int @extraTag(gorm:"primarykey")
+    type: BadgeType
+}
+
+"""
+A Badge is a
+"""
+enum BadgeType {
+    Garden,
+    Fireplace,
+    Caretaker,
+    GreatView,
+    Balcony,
+    SwimmingPool,
+    Lift,
+    Terrace,
+    Garage,
+    Orientation
+}
+
+"""
+An Energy is a
+"""
+enum Energy {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G
 }
 
 input PropertyInput {
-    area: Float
-    address: String
-    codeNumber: Int
-    type: String
+    area: Float!
+    country: String!
+    cityName: String!
+    address: String!
+    postalCode: String!
+    type: String!
+    photos: [Upload]
+    model: Upload
+    badges: [BadgeType]
+    description: String
+    rooms: Int!
+    bedrooms: Int!
+    furnished: Boolean!
+    constructionDate: Time
+    energyRating: Energy!
+    rentAmount: Float!
+    chargesAmount: Float!
 }

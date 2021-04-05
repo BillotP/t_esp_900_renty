@@ -67,6 +67,7 @@ func InitDB() {
 		&models.Admin{},
 		&models.Anomaly{},
 		&models.Asset{},
+		&models.Badge{},
 		&models.Company{},
 		&models.EstateAgent{},
 		&models.Property{},

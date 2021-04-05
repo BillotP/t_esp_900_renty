@@ -35,7 +35,9 @@ services:
       POSTGRES_PASSWORD: AFEC62CDD545955405CC3BCBD00CE85D
       POSTGRES_DB: rentydb
     volumes:
-      - userdocuments_renty:/go/bin/documents
+      - userdocuments_renty:/go/data/documents:rw
+      - propertyphotos_renty:/go/data/photos:rw
+      - properymodel_renty:/go/data/models3d:rw
   front:
     image: node:lts-alpine
     container_name: "front-container"
@@ -47,3 +49,5 @@ services:
 volumes:
   postgres_renty: ~
   userdocuments_renty: ~
+  propertyphotos_renty: ~
+  properymodel_renty: ~

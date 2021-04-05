@@ -75,7 +75,7 @@ const PROPERTIES_QUERY = gql`
       ID
       area
       address
-      codeNumber
+      postalCode
     }
   }
 `;
@@ -90,7 +90,7 @@ const TENANT_QUERY = gql`
       properties {
         area
         address
-        codeNumber
+        postalCode
       }
       documents {
         url
@@ -128,7 +128,7 @@ export default {
           value: "ID",
         },
         { text: "Username", value: "user.username" },
-        { text: "CodeNumber", value: "properties[0].codeNumber" },
+        { text: "Postal Code", value: "properties[0].postalCode" },
         { text: "Address", value: "properties[0].address" },
         { text: "Actions", value: "actions", sortable: false },
       ],

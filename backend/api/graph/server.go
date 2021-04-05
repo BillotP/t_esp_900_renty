@@ -14,10 +14,11 @@ func main() {
 	port := lib.GetDefVal("PORT", "8080")
 
 	// r.StaticFile("/documents/", "./documents")
-	r.GET("/documents/:id/:filename", middleware.FileDownload)
 
 	r.Use(middleware.SetContext())
 	r.Use(middleware.CORSMiddleware())
+
+	r.GET("/:scope/:id/:filename", middleware.FileDownload)
 
 	r.POST("/query", middleware.GraphqlHandler())
 	r.GET("/", middleware.PlaygroundHandler())

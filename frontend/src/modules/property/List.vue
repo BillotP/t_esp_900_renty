@@ -46,8 +46,10 @@ const PROPERTIES_QUERY = gql`
     properties {
       ID
       area
+      country
+      cityName
       address
-      codeNumber
+      postalCode
     }
   }
 `;
@@ -67,7 +69,9 @@ export default {
           sortable: false,
           value: "ID",
         },
-        { text: "Postal Code", value: "codeNumber" },
+        { text: "Country", value: "country" },
+        { text: "City", value: "cityName" },
+        { text: "Postal Code", value: "postalCode" },
         { text: "Address", value: "address" },
         { text: "Property Area (m²)", value: "area" },
         { text: "Actions", value: "actions", sortable: false },
