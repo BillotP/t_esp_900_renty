@@ -34,6 +34,8 @@ func (r *MutationResolver) CreateEstateAgentUser(ctx context.Context, input *mod
 			Password: "",
 			Role:     models.RoleEstateAgent,
 		},
+		Tel:   input.Tel,
+		About: input.About,
 	}
 	if err = r.DB.Joins("User").Where("username = ?", input.User.Username).First(&estateAgent).Error; err == nil {
 		return nil, fmt.Errorf("estate agent seems already register")
@@ -47,6 +49,23 @@ func (r *MutationResolver) CreateEstateAgentUser(ctx context.Context, input *mod
 	if err = r.DB.Create(&estateAgent).Error; err != nil {
 		lib.LogError("mutation/Register/GetEstateAgent", err.Error())
 		return nil, err
+	}
+
+	for _, skill := range input.Skills {
+		if err = r.DB.Model(&estateAgent).Association("Skills").Append(&models.Skill{
+			Type: *skill,
+		}); err != nil {
+			lib.LogError("mutation/Register", err.Error())
+			return nil, err
+		}
+	}
+	for _, speciality := range input.Specialities {
+		if err = r.DB.Model(&estateAgent).Association("Specialities").Append(&models.Speciality{
+			Type: *speciality,
+		}); err != nil {
+			lib.LogError("mutation/Register", err.Error())
+			return nil, err
+		}
 	}
 	return estateAgent, nil
 }

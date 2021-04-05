@@ -103,19 +103,27 @@ type Credential struct {
 
 // An EstateAgent is a
 type EstateAgent struct {
-	ID        *int64     `json:"ID" gorm:"primarykey"`
-	CreatedAt *time.Time `json:"createdAt"`
-	UpdatedAt *time.Time `json:"updatedAt"`
-	CompanyID *int64     `json:"companyID"`
-	Company   *Company   `json:"company" gorm:"foreignKey:CompanyID"`
-	UserID    *int64     `json:"userID"`
-	User      *User      `json:"user" gorm:"foreignKey:UserID"`
+	ID           *int64        `json:"ID" gorm:"primarykey"`
+	CreatedAt    *time.Time    `json:"createdAt"`
+	UpdatedAt    *time.Time    `json:"updatedAt"`
+	CompanyID    *int64        `json:"companyID"`
+	Company      *Company      `json:"company" gorm:"foreignKey:CompanyID"`
+	UserID       *int64        `json:"userID"`
+	User         *User         `json:"user" gorm:"foreignKey:UserID"`
+	Tel          string        `json:"tel"`
+	About        *string       `json:"about"`
+	Specialities []*Speciality `json:"specialities" gorm:"many2many:estage-agent_specialities"`
+	Skills       []*Skill      `json:"skills" gorm:"many2many:estate-agent_skills"`
 }
 
 func (EstateAgent) IsProfile() {}
 
 type EstateAgentInput struct {
-	User *UserInput `json:"user"`
+	User         *UserInput        `json:"user"`
+	Tel          string            `json:"tel"`
+	About        *string           `json:"about"`
+	Specialities []*SpecialityType `json:"specialities"`
+	Skills       []*SkillType      `json:"skills"`
 }
 
 // A Property  is a
@@ -163,6 +171,16 @@ type PropertyInput struct {
 	EnergyRating     Energy            `json:"energyRating"`
 	RentAmount       float64           `json:"rentAmount"`
 	ChargesAmount    float64           `json:"chargesAmount"`
+}
+
+type Skill struct {
+	ID   *int64    `json:"ID" gorm:"primarykey"`
+	Type SkillType `json:"type"`
+}
+
+type Speciality struct {
+	ID   *int64         `json:"ID" gorm:"primarykey"`
+	Type SpecialityType `json:"type"`
 }
 
 // A Tenant is a
@@ -400,5 +418,117 @@ func (e *Role) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Role) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SkillType string
+
+const (
+	SkillTypeEnglish        SkillType = "ENGLISH"
+	SkillTypeSpanish        SkillType = "SPANISH"
+	SkillTypeGerman         SkillType = "GERMAN"
+	SkillTypeFrench         SkillType = "FRENCH"
+	SkillTypeSoftware       SkillType = "SOFTWARE"
+	SkillTypeHardWorking    SkillType = "HARD_WORKING"
+	SkillTypeRemoteWorking  SkillType = "REMOTE_WORKING"
+	SkillTypePensive        SkillType = "PENSIVE"
+	SkillTypeListening      SkillType = "LISTENING"
+	SkillTypeCommunicating  SkillType = "COMMUNICATING"
+	SkillTypeOrganizing     SkillType = "ORGANIZING"
+	SkillTypeNegociation    SkillType = "NEGOCIATION"
+	SkillTypeResponsiveness SkillType = "RESPONSIVENESS"
+)
+
+var AllSkillType = []SkillType{
+	SkillTypeEnglish,
+	SkillTypeSpanish,
+	SkillTypeGerman,
+	SkillTypeFrench,
+	SkillTypeSoftware,
+	SkillTypeHardWorking,
+	SkillTypeRemoteWorking,
+	SkillTypePensive,
+	SkillTypeListening,
+	SkillTypeCommunicating,
+	SkillTypeOrganizing,
+	SkillTypeNegociation,
+	SkillTypeResponsiveness,
+}
+
+func (e SkillType) IsValid() bool {
+	switch e {
+	case SkillTypeEnglish, SkillTypeSpanish, SkillTypeGerman, SkillTypeFrench, SkillTypeSoftware, SkillTypeHardWorking, SkillTypeRemoteWorking, SkillTypePensive, SkillTypeListening, SkillTypeCommunicating, SkillTypeOrganizing, SkillTypeNegociation, SkillTypeResponsiveness:
+		return true
+	}
+	return false
+}
+
+func (e SkillType) String() string {
+	return string(e)
+}
+
+func (e *SkillType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SkillType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SkillType", str)
+	}
+	return nil
+}
+
+func (e SkillType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SpecialityType string
+
+const (
+	SpecialityTypeResidential        SpecialityType = "RESIDENTIAL"
+	SpecialityTypeCommercial         SpecialityType = "COMMERCIAL"
+	SpecialityTypePropertyManagement SpecialityType = "PROPERTY_MANAGEMENT"
+	SpecialityTypeNewConstruction    SpecialityType = "NEW_CONSTRUCTION"
+	SpecialityTypeLuxury             SpecialityType = "LUXURY"
+	SpecialityTypeFarms              SpecialityType = "FARMS"
+)
+
+var AllSpecialityType = []SpecialityType{
+	SpecialityTypeResidential,
+	SpecialityTypeCommercial,
+	SpecialityTypePropertyManagement,
+	SpecialityTypeNewConstruction,
+	SpecialityTypeLuxury,
+	SpecialityTypeFarms,
+}
+
+func (e SpecialityType) IsValid() bool {
+	switch e {
+	case SpecialityTypeResidential, SpecialityTypeCommercial, SpecialityTypePropertyManagement, SpecialityTypeNewConstruction, SpecialityTypeLuxury, SpecialityTypeFarms:
+		return true
+	}
+	return false
+}
+
+func (e SpecialityType) String() string {
+	return string(e)
+}
+
+func (e *SpecialityType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SpecialityType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SpecialityType", str)
+	}
+	return nil
+}
+
+func (e SpecialityType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
