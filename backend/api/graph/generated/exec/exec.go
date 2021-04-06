@@ -103,13 +103,17 @@ type ComplexityRoot struct {
 	}
 
 	EstateAgent struct {
-		Company   func(childComplexity int) int
-		CompanyID func(childComplexity int) int
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
-		User      func(childComplexity int) int
-		UserID    func(childComplexity int) int
+		About        func(childComplexity int) int
+		Company      func(childComplexity int) int
+		CompanyID    func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Skills       func(childComplexity int) int
+		Specialities func(childComplexity int) int
+		Tel          func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+		User         func(childComplexity int) int
+		UserID       func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -166,6 +170,16 @@ type ComplexityRoot struct {
 		Property     func(childComplexity int, id int64) int
 		Tenant       func(childComplexity int, id int64) int
 		Tenants      func(childComplexity int) int
+	}
+
+	Skill struct {
+		ID   func(childComplexity int) int
+		Type func(childComplexity int) int
+	}
+
+	Speciality struct {
+		ID   func(childComplexity int) int
+		Type func(childComplexity int) int
 	}
 
 	Tenant struct {
@@ -500,6 +514,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Credential.User(childComplexity), true
 
+	case "EstateAgent.about":
+		if e.complexity.EstateAgent.About == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.About(childComplexity), true
+
 	case "EstateAgent.company":
 		if e.complexity.EstateAgent.Company == nil {
 			break
@@ -527,6 +548,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.EstateAgent.ID(childComplexity), true
+
+	case "EstateAgent.skills":
+		if e.complexity.EstateAgent.Skills == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.Skills(childComplexity), true
+
+	case "EstateAgent.specialities":
+		if e.complexity.EstateAgent.Specialities == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.Specialities(childComplexity), true
+
+	case "EstateAgent.tel":
+		if e.complexity.EstateAgent.Tel == nil {
+			break
+		}
+
+		return e.complexity.EstateAgent.Tel(childComplexity), true
 
 	case "EstateAgent.updatedAt":
 		if e.complexity.EstateAgent.UpdatedAt == nil {
@@ -968,6 +1010,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Tenants(childComplexity), true
 
+	case "Skill.ID":
+		if e.complexity.Skill.ID == nil {
+			break
+		}
+
+		return e.complexity.Skill.ID(childComplexity), true
+
+	case "Skill.type":
+		if e.complexity.Skill.Type == nil {
+			break
+		}
+
+		return e.complexity.Skill.Type(childComplexity), true
+
+	case "Speciality.ID":
+		if e.complexity.Speciality.ID == nil {
+			break
+		}
+
+		return e.complexity.Speciality.ID(childComplexity), true
+
+	case "Speciality.type":
+		if e.complexity.Speciality.Type == nil {
+			break
+		}
+
+		return e.complexity.Speciality.Type(childComplexity), true
+
 	case "Tenant.createdAt":
 		if e.complexity.Tenant.CreatedAt == nil {
 			break
@@ -1256,10 +1326,53 @@ type EstateAgent implements Profile {
     company: Company! @extraTag(gorm:"foreignKey:CompanyID")
     userID: Int
     user: User! @extraTag(gorm:"foreignKey:UserID")
+    tel: String!
+    about: String
+    specialities: [Speciality] @extraTag(gorm:"many2many:estage-agent_specialities")
+    skills: [Skill] @extraTag(gorm:"many2many:estate-agent_skills")
+}
+
+type Speciality {
+    ID: Int @extraTag(gorm:"primarykey")
+    type: SpecialityType!
+}
+
+enum SpecialityType {
+    RESIDENTIAL,
+    COMMERCIAL,
+    PROPERTY_MANAGEMENT,
+    NEW_CONSTRUCTION,
+    LUXURY,
+    FARMS,
+}
+
+type Skill {
+    ID: Int @extraTag(gorm:"primarykey")
+    type: SkillType!
+}
+
+enum SkillType {
+    ENGLISH,
+    SPANISH,
+    GERMAN,
+    FRENCH,
+    SOFTWARE,
+    HARD_WORKING,
+    REMOTE_WORKING,
+    PENSIVE,
+    LISTENING,
+    COMMUNICATING,
+    ORGANIZING,
+    NEGOCIATION,
+    RESPONSIVENESS
 }
 
 input EstateAgentInput {
     user: UserInput!
+    tel: String!
+    about: String
+    specialities: [SpecialityType]
+    skills: [SkillType]
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/interfaces.graphqls", Input: `interface Profile {
@@ -3201,6 +3314,133 @@ func (ec *executionContext) _EstateAgent_user(ctx context.Context, field graphql
 	res := resTmp.(*models.User)
 	fc.Result = res
 	return ec.marshalNUser2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EstateAgent_tel(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Tel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EstateAgent_about(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.About, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EstateAgent_specialities(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Specialities, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Speciality)
+	fc.Result = res
+	return ec.marshalOSpeciality2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpeciality(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EstateAgent_skills(ctx context.Context, field graphql.CollectedField, obj *models.EstateAgent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "EstateAgent",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Skills, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Skill)
+	fc.Result = res
+	return ec.marshalOSkill2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkill(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_signupAsAdmin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5392,6 +5632,136 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Skill_ID(ctx context.Context, field graphql.CollectedField, obj *models.Skill) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Skill",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Skill_type(ctx context.Context, field graphql.CollectedField, obj *models.Skill) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Skill",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.SkillType)
+	fc.Result = res
+	return ec.marshalNSkillType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Speciality_ID(ctx context.Context, field graphql.CollectedField, obj *models.Speciality) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Speciality",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int64)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Speciality_type(ctx context.Context, field graphql.CollectedField, obj *models.Speciality) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Speciality",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.SpecialityType)
+	fc.Result = res
+	return ec.marshalNSpecialityType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Tenant_ID(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -7053,6 +7423,30 @@ func (ec *executionContext) unmarshalInputEstateAgentInput(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
+		case "tel":
+			var err error
+			it.Tel, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "about":
+			var err error
+			it.About, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "specialities":
+			var err error
+			it.Specialities, err = ec.unmarshalOSpecialityType2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "skills":
+			var err error
+			it.Skills, err = ec.unmarshalOSkillType2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -7543,6 +7937,17 @@ func (ec *executionContext) _EstateAgent(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "tel":
+			out.Values[i] = ec._EstateAgent_tel(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "about":
+			out.Values[i] = ec._EstateAgent_about(ctx, field, obj)
+		case "specialities":
+			out.Values[i] = ec._EstateAgent_specialities(ctx, field, obj)
+		case "skills":
+			out.Values[i] = ec._EstateAgent_skills(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7919,6 +8324,64 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var skillImplementors = []string{"Skill"}
+
+func (ec *executionContext) _Skill(ctx context.Context, sel ast.SelectionSet, obj *models.Skill) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, skillImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Skill")
+		case "ID":
+			out.Values[i] = ec._Skill_ID(ctx, field, obj)
+		case "type":
+			out.Values[i] = ec._Skill_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var specialityImplementors = []string{"Speciality"}
+
+func (ec *executionContext) _Speciality(ctx context.Context, sel ast.SelectionSet, obj *models.Speciality) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, specialityImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Speciality")
+		case "ID":
+			out.Values[i] = ec._Speciality_ID(ctx, field, obj)
+		case "type":
+			out.Values[i] = ec._Speciality_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8619,6 +9082,24 @@ func (ec *executionContext) marshalNRole2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_90
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalNSkillType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx context.Context, v interface{}) (models.SkillType, error) {
+	var res models.SkillType
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalNSkillType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx context.Context, sel ast.SelectionSet, v models.SkillType) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNSpecialityType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx context.Context, v interface{}) (models.SpecialityType, error) {
+	var res models.SpecialityType
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalNSpecialityType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx context.Context, sel ast.SelectionSet, v models.SpecialityType) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -9415,6 +9896,276 @@ func (ec *executionContext) unmarshalORole2ᚖgithubᚗcomᚋBillotPᚋt_esp_900
 }
 
 func (ec *executionContext) marshalORole2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐRole(ctx context.Context, sel ast.SelectionSet, v *models.Role) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) marshalOSkill2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkill(ctx context.Context, sel ast.SelectionSet, v models.Skill) graphql.Marshaler {
+	return ec._Skill(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOSkill2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkill(ctx context.Context, sel ast.SelectionSet, v []*models.Skill) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSkill2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkill(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOSkill2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkill(ctx context.Context, sel ast.SelectionSet, v *models.Skill) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Skill(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSkillType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx context.Context, v interface{}) (models.SkillType, error) {
+	var res models.SkillType
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalOSkillType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx context.Context, sel ast.SelectionSet, v models.SkillType) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOSkillType2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx context.Context, v interface{}) ([]*models.SkillType, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*models.SkillType, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOSkillType2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOSkillType2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx context.Context, sel ast.SelectionSet, v []*models.SkillType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSkillType2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) unmarshalOSkillType2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx context.Context, v interface{}) (*models.SkillType, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOSkillType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOSkillType2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSkillType(ctx context.Context, sel ast.SelectionSet, v *models.SkillType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) marshalOSpeciality2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpeciality(ctx context.Context, sel ast.SelectionSet, v models.Speciality) graphql.Marshaler {
+	return ec._Speciality(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOSpeciality2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpeciality(ctx context.Context, sel ast.SelectionSet, v []*models.Speciality) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSpeciality2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpeciality(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOSpeciality2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpeciality(ctx context.Context, sel ast.SelectionSet, v *models.Speciality) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Speciality(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSpecialityType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx context.Context, v interface{}) (models.SpecialityType, error) {
+	var res models.SpecialityType
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalOSpecialityType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx context.Context, sel ast.SelectionSet, v models.SpecialityType) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOSpecialityType2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx context.Context, v interface{}) ([]*models.SpecialityType, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*models.SpecialityType, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalOSpecialityType2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOSpecialityType2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx context.Context, sel ast.SelectionSet, v []*models.SpecialityType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOSpecialityType2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) unmarshalOSpecialityType2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx context.Context, v interface{}) (*models.SpecialityType, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOSpecialityType2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOSpecialityType2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐSpecialityType(ctx context.Context, sel ast.SelectionSet, v *models.SpecialityType) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

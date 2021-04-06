@@ -9,8 +9,51 @@ type EstateAgent implements Profile {
     company: Company! @extraTag(gorm:"foreignKey:CompanyID")
     userID: Int
     user: User! @extraTag(gorm:"foreignKey:UserID")
+    tel: String!
+    about: String
+    specialities: [Speciality] @extraTag(gorm:"many2many:estage-agent_specialities")
+    skills: [Skill] @extraTag(gorm:"many2many:estate-agent_skills")
+}
+
+type Speciality {
+    ID: Int @extraTag(gorm:"primarykey")
+    type: SpecialityType!
+}
+
+enum SpecialityType {
+    RESIDENTIAL,
+    COMMERCIAL,
+    PROPERTY_MANAGEMENT,
+    NEW_CONSTRUCTION,
+    LUXURY,
+    FARMS,
+}
+
+type Skill {
+    ID: Int @extraTag(gorm:"primarykey")
+    type: SkillType!
+}
+
+enum SkillType {
+    ENGLISH,
+    SPANISH,
+    GERMAN,
+    FRENCH,
+    SOFTWARE,
+    HARD_WORKING,
+    REMOTE_WORKING,
+    PENSIVE,
+    LISTENING,
+    COMMUNICATING,
+    ORGANIZING,
+    NEGOCIATION,
+    RESPONSIVENESS
 }
 
 input EstateAgentInput {
     user: UserInput!
+    tel: String!
+    about: String
+    specialities: [SpecialityType]
+    skills: [SkillType]
 }
