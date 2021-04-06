@@ -19,20 +19,6 @@ func (r *MutationResolver) CreateTenantUser(ctx context.Context, input *models.T
 
 	username := ctx.Value(lib.ContextKey("username")).(string)
 
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-	fmt.Println(username)
-
 	if err = r.DB.Joins("User").Where("username = ?", username).First(&estateAgent).Error; err != nil {
 		return nil, err
 	}
@@ -44,6 +30,10 @@ func (r *MutationResolver) CreateTenantUser(ctx context.Context, input *models.T
 			Password: "",
 			Role:     models.RoleTenant,
 		},
+		Tel:         input.Tel,
+		Birthday:    input.Birthday,
+		CustomerRef: input.CustomerRef,
+		Gender:      input.Gender,
 	}
 	if err = r.DB.Joins("User").Where("username = ?", input.User.Username).First(&tenant).Error; err == nil {
 		return nil, fmt.Errorf("tenant seems already register")

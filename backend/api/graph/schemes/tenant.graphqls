@@ -11,14 +11,29 @@ type Tenant implements Profile {
     estateAgentID: Int
     estateAgent: EstateAgent! @extraTag(gorm:"foreignKey:EstateAgentID")
     documents: [Asset!] @extraTag(gorm:"many2many:tenant_documents")
+    tel: String!
+    birthday: Time!
+    customerRef: String!
+    gender: Gender!
 }
 
 input TenantInput {
     user: UserInput!
+    tel: String!
+    birthday: Time!
+    customerRef: String!
+    gender: Gender!
 }
 
-
 input TenantUpdateInput {
-    properties: [Int]
-    documents: [String]
+    tel: String
+    birthday: Time
+    customerRef: String
+    gender: Gender
+}
+
+enum Gender {
+    MAN,
+    WOMAN,
+    OTHER
 }
