@@ -1,94 +1,150 @@
 <template>
   <v-main>
-    <v-card elevation="3" style="margin: 5vh; padding: 10px" tile>
-      <v-chip-group
-        v-model="selection"
-        active-class="deep-purple accent-4 white--text"
-        column
-      >
-        <v-chip>Photos</v-chip>
-
-        <v-tooltip top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-chip v-bind="attrs" v-on="on" :disabled="property.model == null">
-              3D
-            </v-chip>
-          </template>
-          <span>3D visual not yet available</span>
-        </v-tooltip>
-      </v-chip-group>
+    <v-card elevation="5" style="margin: 5vh; padding: 10px">
       <v-carousel v-if="!selection" height="auto">
-        <v-carousel-item :key="i" v-for="(photo, i) in property.photos">
-          <v-img :src="url + photo.url"></v-img>
-        </v-carousel-item>
         <v-carousel-item v-if="!property.photos || !property.photos.length">
-          <v-img
-            src="https://image.freepik.com/photos-gratuite/lay-plat-concept-immobilier_53876-14502.jpg"
-          ></v-img>
+          <v-img :src="mockPicture">
+            <v-chip-group
+              v-model="selection"
+              active-class="deep-purple accent-4 white--text"
+              style="padding: 5px"
+              column
+            >
+              <v-chip>Photos</v-chip>
+              <v-chip :disabled="property.model == null"> 3D </v-chip>
+            </v-chip-group>
+          </v-img>
+        </v-carousel-item>
+        <v-carousel-item v-else :key="i" v-for="(photo, i) in property.photos">
+          <v-img :src="url + photo.url">
+            <v-chip-group
+              v-model="selection"
+              active-class="deep-purple accent-4 white--text"
+              style="padding: 5px"
+              column
+            >
+              <v-chip>Photos</v-chip>
+              <v-chip :disabled="!property.model"> 3D </v-chip>
+            </v-chip-group>
+          </v-img>
         </v-carousel-item>
       </v-carousel>
-      <model-obj v-else :src="url + property.model.url"></model-obj>
-      <v-card-text>
-        <v-row v-if="property && property.energyRating">
-          <v-col cols="12" md="6">
-            <v-list-item-title>{{
-              propertyTypes[property.type]
-            }}</v-list-item-title>
-            <v-list-item-subtitle> {{ property.address }}</v-list-item-subtitle>
-            <v-list-item-subtitle
-              >{{ property.postalCode + " " }}
-              <strong>{{ property.cityName }}</strong></v-list-item-subtitle
-            >
-            <v-list-item-subtitle
-              ><u>{{ property.country }}</u></v-list-item-subtitle
-            >
-            <span
-              ><strong>{{ property.area }} m²</strong></span
+      <div v-else>
+        <model-obj :src="url + property.model.url"> </model-obj>
+        <v-chip-group
+          v-model="selection"
+          active-class="deep-purple accent-4 white--text"
+          column
+        >
+          <v-chip>Photos</v-chip>
+          <v-chip :disabled="property.model == null"> 3D </v-chip>
+        </v-chip-group>
+      </div>
+      <v-divider style="margin: 10px" />
+      <v-row style="padding: 10px">
+        <v-list-item-title
+          >{{ propertyTypes[property.type] }} -
+          {{ property.area }} m²</v-list-item-title
+        >
+        <v-list-item-title>
+          📍 {{ property.address }} {{ property.postalCode + " " }}
+          {{ property.cityName + " " + property.country }}
+        </v-list-item-title>
+        <v-list-item-title>
+          🔎
+          <a
+            target="_blank"
+            :href="
+              'https://www.google.com/maps/search/?api=1&query=' +
+              encodeURI(
+                property.address +
+                  ' ' +
+                  property.postalCode +
+                  ' ' +
+                  property.cityName
+              )
+            "
+          >
+            View on Google Maps</a
+          >
+        </v-list-item-title>
+      </v-row>
+      <v-divider style="margin: 10px" />
+      <v-col>
+        <v-row align="center" justify="center">
+          <v-col>
+            <v-list-item-title>🛋️ Furnished</v-list-item-title>
+          </v-col>
+          <v-col>
+            <strong
+            :aria-label="property.furnished ? 'true' : 'false'"
+            style="margin-left: 10px">{{
+              property.furnished ? "✅" : "❎"
+            }}</strong>
+          </v-col>
+        </v-row>
+
+        <v-row align="center" justify="center">
+          <v-col>
+            <v-list-item-title>🚪 Rooms</v-list-item-title>
+          </v-col>
+          <v-col>
+            <strong
+              :style="'margin-left:' + (property.rooms >= 10 ? '8px' : '10px')"
+              >{{ property.rooms }}</strong
             >
           </v-col>
-          <v-col align-self="center" cols="12" md="6">
-            <v-row>
-              <span style="margin: 5px">Energy Rating :</span>
-            </v-row>
-            <v-row>
-              <v-progress-circular
-                :value="
-                  100 -
-                  ((this.property.energyRating.charCodeAt(0) - 65) / 7) * 100
-                "
-                :color="energyColors[property.energyRating]"
-                size="50"
-                style="margin: 5px"
-              >
-                <strong>{{ property.energyRating }}</strong>
-              </v-progress-circular>
-            </v-row>
+        </v-row>
+
+        <v-row align="center" justify="center">
+          <v-col>
+            <v-list-item-title>🛌 Bedrooms</v-list-item-title>
+          </v-col>
+          <v-col>
+            <strong style="margin-left: 10px">{{ property.bedrooms }}</strong>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col :key="i" v-for="(badge, i) in property.badges">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-icon v-bind="attrs" v-on="on" x-large color="primary">
-                  {{ badgeIcons[badge.type] }}
-                </v-icon>
-              </template>
-              <span>{{ badge.type }}</span>
-            </v-tooltip>
+
+        <v-row
+          align="center"
+          justify="center"
+          v-if="property && property.energyRating"
+        >
+          <v-col>
+            <v-list-item-title>🌡️ Energy Rating</v-list-item-title>
+          </v-col>
+          <v-col>
+            <v-progress-circular
+              :value="
+                100 -
+                ((this.property.energyRating.charCodeAt(0) - 65) / 7) * 100
+              "
+              :color="energyColors[property.energyRating]"
+            >
+              <strong>{{ property.energyRating }}</strong>
+            </v-progress-circular>
           </v-col>
         </v-row>
-        <v-row>
-          <div class="my-4 subtitle-1">
-            • Rent: <strong>{{ property.rentAmount }}</strong
-            >€ / Monthly<br />
-            • Charges: <strong>{{ property.chargesAmount }}</strong
-            >€ / Monthly
-          </div>
-        </v-row>
-        <v-row>
-          <p style="padding: 10px">{{ property.description }}</p>
-        </v-row>
-      </v-card-text>
+      </v-col>
+      <v-divider style="margin: 10px" />
+      <v-row dense>
+        <v-col dense :key="i" v-for="(badge, i) in property.badges">
+          <v-card elevation="10">
+            <v-col align="center" justify="center">
+              <v-icon x-large color="primary">
+                {{ badgeIcons[badge.type] }}
+              </v-icon>
+            </v-col>
+            <v-col>
+              <p style="text-align: center">{{ badge.type }}</p>
+            </v-col>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <p style="padding: 10px">{{ property.description }}</p>
+      </v-row>
     </v-card>
   </v-main>
 </template>
@@ -136,7 +192,7 @@ export default class PropertyProfile extends Vue {
 
   data() {
     return {
-      banneer:
+      mockPicture:
         "https://image.freepik.com/photos-gratuite/lay-plat-concept-immobilier_53876-14502.jpg",
       selection: 0,
       badgeIcons: {
@@ -162,7 +218,7 @@ export default class PropertyProfile extends Vue {
       },
       url: process.env.VUE_APP_GRAPHQL_HTTP,
       propertyTypes: {
-        Maison: "🏠 House",
+        Maison: "🏠 Independent House",
         Appartement: "🏙️ Flat",
       },
     };

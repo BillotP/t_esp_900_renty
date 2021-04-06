@@ -26,7 +26,7 @@
             ></v-text-field>
           </v-row>
           <v-row>
-            <v-radio-group :row="$vuetify.breakpoint.mobile"  v-model="role" mandatory>
+            <v-radio-group row  v-model="role" mandatory>
               <v-radio
                 color="primary"
                 label="Company"
