@@ -3,6 +3,7 @@ package lib
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/getsentry/sentry-go"
@@ -29,16 +30,17 @@ func init() {
 // LogInfo log info with timestamp on stdout
 func LogInfo(orig string, message string) string {
 	logmsg := fmt.Sprintf("[%s] 💡 Info(%s): %s\n", TMSTP, orig, message)
-	fmt.Fprintf(os.Stdout, logmsg)
+	fmt.Fprint(os.Stdout, logmsg)
 	return logmsg
 }
 
 // LogError log error with timestamp on stderr
 func LogError(orig string, message string) string {
 	logmsg := fmt.Sprintf("[%s] 🚨  Error(%s): %s\n", TMSTP, orig, message)
-	if ServerConf.Stage != "dev" {
+	if ServerConf.Stage != "dev" &&
+		!strings.Contains(message, "Token is expired") {
 		sentry.CaptureMessage(logmsg)
 	}
-	fmt.Fprintf(os.Stderr, logmsg)
+	fmt.Fprint(os.Stderr, logmsg)
 	return logmsg
 }
