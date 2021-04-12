@@ -8,6 +8,29 @@ enum AnomalyStates {
 }
 
 """
+An AnomalyState is a
+"""
+enum AnomalyTypes {
+    MAINTENANCE,
+    PAYMENT,
+    RENT,
+    DOCUMENTS,
+    ACCOMMODATION,
+    OTHER
+}
+
+"""
+A Priority is a
+"""
+enum Priority {
+    MAJOR,
+    HIGHEST,
+    HIGH,
+    MEDIUM,
+    LOW
+}
+
+"""
 An Anomaly is a
 """
 type Anomaly {
@@ -21,18 +44,20 @@ type Anomaly {
     propertyID: Int
     property: Property @extraTag(gorm:"foreignKey:PropertyID")
     description: String!
-    type: String!
+    type: AnomalyTypes!
     state: AnomalyStates
+    priority: Priority
 }
 
 
 input AnomalyInput {
     property: Int
-    type: String!
+    type: AnomalyTypes!
     description: String!
 }
 
 input AnomalyUpdateInput {
     assignedTo: Int
     state: AnomalyStates
+    priority: Priority
 }

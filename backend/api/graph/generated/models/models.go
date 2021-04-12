@@ -40,19 +40,21 @@ type Anomaly struct {
 	PropertyID   *int64         `json:"propertyID"`
 	Property     *Property      `json:"property" gorm:"foreignKey:PropertyID"`
 	Description  string         `json:"description"`
-	Type         string         `json:"type"`
+	Type         AnomalyTypes   `json:"type"`
 	State        *AnomalyStates `json:"state"`
+	Priority     *Priority      `json:"priority"`
 }
 
 type AnomalyInput struct {
-	Property    *int64 `json:"property"`
-	Type        string `json:"type"`
-	Description string `json:"description"`
+	Property    *int64       `json:"property"`
+	Type        AnomalyTypes `json:"type"`
+	Description string       `json:"description"`
 }
 
 type AnomalyUpdateInput struct {
 	AssignedTo *int64         `json:"assignedTo"`
 	State      *AnomalyStates `json:"state"`
+	Priority   *Priority      `json:"priority"`
 }
 
 // An Asset is a document or a picture
@@ -276,6 +278,56 @@ func (e AnomalyStates) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+// An AnomalyState is a
+type AnomalyTypes string
+
+const (
+	AnomalyTypesMaintenance   AnomalyTypes = "MAINTENANCE"
+	AnomalyTypesPayment       AnomalyTypes = "PAYMENT"
+	AnomalyTypesRent          AnomalyTypes = "RENT"
+	AnomalyTypesDocuments     AnomalyTypes = "DOCUMENTS"
+	AnomalyTypesAccommodation AnomalyTypes = "ACCOMMODATION"
+	AnomalyTypesOther         AnomalyTypes = "OTHER"
+)
+
+var AllAnomalyTypes = []AnomalyTypes{
+	AnomalyTypesMaintenance,
+	AnomalyTypesPayment,
+	AnomalyTypesRent,
+	AnomalyTypesDocuments,
+	AnomalyTypesAccommodation,
+	AnomalyTypesOther,
+}
+
+func (e AnomalyTypes) IsValid() bool {
+	switch e {
+	case AnomalyTypesMaintenance, AnomalyTypesPayment, AnomalyTypesRent, AnomalyTypesDocuments, AnomalyTypesAccommodation, AnomalyTypesOther:
+		return true
+	}
+	return false
+}
+
+func (e AnomalyTypes) String() string {
+	return string(e)
+}
+
+func (e *AnomalyTypes) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AnomalyTypes(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AnomalyTypes", str)
+	}
+	return nil
+}
+
+func (e AnomalyTypes) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
 // A Badge is a
 type BadgeType string
 
@@ -426,6 +478,54 @@ func (e *Gender) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Gender) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// A Priority is a
+type Priority string
+
+const (
+	PriorityMajor   Priority = "MAJOR"
+	PriorityHighest Priority = "HIGHEST"
+	PriorityHigh    Priority = "HIGH"
+	PriorityMedium  Priority = "MEDIUM"
+	PriorityLow     Priority = "LOW"
+)
+
+var AllPriority = []Priority{
+	PriorityMajor,
+	PriorityHighest,
+	PriorityHigh,
+	PriorityMedium,
+	PriorityLow,
+}
+
+func (e Priority) IsValid() bool {
+	switch e {
+	case PriorityMajor, PriorityHighest, PriorityHigh, PriorityMedium, PriorityLow:
+		return true
+	}
+	return false
+}
+
+func (e Priority) String() string {
+	return string(e)
+}
+
+func (e *Priority) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Priority(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Priority", str)
+	}
+	return nil
+}
+
+func (e Priority) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
