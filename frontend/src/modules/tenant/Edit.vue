@@ -205,6 +205,7 @@ export default class TenantEdit extends Vue {
             'OTHER': 'bottts',
           };
           this.tenant = res.data.tenant;
+          this.tenant.documents = res.data.tenant.documents.length ? res.data.tenant.documents: [{}];
           this.gender = genders[this.tenant.gender];
           this.birthday = this.tenant.birthday.split('T')[0];
           console.log(res);

@@ -29,6 +29,7 @@ func (r *MutationResolver) UploadDocument(ctx context.Context, file graphql.Uplo
 		success = false
 		return &success, err
 	}
+	path = path + "/data/"
 	url := "/documents/" + strconv.FormatInt(*(tenant.ID), 10) + "/" + title
 	if _, err := os.Stat(path + "/documents/" + strconv.FormatInt(*(tenant.ID), 10)); os.IsNotExist(err) {
 		if err = os.MkdirAll(path+"/documents/"+strconv.FormatInt(*(tenant.ID), 10), os.ModePerm); err != nil {
