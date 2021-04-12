@@ -19,7 +19,7 @@ docker-compose up
 
 - LinkedIn: [@renty_dvlpmt](https://linkedin.com/in/renty)
 
-- Twitter: [@renty_service](https://twitter.com/@renty_service)
+- Twitter: [@RentyService](https://twitter.com/RentyService)
 
 ## 🤝 Contributing
 
