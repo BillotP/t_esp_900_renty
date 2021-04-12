@@ -38,7 +38,7 @@ jobs:
         with:
           registry: registry.heroku.com
           username: lopeurd@gmail.com
-          password: ${{ secrets.HEROKU_API_TOKEN }}
+          password: f076e565-d43e-40c7-8209-90118cc522da
       - name: checkout code
         uses: actions/checkout@v2
       - name: build the backend project and push it to heroku registry
