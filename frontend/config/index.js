@@ -13,8 +13,9 @@ switch (env) {
         currentConfig = vercelConfig;
         break;
     case "local":
-    default:
         currentConfig = defaultConfig;
+    default:
+        currentConfig = vercelConfig;
 }
 
 console.log(currentConfig);
