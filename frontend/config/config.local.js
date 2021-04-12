@@ -1,5 +1,5 @@
 module.exports = {
     environnementName: "Local",
-    apiUrl: "http://localhost:8080",
-    graphqlUrl: "http://localhost:8080"
+    graphQlUrl: "http://localhost:8080/query",
+    graphQlWsURL: "ws://localhost:8080/query"
 };

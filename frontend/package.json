@@ -7,7 +7,8 @@
         "test:unit": "vue-cli-service test:unit",
         "lint": "vue-cli-service lint",
         "build:local": "cross-env CURRENT_ENV=local vue-cli-service build",
-        "build:prod": "cross-env CURRENT_ENV=production vue-cli-service build"
+        "build:prod": "cross-env CURRENT_ENV=production vue-cli-service build",
+        "build:vercel": "cross-env CURRENT_ENV=vercel vue-cli-service build"
     },
     "dependencies": {
         "@types/vue-the-mask": "^0.11.1",
