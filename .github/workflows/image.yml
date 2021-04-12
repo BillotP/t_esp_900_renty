@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: install deps
-        run: sudo snap install --classic heroku && docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+        run: sudo snap install --classic heroku && docker login -u "_" -p ${HEROKU_API_KEY} registry.heroku.com
       - name: checkout code
         uses: actions/checkout@v2
       - name: build the backend project and push it to heroku registry
