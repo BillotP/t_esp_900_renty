@@ -1,11 +1,11 @@
 <template>
   <v-main
-      style="
-        margin-top: 10vh;
-        margin-bottom: 10vh;
-        margin-right: 10vh;
-        margin-left: 10vh;
-      "
+    style="
+      margin-top: 10vh;
+      margin-bottom: 10vh;
+      margin-right: 10vh;
+      margin-left: 10vh;
+    "
   >
     <v-card>
       <v-card-text>
@@ -14,72 +14,75 @@
           <v-form v-model="valid">
             <h4>My Profile</h4>
             <v-row>
-              <v-text-field
-                  type="phone"
-                  v-model="phone"
-                  label="Phone Number"
-                  required
-                  :rules="rules"
-              ></v-text-field>
+              <v-col cols="6">
+                <vue-phone-number-input v-model="phone" default-country-code="FR" required  @update="isvalidPhoneNumber = $event" :preferred-countries="['FR', 'BE', 'DE']" />
+              </v-col>
             </v-row>
             <v-row>
               <v-col cols="12" md="6">
                 <v-select
-                    v-model="skillsSelected"
-                    :items="skillTypes"
-                    item-text="label"
-                    item-value="value"
-                    label="Skills"
-                    multiple
+                  v-model="skillsSelected"
+                  :items="skillTypes"
+                  item-text="label"
+                  item-value="value"
+                  label="Skills"
+                  multiple
                 ></v-select>
               </v-col>
               <v-col cols="12" md="6">
                 <v-select
-                    v-model="specialitiesSelected"
-                    :items="specialityTypes"
-                    item-text="label"
-                    item-value="value"
-                    label="Specialities"
-                    multiple
+                  v-model="specialitiesSelected"
+                  :items="specialityTypes"
+                  item-text="label"
+                  item-value="value"
+                  label="Specialities"
+                  multiple
                 ></v-select>
               </v-col>
             </v-row>
             <v-row>
               <v-textarea
-                  hint="Let me know you"
-                  v-model="about"
-                  label="About"
+                hint="Let me know you"
+                v-model="about"
+                label="About"
               ></v-textarea>
             </v-row>
             <h4>My Account</h4>
             <v-row>
               <v-text-field
-                  type="text"
-                  v-model="username"
-                  label="Username"
-                  required
-                  :rules="rules"
+                type="text"
+                v-model="username"
+                label="Username"
+                required
+                :rules="rules"
               ></v-text-field>
             </v-row>
             <v-row>
               <v-text-field
-                  type="password"
-                  v-model="password"
-                  label="Password"
-                  required
-                  :rules="rules"
+                type="password"
+                v-model="password"
+                label="Password"
+                required
+                :rules="rules"
               ></v-text-field>
             </v-row>
             <v-row>
-              <v-btn depressed color="primary" v-on:click="createUser()"> Create</v-btn>
+              <v-btn depressed color="primary" v-on:click="createUser()" :disabled="!isvalidPhoneNumber['isValid']">
+                Create</v-btn
+              >
               <v-snackbar
-                  v-model="snackbar"
-                  :color="hasError ? 'red' : ''"
-                  :timeout="timeout"
+                v-model="snackbar"
+                :color="hasError ? 'red' : ''"
+                :timeout="timeout"
               >
                 {{ text }}
                 <template v-slot:action="{ attrs }">
-                  <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+                  <v-btn
+                    color="blue"
+                    text
+                    v-bind="attrs"
+                    @click="snackbar = false"
+                  >
                     Close
                   </v-btn>
                 </template>
@@ -111,6 +114,7 @@ export default class CreateEstateAgentUser extends Vue {
     return {
       about: null,
       phone: null,
+      isvalidPhoneNumber: false,
       username: "",
       password: "",
       snackbar: false,
@@ -118,33 +122,31 @@ export default class CreateEstateAgentUser extends Vue {
       timeout: 2000,
       hasError: false,
       valid: false,
-      rules: [
-        v => !!v || 'field is required',
-      ],
+      rules: [(v) => !!v || "field is required"],
       skillsSelected: [],
       skillTypes: [
-        {label: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 English", value: "ENGLISH"},
-        {label: "🇪🇸 Spanish", value: "SPANISH"},
-        {label: "🇩🇪 German", value: "GERMAN"},
-        {label: "🇫🇷 French", value: "FRENCH"},
-        {label: "⚙ Software", value: "SOFTWARE"},
-        {label: "👔 Hard working", value: "HARD_WORKING"},
-        {label: "🧑‍💻 Remote working", value: "REMOTE_WORKING"},
-        {label: "😔 Pensive", value: "PENSIVE"},
-        {label: "👂 Listening", value: "LISTENING"},
-        {label: "💬 Communicating", value: "COMMUNICATING"},
-        {label: "🗂️ Organizing", value: "ORGANIZING"},
-        {label: "💱 Negociation", value: "NEGOCIATION"},
-        {label: "🔥 Responsiveness", value: "RESPONSIVENESS"},
+        { label: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 English", value: "ENGLISH" },
+        { label: "🇪🇸 Spanish", value: "SPANISH" },
+        { label: "🇩🇪 German", value: "GERMAN" },
+        { label: "🇫🇷 French", value: "FRENCH" },
+        { label: "⚙ Software", value: "SOFTWARE" },
+        { label: "👔 Hard working", value: "HARD_WORKING" },
+        { label: "🧑‍💻 Remote working", value: "REMOTE_WORKING" },
+        { label: "😔 Pensive", value: "PENSIVE" },
+        { label: "👂 Listening", value: "LISTENING" },
+        { label: "💬 Communicating", value: "COMMUNICATING" },
+        { label: "🗂️ Organizing", value: "ORGANIZING" },
+        { label: "💱 Negociation", value: "NEGOCIATION" },
+        { label: "🔥 Responsiveness", value: "RESPONSIVENESS" },
       ],
       specialitiesSelected: [],
       specialityTypes: [
-        {label: "🏘️ Residential", value: "RESIDENTIAL"},
-        {label: "🏬 Commercial", value: "COMMERCIAL"},
-        {label: "🏚️ Property management", value: "PROPERTY_MANAGEMENT"},
-        {label: "🏗️ New construction", value: "NEW_CONSTRUCTION"},
-        {label: "💍️ Luxury", value: "LUXURY"},
-        {label: "🚜 Farms", value: "FARMS"},
+        { label: "🏘️ Residential", value: "RESIDENTIAL" },
+        { label: "🏬 Commercial", value: "COMMERCIAL" },
+        { label: "🏚️ Property management", value: "PROPERTY_MANAGEMENT" },
+        { label: "🏗️ New construction", value: "NEW_CONSTRUCTION" },
+        { label: "💍️ Luxury", value: "LUXURY" },
+        { label: "🚜 Farms", value: "FARMS" },
       ],
     };
   }
@@ -162,13 +164,13 @@ export default class CreateEstateAgentUser extends Vue {
             about: this.$data.about,
             tel: this.$data.phone,
             skills: this.$data.skillsSelected,
-            specialities: this.$data.specialitiesSelected
+            specialities: this.$data.specialitiesSelected,
           },
         },
       });
       if (resp.data.createEstateAgentUser.ID) {
         this.$data.text =
-            "Estate agent " + this.$data.username + " successfully created !";
+          "Estate agent " + this.$data.username + " successfully created !";
         this.$data.hasError = false;
         this.$data.snackbar = true;
         // this.$router.("/estate-agents");
@@ -176,7 +178,7 @@ export default class CreateEstateAgentUser extends Vue {
       }
     } catch (e) {
       this.$data.text =
-          "⚠️ Failed to create estate agent :" + e["graphQLErrors"][0]["message"];
+        "⚠️ Failed to create estate agent :" + e["graphQLErrors"][0]["message"];
       this.$data.hasError = true;
       this.$data.snackbar = true;
     }
