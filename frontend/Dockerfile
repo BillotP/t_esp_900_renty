@@ -2,6 +2,7 @@
 FROM node:lts-alpine as build
 WORKDIR /build
 COPY package*.json ./
+RUN apk add npm
 RUN npm ci
 COPY . .
 RUN npm run build:local
