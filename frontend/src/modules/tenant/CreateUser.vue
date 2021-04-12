@@ -1,11 +1,11 @@
 <template>
   <v-main
-      style="
-        margin-top: 10vh;
-        margin-bottom: 10vh;
-        margin-right: 10vh;
-        margin-left: 10vh;
-      "
+    style="
+      margin-top: 10vh;
+      margin-bottom: 10vh;
+      margin-right: 10vh;
+      margin-left: 10vh;
+    "
   >
     <v-card>
       <v-card-text>
@@ -16,75 +16,72 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                    prepend-icon="mdi-barcode"
-                    type="text"
-                    v-model="customerRef"
-                    label="Customer Ref°"
-                    required
-                    :rules="rules"
+                  prepend-icon="mdi-barcode"
+                  type="text"
+                  v-model="customerRef"
+                  label="Customer Ref°"
+                  required
+                  :rules="rules"
                 ></v-text-field>
               </v-col>
               <v-col cols="2">
                 <v-radio-group v-model="gender">
-                  <v-radio
-                      label="👦"
-                      value="0"
-                  ></v-radio>
-                  <v-radio
-                      label="👩"
-                      value="1"
-                  ></v-radio>
-                  <v-radio
-                      label="😈"
-                      value="2"
-                  ></v-radio>
+                  <v-radio label="👦" value="0"></v-radio>
+                  <v-radio label="👩" value="1"></v-radio>
+                  <v-radio label="😈" value="2"></v-radio>
                 </v-radio-group>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="6">
-                <v-text-field
-                    prepend-icon="mdi-phone"
-                    type="phone"
-                    v-model="phone"
-                    label="Phone"
-                    required
-                    :rules="rules"
-                ></v-text-field>
+                <vue-phone-number-input
+                  v-model="phone"
+                  default-country-code="FR"
+                  required
+                  @update="isvalidPhoneNumber = $event"
+                  :preferred-countries="['FR', 'BE', 'DE']"
+                />
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                    prepend-icon="mdi-cake"
-                    v-model="birthday"
-                    label="Birthday"
-                    type="date"
-                    required
-                    :rules="rules"
+                  prepend-icon="mdi-cake"
+                  v-model="birthday"
+                  label="Birthday"
+                  type="date"
+                  required
+                  :rules="rules"
                 ></v-text-field>
               </v-col>
             </v-row>
             <h4>My Account</h4>
             <v-row>
               <v-text-field
-                  prepend-icon="mdi-account"
-                  v-model="username"
-                  label="Username"
-                  required
-                  :rules="rules"
+                prepend-icon="mdi-account"
+                v-model="username"
+                label="Username"
+                required
+                :rules="rules"
               ></v-text-field>
             </v-row>
             <v-row>
               <v-text-field
-                  prepend-icon="mdi-form-textbox-password"
-                  type="password"
-                  v-model="password"
-                  label="Password"
-                  required
-                  :rules="rules"
+                prepend-icon="mdi-form-textbox-password"
+                type="password"
+                v-model="password"
+                label="Password"
+                required
+                :rules="rules"
               ></v-text-field>
             </v-row>
             <v-row>
-              <v-btn depressed color="primary" :disabled="!valid" v-on:click="createUser()"> Create</v-btn>
+              <v-btn
+                depressed
+                color="primary"
+                :disabled="!valid"
+                v-on:click="createUser()"
+              >
+                Create</v-btn
+              >
             </v-row>
           </v-form>
         </v-container>
@@ -113,23 +110,18 @@ export default class CreateTenantUser extends Vue {
       phone: null,
       birthday: null,
       customerRef: null,
-      gender: '0',
+      gender: "0",
       username: null,
       password: null,
+      isvalidPhoneNumber: null,
       valid: false,
-      rules: [
-        v => !!v || 'field is required',
-      ],
+      rules: [(v) => !!v || "field is required"],
     };
   }
 
   async createUser() {
     try {
-      const genders = [
-        'MAN',
-        'WOMAN',
-        'OTHER'
-      ];
+      const genders = ["MAN", "WOMAN", "OTHER"];
       const resp = await this.$apollo.getClient().mutate({
         mutation: CREATE_TENANT_USER_MUTATION,
         variables: {
@@ -147,7 +139,7 @@ export default class CreateTenantUser extends Vue {
       });
       if (resp.data.createTenantUser.ID) {
         this.$data.text =
-            "User " + this.$data.username + " create successfully !";
+          "User " + this.$data.username + " create successfully !";
         this.$data.snackbar = true;
         this.$router.back();
       }
