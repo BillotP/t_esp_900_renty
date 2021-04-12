@@ -34,7 +34,11 @@ jobs:
       - name: install heroku cli
         run: sudo snap install --classic heroku
       - name: login to heroku registry
-        run: echo -n $HEROKU_API_TOKEN | docker login --username $HEROKU_USER_EMAIL --password-stdin registry.heroku.com
+        uses: docker/login-action@v1
+        with:
+          registry: registry.heroku.com
+          username: ${{ secrets.HEROKU_USER_EMAIL }}
+          password: ${{ secrets.HEROKU_API_TOKEN }}
       - name: checkout code
         uses: actions/checkout@v2
       - name: build the backend project and push it to heroku registry
