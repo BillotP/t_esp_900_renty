@@ -62,6 +62,7 @@ type ComplexityRoot struct {
 		CreatedAt    func(childComplexity int) int
 		Description  func(childComplexity int) int
 		ID           func(childComplexity int) int
+		Priority     func(childComplexity int) int
 		Property     func(childComplexity int) int
 		PropertyID   func(childComplexity int) int
 		State        func(childComplexity int) int
@@ -335,6 +336,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Anomaly.ID(childComplexity), true
+
+	case "Anomaly.priority":
+		if e.complexity.Anomaly.Priority == nil {
+			break
+		}
+
+		return e.complexity.Anomaly.Priority(childComplexity), true
 
 	case "Anomaly.property":
 		if e.complexity.Anomaly.Property == nil {
@@ -1264,6 +1272,29 @@ enum AnomalyStates {
 }
 
 """
+An AnomalyState is a
+"""
+enum AnomalyTypes {
+    MAINTENANCE,
+    PAYMENT,
+    RENT,
+    DOCUMENTS,
+    ACCOMMODATION,
+    OTHER
+}
+
+"""
+A Priority is a
+"""
+enum Priority {
+    MAJOR,
+    HIGHEST,
+    HIGH,
+    MEDIUM,
+    LOW
+}
+
+"""
 An Anomaly is a
 """
 type Anomaly {
@@ -1277,20 +1308,22 @@ type Anomaly {
     propertyID: Int
     property: Property @extraTag(gorm:"foreignKey:PropertyID")
     description: String!
-    type: String!
+    type: AnomalyTypes!
     state: AnomalyStates
+    priority: Priority
 }
 
 
 input AnomalyInput {
     property: Int
-    type: String!
+    type: AnomalyTypes!
     description: String!
 }
 
 input AnomalyUpdateInput {
     assignedTo: Int
     state: AnomalyStates
+    priority: Priority
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/asset.graphqls", Input: `"""
@@ -2435,9 +2468,9 @@ func (ec *executionContext) _Anomaly_type(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(models.AnomalyTypes)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNAnomalyTypes2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyTypes(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Anomaly_state(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
@@ -2469,6 +2502,37 @@ func (ec *executionContext) _Anomaly_state(ctx context.Context, field graphql.Co
 	res := resTmp.(*models.AnomalyStates)
 	fc.Result = res
 	return ec.marshalOAnomalyStates2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Anomaly_priority(ctx context.Context, field graphql.CollectedField, obj *models.Anomaly) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Anomaly",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Priority, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.Priority)
+	fc.Result = res
+	return ec.marshalOPriority2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPriority(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Asset_ID(ctx context.Context, field graphql.CollectedField, obj *models.Asset) (ret graphql.Marshaler) {
@@ -7512,7 +7576,7 @@ func (ec *executionContext) unmarshalInputAnomalyInput(ctx context.Context, obj 
 			}
 		case "type":
 			var err error
-			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			it.Type, err = ec.unmarshalNAnomalyTypes2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyTypes(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7543,6 +7607,12 @@ func (ec *executionContext) unmarshalInputAnomalyUpdateInput(ctx context.Context
 		case "state":
 			var err error
 			it.State, err = ec.unmarshalOAnomalyStates2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyStates(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "priority":
+			var err error
+			it.Priority, err = ec.unmarshalOPriority2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPriority(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7966,6 +8036,8 @@ func (ec *executionContext) _Anomaly(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "state":
 			out.Values[i] = ec._Anomaly_state(ctx, field, obj)
+		case "priority":
+			out.Values[i] = ec._Anomaly_priority(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9021,6 +9093,15 @@ func (ec *executionContext) marshalNAnomaly2ᚖgithubᚗcomᚋBillotPᚋt_esp_90
 	return ec._Anomaly(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNAnomalyTypes2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyTypes(ctx context.Context, v interface{}) (models.AnomalyTypes, error) {
+	var res models.AnomalyTypes
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalNAnomalyTypes2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAnomalyTypes(ctx context.Context, sel ast.SelectionSet, v models.AnomalyTypes) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) marshalNAsset2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAsset(ctx context.Context, sel ast.SelectionSet, v models.Asset) graphql.Marshaler {
 	return ec._Asset(ctx, sel, &v)
 }
@@ -10060,6 +10141,30 @@ func (ec *executionContext) marshalOInt2ᚖint64(ctx context.Context, sel ast.Se
 		return graphql.Null
 	}
 	return ec.marshalOInt2int64(ctx, sel, *v)
+}
+
+func (ec *executionContext) unmarshalOPriority2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPriority(ctx context.Context, v interface{}) (models.Priority, error) {
+	var res models.Priority
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalOPriority2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPriority(ctx context.Context, sel ast.SelectionSet, v models.Priority) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOPriority2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPriority(ctx context.Context, v interface{}) (*models.Priority, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOPriority2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPriority(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOPriority2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐPriority(ctx context.Context, sel ast.SelectionSet, v *models.Priority) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalOProfile2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐProfile(ctx context.Context, sel ast.SelectionSet, v models.Profile) graphql.Marshaler {

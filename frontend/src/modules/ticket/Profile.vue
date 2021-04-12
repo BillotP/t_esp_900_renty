@@ -1,52 +1,66 @@
 <template>
-  <v-container>
-    <v-card v-if="anomaly && anomaly.createBy && anomaly.assignedTo" tile>
-      <v-list>
+  <v-main>
+    <v-card
+        v-if="anomaly && anomaly.createBy && anomaly.createBy.user.username"
+        class="mx-auto" max-width="434" tile
+    >
+      <v-chip color="secondary" style="text-transform: uppercase;">
+        <i style="color: white">{{ ticketStates[anomaly.state] }}</i>
+      </v-chip>
+      <v-img height="100%" :src="banner"></v-img>
+      <v-card-text>
+        <v-list>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title class="title">
+                {{ ticketTypes[anomaly.type] }}
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-divider></v-divider>
         <v-list-item>
-          <v-list-item-avatar>
-            <v-img
-              src="https://as2.ftcdn.net/jpg/01/90/07/23/500_F_190072303_iN1moor8sdI21msMcD0gO6AwSeQuygMW.jpg"
-            ></v-img>
-          </v-list-item-avatar>
-        </v-list-item>
-
-        <v-list-item>
-          <v-list-item-content>
+          <v-list>
             <v-list-item-title class="title">
-              {{ anomaly.type }}
+              <v-tooltip left>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                      depressed
+                      v-if="anomaly.priority"
+                      v-bind="attrs"
+                      v-on="on"
+                  >
+                    {{ priorityIcons[anomaly.priority] }}
+                  </v-btn>
+                </template>
+                <span>{{ anomaly.priority }}</span>
+              </v-tooltip>
+              <p>{{ anomaly.description }}</p>
             </v-list-item-title>
-          </v-list-item-content>
+          </v-list>
         </v-list-item>
-      </v-list>
-      <v-divider></v-divider>
-      <v-list-item>
-        <v-list>
-          <v-list-item-title class="title">
-            {{ anomaly.description }}
-          </v-list-item-title>
-        </v-list>
-      </v-list-item>
-      <v-divider></v-divider>
-      <v-list-item>
-        <v-list>
-          <v-btn depressed color="primary"> Assigned To: </v-btn>
-          <v-chip>
-            <v-icon left> mdi-account </v-icon>
-            {{ anomaly.assignedTo.user.username }}
-          </v-chip>
-        </v-list>
-      </v-list-item>
-      <v-list-item>
-        <v-list>
-          <v-btn depressed color="primary"> Created By: </v-btn>
-          <v-chip>
-            <v-icon left> mdi-account </v-icon>
-            {{ anomaly.createBy.user.username }}
-          </v-chip>
-        </v-list>
-      </v-list-item>
+        <v-divider></v-divider>
+        <v-list-item>
+          <v-list>
+            <v-btn x-small depressed color="primary"> Assigned To:</v-btn>
+            <v-chip style="margin-left: 10px">
+              <v-icon left> mdi-account</v-icon>
+              {{ anomaly.assignedTo.user.username }}
+            </v-chip>
+          </v-list>
+        </v-list-item>
+        <v-list-item>
+          <v-list>
+            <v-btn x-small depressed color="primary"> Created By:</v-btn>
+            <v-chip style="margin-left: 10px">
+              <v-icon left> mdi-account</v-icon>
+              {{ anomaly.createBy.user.username }}
+            </v-chip>
+          </v-list>
+        </v-list-item>
+      </v-card-text>
     </v-card>
-  </v-container>
+  </v-main>
 </template>
 
 
@@ -71,6 +85,8 @@ const TICKET_QUERY = gql`
       }
       type
       description
+      priority
+      state
     }
   }
 `;
@@ -81,18 +97,44 @@ export default class TicketProfile extends Vue {
 
   beforeMount() {
     this.$apollo
-      .getClient()
-      .query({
-        query: TICKET_QUERY,
-        variables: { id: this.$route.params.id },
-      })
-      .then((res) => {
-        this.anomaly = res.data.anomaly;
-        console.log(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+        .getClient()
+        .query({
+          query: TICKET_QUERY,
+          variables: {id: this.$route.params.id},
+        })
+        .then((res) => {
+          this.anomaly = res.data.anomaly;
+          console.log(res);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+  }
+
+  data() {
+    return {
+      banner: 'https://image.freepik.com/vecteurs-libre/service-clientele-illustration-icones_53876-66281.jpg',
+      ticketTypes: {
+        MAINTENANCE: "🔨 Maintenance",
+        PAYMENT: "💳 Rent payment method",
+        RENT: "⚠️Rent issue",
+        DOCUMENTS: "📄 Document request",
+        ACCOMMODATION: "⚠️Accommodation issue",
+        OTHER: "🥜 Other",
+      },
+      ticketStates: {
+        TODO: "📋 To do",
+        IN_PROGRESS: "🔄 In progress",
+        DONE: "✅ Done",
+      },
+      priorityIcons: {
+        MAJOR: "⬆️⬆️",
+        HIGHEST: "⬆️",
+        HIGH: "↕️",
+        MEDIUM: "⬇️",
+        LOW: "⬇️⬇️",
+      },
+    }
   }
 }
 </script>
