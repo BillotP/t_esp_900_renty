@@ -62,30 +62,6 @@
               label="Password"
             ></v-text-field>
           </v-row>
-          <v-row>
-            <v-radio-group row v-model="role" mandatory>
-              <v-radio
-                color="primary"
-                label="Company"
-                value="0"
-                key="0"
-              ></v-radio>
-              <v-radio
-                color="primary"
-                label="Estate Agent"
-                value="1"
-                key="1"
-                disabled
-              ></v-radio>
-              <v-radio
-                color="primary"
-                label="Tenant"
-                value="2"
-                key="2"
-                disabled
-              ></v-radio>
-            </v-radio-group>
-          </v-row>
           <v-btn
             depressed
             block
@@ -167,12 +143,6 @@ export default class Register extends Vue {
     return JSON.parse(jsonPayload);
   }
   async register() {
-    // const registerAs = [
-    //   {
-    //     mutation: REGISTER_AS_COMPANY,
-    //     key: "registerAsCompany",
-    //   },
-    // ];
     this.hasError = false;
     this.isLoading = true;
     try {

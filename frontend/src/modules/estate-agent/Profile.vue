@@ -5,43 +5,61 @@
       <v-col>
         <v-avatar size="100" style="position: absolute; top: 130px">
           <v-img
-              :src="`https://robohash.org/${estateAgent.user.username}.png?set=set5&bgset=bg1&size=100x100`"
+            :src="`https://robohash.org/${estateAgent.user.username}.png?set=set5&bgset=bg1&size=100x100`"
           ></v-img>
         </v-avatar>
       </v-col>
       <v-list-item color="rgba(0, 0, 0, .4)">
         <v-list-item-content>
-          <v-list-item-title style="text-transform: capitalize" class="title">{{
-              estateAgent.user.username
-            }}
+          <v-list-item-title style="text-transform: capitalize" class="title"
+            >{{ estateAgent.user.username }}
           </v-list-item-title>
           <v-list-item-subtitle
-          >RealEstate Agent N° {{ id }}
-          </v-list-item-subtitle
-          >
+            >RealEstate Agent N° {{ id }}
+          </v-list-item-subtitle>
           <v-list-item-subtitle
-          >@
+            >@
             <strong>{{
-                estateAgent.company.name
-              }}</strong></v-list-item-subtitle
+              estateAgent.company.name
+            }}</strong></v-list-item-subtitle
           >
         </v-list-item-content>
         <v-list-item-content>
-          <v-list-item-title style="text-transform: capitalize" class="title">{{ estateAgent.tel }}</v-list-item-title>
+          <v-list-item-title style="text-transform: capitalize" class="title">{{
+            estateAgent.tel
+          }}</v-list-item-title>
           <v-list-item-subtitle>{{ estateAgent.about }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
       <v-card-text>
         <h6>Skills</h6>
         <v-row>
-          <v-col cols="2" v-for="(skill, i) in estateAgent.skills">
-            <span style="border: dotted 2px lightgray; border-radius: 20px; padding: 5px;">{{ skillIcons[skill.type] }}</span>
+          <v-col :key="i" cols="2" v-for="(skill, i) in estateAgent.skills">
+            <span
+              style="
+                border: dotted 2px lightgray;
+                border-radius: 20px;
+                padding: 5px;
+              "
+              >{{ skillIcons[skill.type] }}</span
+            >
           </v-col>
         </v-row>
         <h6>Specialities</h6>
         <v-row>
-          <v-col cols="2" v-for="(speciality, i) in estateAgent.specialities">
-            <span style="border: dotted 2px lightgray; border-radius: 20px; padding: 5px;">{{ specialitiesIcons[speciality.type] }}</span>
+          <v-col
+            :key="i"
+            cols="2"
+            v-for="(speciality, i) in estateAgent.specialities"
+          >
+            <span
+              style="
+                border: dotted 2px lightgray;
+                border-radius: 20px;
+                padding: 5px;
+              "
+              >{{ specialitiesIcons[speciality.type] }}</span
+            >
           </v-col>
         </v-row>
       </v-card-text>
@@ -85,47 +103,47 @@ export default class EstateAgentProfile extends Vue {
     return {
       id: this.$route.params.id,
       banneer:
-          "https://image.freepik.com/free-photo/real-estate-agent-customer-face-mask-looking-new-project_53876-97516.jpg",
+        "https://image.freepik.com/free-photo/real-estate-agent-customer-face-mask-looking-new-project_53876-97516.jpg",
       skillIcons: {
-        'ENGLISH': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-        'SPANISH': '🇪🇸',
-        'GERMAN': '🇩🇪',
-        'FRENCH': '🇫🇷',
-        'SOFTWARE': '⚙',
-        'HARD_WORKING': '👔',
-        'REMOTE_WORKING': '🧑‍💻',
-        'PENSIVE': '😔',
-        'LISTENING': '👂',
-        'COMMUNICATING': '💬',
-        'ORGANIZING': '🗂',
-        'NEGOCIATION': '💱',
-        'RESPONSIVENESS': '🔥',
+        ENGLISH: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+        SPANISH: "🇪🇸",
+        GERMAN: "🇩🇪",
+        FRENCH: "🇫🇷",
+        SOFTWARE: "⚙",
+        HARD_WORKING: "👔",
+        REMOTE_WORKING: "🧑‍💻",
+        PENSIVE: "😔",
+        LISTENING: "👂",
+        COMMUNICATING: "💬",
+        ORGANIZING: "🗂",
+        NEGOCIATION: "💱",
+        RESPONSIVENESS: "🔥",
       },
       specialitiesIcons: {
-        'RESIDENTIAL': '🏘️',
-        'COMMERCIAL': '🏬',
-        'PROPERTY_MANAGEMENT': '🏚️',
-        'NEW_CONSTRUCTION': '🏗️',
-        'LUXURY': '💍️',
-        'FARMS': '🚜',
+        RESIDENTIAL: "🏘️",
+        COMMERCIAL: "🏬",
+        PROPERTY_MANAGEMENT: "🏚️",
+        NEW_CONSTRUCTION: "🏗️",
+        LUXURY: "💍️",
+        FARMS: "🚜",
       },
     };
   }
 
   beforeMount() {
     this.$apollo
-        .getClient()
-        .query({
-          query: ESTATE_AGENT_QUERY,
-          variables: {id: this.$route.params.id},
-        })
-        .then((res) => {
-          this.estateAgent = res.data.estateAgent;
-          console.log(res);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      .getClient()
+      .query({
+        query: ESTATE_AGENT_QUERY,
+        variables: { id: this.$route.params.id },
+      })
+      .then((res) => {
+        this.estateAgent = res.data.estateAgent;
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 }
 </script>

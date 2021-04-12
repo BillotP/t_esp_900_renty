@@ -46,6 +46,7 @@
     "src/vue-apollo.js"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "config/*.js"
   ]
 }

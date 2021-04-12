@@ -1,5 +1,5 @@
 module.exports = {
     environnementName: "Production",
-    apiUrl: "http://renty:8080",
-    graphqlUrl: "http://api:8080"
+    graphQlUrl: "http://api:8080/query",
+    graphQlWsURL: "ws://api:8080/query"
 };
