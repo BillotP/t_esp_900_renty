@@ -183,12 +183,16 @@ type ComplexityRoot struct {
 	}
 
 	Tenant struct {
+		Birthday      func(childComplexity int) int
 		CreatedAt     func(childComplexity int) int
+		CustomerRef   func(childComplexity int) int
 		Documents     func(childComplexity int) int
 		EstateAgent   func(childComplexity int) int
 		EstateAgentID func(childComplexity int) int
+		Gender        func(childComplexity int) int
 		ID            func(childComplexity int) int
 		Properties    func(childComplexity int) int
+		Tel           func(childComplexity int) int
 		UpdatedAt     func(childComplexity int) int
 		User          func(childComplexity int) int
 		UserID        func(childComplexity int) int
@@ -1038,12 +1042,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Speciality.Type(childComplexity), true
 
+	case "Tenant.birthday":
+		if e.complexity.Tenant.Birthday == nil {
+			break
+		}
+
+		return e.complexity.Tenant.Birthday(childComplexity), true
+
 	case "Tenant.createdAt":
 		if e.complexity.Tenant.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Tenant.CreatedAt(childComplexity), true
+
+	case "Tenant.customerRef":
+		if e.complexity.Tenant.CustomerRef == nil {
+			break
+		}
+
+		return e.complexity.Tenant.CustomerRef(childComplexity), true
 
 	case "Tenant.documents":
 		if e.complexity.Tenant.Documents == nil {
@@ -1066,6 +1084,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Tenant.EstateAgentID(childComplexity), true
 
+	case "Tenant.gender":
+		if e.complexity.Tenant.Gender == nil {
+			break
+		}
+
+		return e.complexity.Tenant.Gender(childComplexity), true
+
 	case "Tenant.ID":
 		if e.complexity.Tenant.ID == nil {
 			break
@@ -1079,6 +1104,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Tenant.Properties(childComplexity), true
+
+	case "Tenant.tel":
+		if e.complexity.Tenant.Tel == nil {
+			break
+		}
+
+		return e.complexity.Tenant.Tel(childComplexity), true
 
 	case "Tenant.updatedAt":
 		if e.complexity.Tenant.UpdatedAt == nil {
@@ -1512,16 +1544,31 @@ type Tenant implements Profile {
     estateAgentID: Int
     estateAgent: EstateAgent! @extraTag(gorm:"foreignKey:EstateAgentID")
     documents: [Asset!] @extraTag(gorm:"many2many:tenant_documents")
+    tel: String!
+    birthday: Time!
+    customerRef: String!
+    gender: Gender!
 }
 
 input TenantInput {
     user: UserInput!
+    tel: String!
+    birthday: Time!
+    customerRef: String!
+    gender: Gender!
 }
 
-
 input TenantUpdateInput {
-    properties: [Int]
-    documents: [String]
+    tel: String
+    birthday: Time
+    customerRef: String
+    gender: Gender
+}
+
+enum Gender {
+    MAN,
+    WOMAN,
+    OTHER
 }
 `, BuiltIn: false},
 	&ast.Source{Name: "schemes/user.graphqls", Input: `"""
@@ -6047,6 +6094,142 @@ func (ec *executionContext) _Tenant_documents(ctx context.Context, field graphql
 	return ec.marshalOAsset2ᚕᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐAssetᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Tenant_tel(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Tel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Tenant_birthday(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Birthday, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Tenant_customerRef(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomerRef, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Tenant_gender(ctx context.Context, field graphql.CollectedField, obj *models.Tenant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Tenant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gender, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Gender)
+	fc.Result = res
+	return ec.marshalNGender2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _User_ID(ctx context.Context, field graphql.CollectedField, obj *models.User) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -7579,6 +7762,30 @@ func (ec *executionContext) unmarshalInputTenantInput(ctx context.Context, obj i
 			if err != nil {
 				return it, err
 			}
+		case "tel":
+			var err error
+			it.Tel, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "birthday":
+			var err error
+			it.Birthday, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customerRef":
+			var err error
+			it.CustomerRef, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gender":
+			var err error
+			it.Gender, err = ec.unmarshalNGender2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -7591,15 +7798,27 @@ func (ec *executionContext) unmarshalInputTenantUpdateInput(ctx context.Context,
 
 	for k, v := range asMap {
 		switch k {
-		case "properties":
+		case "tel":
 			var err error
-			it.Properties, err = ec.unmarshalOInt2ᚕᚖint64(ctx, v)
+			it.Tel, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "documents":
+		case "birthday":
 			var err error
-			it.Documents, err = ec.unmarshalOString2ᚕᚖstring(ctx, v)
+			it.Birthday, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customerRef":
+			var err error
+			it.CustomerRef, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gender":
+			var err error
+			it.Gender, err = ec.unmarshalOGender2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8428,6 +8647,26 @@ func (ec *executionContext) _Tenant(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "documents":
 			out.Values[i] = ec._Tenant_documents(ctx, field, obj)
+		case "tel":
+			out.Values[i] = ec._Tenant_tel(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "birthday":
+			out.Values[i] = ec._Tenant_birthday(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "customerRef":
+			out.Values[i] = ec._Tenant_customerRef(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "gender":
+			out.Values[i] = ec._Tenant_gender(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8953,6 +9192,15 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 	return res
 }
 
+func (ec *executionContext) unmarshalNGender2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx context.Context, v interface{}) (models.Gender, error) {
+	var res models.Gender
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalNGender2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx context.Context, sel ast.SelectionSet, v models.Gender) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNInt2int64(ctx context.Context, v interface{}) (int64, error) {
 	return graphql.UnmarshalInt64(v)
 }
@@ -9165,6 +9413,20 @@ func (ec *executionContext) marshalNTenant2ᚖgithubᚗcomᚋBillotPᚋt_esp_900
 		return graphql.Null
 	}
 	return ec._Tenant(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	return graphql.UnmarshalTime(v)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) unmarshalNUpload2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (graphql.Upload, error) {
@@ -9753,44 +10015,36 @@ func (ec *executionContext) unmarshalOEstateAgentInput2ᚖgithubᚗcomᚋBillotP
 	return &res, err
 }
 
+func (ec *executionContext) unmarshalOGender2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx context.Context, v interface{}) (models.Gender, error) {
+	var res models.Gender
+	return res, res.UnmarshalGQL(v)
+}
+
+func (ec *executionContext) marshalOGender2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx context.Context, sel ast.SelectionSet, v models.Gender) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOGender2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx context.Context, v interface{}) (*models.Gender, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOGender2githubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOGender2ᚖgithubᚗcomᚋBillotPᚋt_esp_900_rentyᚋv2ᚋbackendᚋapiᚋgraphᚋgeneratedᚋmodelsᚐGender(ctx context.Context, sel ast.SelectionSet, v *models.Gender) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
 func (ec *executionContext) unmarshalOInt2int64(ctx context.Context, v interface{}) (int64, error) {
 	return graphql.UnmarshalInt64(v)
 }
 
 func (ec *executionContext) marshalOInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
 	return graphql.MarshalInt64(v)
-}
-
-func (ec *executionContext) unmarshalOInt2ᚕᚖint64(ctx context.Context, v interface{}) ([]*int64, error) {
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]*int64, len(vSlice))
-	for i := range vSlice {
-		res[i], err = ec.unmarshalOInt2ᚖint64(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOInt2ᚕᚖint64(ctx context.Context, sel ast.SelectionSet, v []*int64) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalOInt2ᚖint64(ctx, sel, v[i])
-	}
-
-	return ret
 }
 
 func (ec *executionContext) unmarshalOInt2ᚖint64(ctx context.Context, v interface{}) (*int64, error) {
@@ -10178,38 +10432,6 @@ func (ec *executionContext) unmarshalOString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
-}
-
-func (ec *executionContext) unmarshalOString2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]*string, len(vSlice))
-	for i := range vSlice {
-		res[i], err = ec.unmarshalOString2ᚖstring(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOString2ᚕᚖstring(ctx context.Context, sel ast.SelectionSet, v []*string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalOString2ᚖstring(ctx, sel, v[i])
-	}
-
-	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
