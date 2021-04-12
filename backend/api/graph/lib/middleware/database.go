@@ -43,20 +43,21 @@ func InitDB() {
 	dbName = lib.GetDefVal("DB_NAME", "rentydb")
 	dbHost = lib.GetDefVal("POSTGRES_HOST", "127.0.0.1")
 	dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", dbHost, username, dbName, password, "5432") //Build connection string
+	finalDBURI := lib.GetDefVal("DATABASE_URL", dbURI)
 	logrConf := logger.Config{
 		SlowThreshold: time.Second, // Slow SQL threshold
 		LogLevel:      logger.Warn, // Log level
 		Colorful:      false,       // Disable color,
 	}
 	if stage == "dev" {
-		lib.LogInfo("InitDB", fmt.Sprintf("will connect to db with URI : %s", dbURI))
+		lib.LogInfo("InitDB", fmt.Sprintf("will connect to db with URI : %s", finalDBURI))
 		logrConf.LogLevel = logger.Info
 	}
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logrConf,
 	)
-	if Db, err = gorm.Open(postgres.Open(dbURI), &gorm.Config{
+	if Db, err = gorm.Open(postgres.Open(finalDBURI), &gorm.Config{
 		Logger: newLogger,
 	}); err != nil {
 		lib.LogError("InitDB", "Failed to connect to database, exiting")
