@@ -28,12 +28,18 @@ jobs:
         uses: anchore/scan-action@v2
         with:
           image: "renty_api"
-  # deploy_api:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: install deps
-  #       run: sudo snap install --classic heroku && docker login --username=_ --password=$(heroku auth:token) registry.heroku.com
-  #     - name: checkout code
-  #       uses: actions/checkout@v2
-  #     - name: build the backend project and push it to heroku registry
-  #       run: cd backend/api/graph && heroku container:push web -a rentyv2-api && heroku container:release web -a rentyv2-api
+  deploy_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install heroku cli
+        run: sudo snap install --classic heroku
+      - name: login to heroku registry
+        uses: docker/login-action@v1
+        with:
+          registry: registry.heroku.com
+          username: lopeurd@gmail.com
+          password: f076e565-d43e-40c7-8209-90118cc522da
+      - name: checkout code
+        uses: actions/checkout@v2
+      - name: build the backend project and push it to heroku registry
+        run:  export HEROKU_API_KEY=f076e565-d43e-40c7-8209-90118cc522da && cd backend/api/graph && heroku container:push web -a rentyv2-api && heroku container:release web -a rentyv2-api
