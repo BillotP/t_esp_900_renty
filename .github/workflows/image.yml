@@ -32,8 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: install deps
-        run: sudo apt-get update && sudo apt-get install -y docker && sudo snap install --classic heroku && sudo docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+        run: sudo apt-get update && sudo apt-get install -y docker && sudo snap install --classic heroku && docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
       - name: checkout code
         uses: actions/checkout@v2
       - name: build the backend project and push it to heroku registry
-        run: cd backend/api/graph && sudo heroku container:push web -a rentyv2-api && sudo heroku container:release web -a rentyv2-api
+        run: cd backend/api/graph && heroku container:push web -a rentyv2-api && heroku container:release web -a rentyv2-api
