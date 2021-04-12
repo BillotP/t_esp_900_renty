@@ -5,6 +5,8 @@ const vercelConfig = require('./config.vercel');
 
 let currentConfig;
 
+console.log(env);
+
 switch (env) {
     case "production":
         currentConfig = prodConfig;
@@ -14,6 +16,7 @@ switch (env) {
         break;
     case "local":
         currentConfig = defaultConfig;
+        break;
     default:
         currentConfig = vercelConfig;
 }
