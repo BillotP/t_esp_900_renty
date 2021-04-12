@@ -216,7 +216,7 @@ export default class PropertyProfile extends Vue {
         F: "rgb(255,128,064)",
         G: "rgb(255,000,000)",
       },
-      url: process.env.VUE_APP_GRAPHQL_HTTP,
+      url: process.env.VUE_APP_GRAPHQL_HTTP + '/..',
       propertyTypes: {
         Maison: "🏠 Independent House",
         Appartement: "🏙️ Flat",
