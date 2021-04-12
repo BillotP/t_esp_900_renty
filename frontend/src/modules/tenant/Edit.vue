@@ -115,7 +115,7 @@ const TENANT_QUERY = gql`
         ID
         area
         address
-        codeNumber
+        postalCode
       }
       documents {
         url
