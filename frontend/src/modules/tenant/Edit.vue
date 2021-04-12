@@ -217,7 +217,7 @@ export default class TenantEdit extends Vue {
 
   public downloadDocument(myDocument: any) {
     const a = document.createElement("a");
-    a.href = "http://localhost:8080" + myDocument.url;
+    a.href = process.env.VUE_APP_GRAPHQL_HTTP + '/..' + myDocument.url;
     a.target = "_blank";
     document.body.appendChild(a);
     a.click();
