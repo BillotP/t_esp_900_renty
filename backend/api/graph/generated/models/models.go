@@ -194,17 +194,27 @@ type Tenant struct {
 	EstateAgentID *int64       `json:"estateAgentID"`
 	EstateAgent   *EstateAgent `json:"estateAgent" gorm:"foreignKey:EstateAgentID"`
 	Documents     []*Asset     `json:"documents" gorm:"many2many:tenant_documents"`
+	Tel           string       `json:"tel"`
+	Birthday      time.Time    `json:"birthday"`
+	CustomerRef   string       `json:"customerRef"`
+	Gender        Gender       `json:"gender"`
 }
 
 func (Tenant) IsProfile() {}
 
 type TenantInput struct {
-	User *UserInput `json:"user"`
+	User        *UserInput `json:"user"`
+	Tel         string     `json:"tel"`
+	Birthday    time.Time  `json:"birthday"`
+	CustomerRef string     `json:"customerRef"`
+	Gender      Gender     `json:"gender"`
 }
 
 type TenantUpdateInput struct {
-	Properties []*int64  `json:"properties"`
-	Documents  []*string `json:"documents"`
+	Tel         *string    `json:"tel"`
+	Birthday    *time.Time `json:"birthday"`
+	CustomerRef *string    `json:"customerRef"`
+	Gender      *Gender    `json:"gender"`
 }
 
 // A User is a
@@ -373,6 +383,49 @@ func (e *Energy) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Energy) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type Gender string
+
+const (
+	GenderMan   Gender = "MAN"
+	GenderWoman Gender = "WOMAN"
+	GenderOther Gender = "OTHER"
+)
+
+var AllGender = []Gender{
+	GenderMan,
+	GenderWoman,
+	GenderOther,
+}
+
+func (e Gender) IsValid() bool {
+	switch e {
+	case GenderMan, GenderWoman, GenderOther:
+		return true
+	}
+	return false
+}
+
+func (e Gender) String() string {
+	return string(e)
+}
+
+func (e *Gender) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Gender(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Gender", str)
+	}
+	return nil
+}
+
+func (e Gender) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

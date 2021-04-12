@@ -19,7 +19,7 @@ module.exports = {
                         VUE_APP_API_HOST_URL: `'${config.apiUrl || "http://localhost:5001"}'`,
                         VUE_APP_ENV_NAME: `'${config.environnementName || "Local"}'`,
                         VUE_APP_VERSION: `'${process.env.VUE_APP_VERSION}'`,
-                        VUE_APP_GRAPHQL_HTTP: `'${config.graphQlUrl || "http://localhost:8080"}'`,
+                        VUE_APP_GRAPHQL_HTTP: `'${config.graphQlUrl || "http://localhost:8080/query"}'`,
                         VUE_APP_GRAPHQL_WS: `'${config.wsGraphqlUrl || "ws://localhost:8080/query"}'`,
                     },
                     devServer: {
