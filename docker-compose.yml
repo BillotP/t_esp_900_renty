@@ -38,6 +38,12 @@ services:
       - userdocuments_renty:/go/data/documents:rw
       - propertyphotos_renty:/go/data/photos:rw
       - properymodel_renty:/go/data/models3d:rw
+  seed:
+    build: ./seed
+    container_name: "seed-container"
+    restart: on-failure
+    depends_on:
+      - api
   front:
     image: node:lts-alpine
     container_name: "front-container"
