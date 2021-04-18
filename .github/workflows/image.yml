@@ -38,8 +38,8 @@ jobs:
         with:
           registry: registry.heroku.com
           username: lopeurd@gmail.com
-          password: f076e565-d43e-40c7-8209-90118cc522da
+          password: env.HEROKU_API_KEY
       - name: checkout code
         uses: actions/checkout@v2
       - name: build the backend project and push it to heroku registry
-        run:  export HEROKU_API_KEY=f076e565-d43e-40c7-8209-90118cc522da && cd backend/api/graph && heroku container:push web -a rentyv2-api && heroku container:release web -a rentyv2-api
+        run:  export HEROKU_API_KEY=env.HEROKU_API_KEY && cd backend/api/graph && heroku container:push web -a rentyv2-api && heroku container:release web -a rentyv2-api
