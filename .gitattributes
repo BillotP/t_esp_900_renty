@@ -1,2 +1,2 @@
 **/secrets/** filter=git-crypt diff=git-crypt
-*jobs.*.env
+**/jobs.*.env filter=git-crypt diff=git-crypt

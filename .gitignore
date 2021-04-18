@@ -1,6 +1,7 @@
 # Secrets
 .credential
 *.env
+!*jobs.*.env
 # Openfaas
 build
 
