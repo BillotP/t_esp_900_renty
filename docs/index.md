@@ -10,11 +10,17 @@
     - Modifier son mot de passe / ses informations
     - Conditions d'utilisations
 
-- B. [Utilisateur Pro (Agence)](/t_esp_900_renty/company)
+- B. [Utilisateur Pro - Agence](/t_esp_900_renty/company)
 
     - Créer le profil de son agence
     - Ajouter ses agents immobilier
     - Ajouter les propriétés sous gestion
+    - Conditions d'utilisations
+
+- B. [Utilisateur Pro - Agent/Agente](/t_esp_900_renty/estate_agent)
+
+    - Se connecter
+    - Gérer les tickets
     - Conditions d'utilisations
 
 - C. [Intégrateur / Dévellopeur API](/t_esp_900_renty/developer)
