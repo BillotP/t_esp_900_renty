@@ -1,0 +1,22 @@
+---
+- name: Install prometheus
+  hosts: monitoring
+  roles:
+    - cloudalchemy.prometheus
+  tags:
+    - prometheus
+
+- name: Install prometheus blackbox-exporter
+  hosts: monitoring
+  roles:
+    - cloudalchemy.blackbox-exporter
+  tags:
+    - blackbox-exporter
+    - prometheus-blackbox-exporter
+
+- name: Configure Grafana
+  hosts: monitoring
+  roles:
+    - cloudalchemy.grafana
+  tags:
+    - grafana
