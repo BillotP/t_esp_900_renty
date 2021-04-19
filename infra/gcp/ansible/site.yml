@@ -16,6 +16,7 @@
 
 - name: Configure Grafana
   hosts: monitoring
+  vars_files: ./secrets/main.yml
   roles:
     - cloudalchemy.grafana
   tags:

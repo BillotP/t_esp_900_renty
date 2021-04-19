@@ -31,7 +31,7 @@ blackbox_exporter_configuration_modules:
 # GRAFANA
 grafana_security:
   admin_user: admin
-  admin_password: enter_your_secure_password
+  admin_password: "{{ grafana_admin_password }}"
 grafana_datasources:
   - name: prometheus
     type: prometheus
