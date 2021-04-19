@@ -20,6 +20,7 @@ prometheus_scrape_configs:
     - targets:
       - "https://rentyv2.vercel.app/"
       - "https://rentyv2-api.herokuapp.com/"
+      - "https://therentyapp.com"
   relabel_configs:
     - source_labels: [__address__]
       target_label: __param_target
