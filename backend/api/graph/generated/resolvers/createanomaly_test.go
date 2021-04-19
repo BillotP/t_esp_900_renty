@@ -1,18 +1,19 @@
 package resolvers_test
 
 import (
+	"regexp"
+	"testing"
+
 	"github.com/99designs/gqlgen/client"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/generated/models"
 	"github.com/BillotP/t_esp_900_renty/v2/backend/api/graph/lib/middleware"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
-	"regexp"
-	"testing"
 )
 
 func TestMutationResolver_CreateAnomaly(t *testing.T) {
 	var (
-		query            string
+		query string
 
 		input  *models.AnomalyInput
 		output struct {
@@ -22,17 +23,17 @@ func TestMutationResolver_CreateAnomaly(t *testing.T) {
 
 		err error
 
-		propertyTest int64 = 1
-		typeTest = "Damages"
-		descriptionTest = ""
+		propertyTest    int64 = 1
+		typeTest              = "Damages"
+		descriptionTest       = ""
 	)
 
 	middleware.InitMockDB(models.RoleAdmin)
 
 	query = `mutation createAnomaly($input: AnomalyInput!){createAnomaly(input: $input){ID}}`
 	input = &models.AnomalyInput{
-		Property: &propertyTest,
-		Type: typeTest,
+		Property:    &propertyTest,
+		Type:        models.AnomalyTypes(typeTest),
 		Description: descriptionTest,
 	}
 
