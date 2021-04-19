@@ -1,16 +1,5 @@
 ---
-grafana_security:
-  admin_user: admin
-  admin_password: enter_your_secure_password
-grafana_datasources:
-  - name: prometheus
-    type: prometheus
-    url: http://127.0.0.1:9090
-grafana_dashboards:
-  - dashboard_id: 13041
-    revision_id: 4
-    datasource: prometheus
-
+# PROMETHEUS
 prometheus_scrape_configs:
 - job_name: 'blackbox'
   metrics_path: /probe
@@ -20,11 +9,34 @@ prometheus_scrape_configs:
     - targets:
       - "https://rentyv2.vercel.app/"
       - "https://rentyv2-api.herokuapp.com/"
-      - "https://therentyapp.com"
+      - "https://therentyapp.com/"
   relabel_configs:
     - source_labels: [__address__]
       target_label: __param_target
     - source_labels: [__param_target]
       target_label: instance
     - target_label: __address__
-      replacement: 127.0.0.1:9115  # Blackbox exporter.
+      replacement: 127.0.0.1:9115
+
+# BLACKBOX_EXPORTER
+blackbox_exporter_configuration_modules:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      method: GET
+      preferred_ip_protocol: ip4
+      valid_status_codes: []
+
+# GRAFANA
+grafana_security:
+  admin_user: admin
+  admin_password: "{{ grafana_admin_password }}"
+grafana_datasources:
+  - name: prometheus
+    type: prometheus
+    url: http://127.0.0.1:9090
+grafana_dashboards:
+  - dashboard_id: 13041
+    revision_id: 4
+    datasource: prometheus
