@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"gce-lb-http","Source":"GoogleCloudPlatform/lb-http/google","Version":"4.5.0","Dir":".terraform/modules/gce-lb-http"}]}

@@ -4,7 +4,7 @@ generate "provider" {
     contents  = <<EOF
 provider "google" {
    project = "therentyapp"
-   region  = "europe-west1-b"
+   region  = "europe-west1"
 }
 EOF
 }

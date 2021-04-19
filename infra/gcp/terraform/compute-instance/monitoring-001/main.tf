@@ -17,7 +17,7 @@ resource "google_compute_instance" "default" {
     network = var.compute_network_name
 
     access_config {
-      nat_ip = var.compute_address_address
+
     }
   }
 
